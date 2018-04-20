@@ -31,7 +31,7 @@
 #include <condition_variable>
 
 /** Multiple producer, multiple consumer (mpmc) thread safe queue
-* Since 'return by reference' is used this queue won't throw */
+* protected by mutex. Since 'return by reference' is used this queue won't throw */
 namespace mpmc {
    template<typename T>
    class shared_queue {
