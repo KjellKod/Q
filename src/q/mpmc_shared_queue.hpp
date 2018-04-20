@@ -38,7 +38,6 @@ namespace mpmc {
       std::queue<T> queue_;
       mutable std::mutex m_;
       std::condition_variable data_cond_;
-
       shared_queue& operator=(const shared_queue&) = delete;
       shared_queue(const shared_queue& other) = delete;
 
@@ -85,5 +84,16 @@ namespace mpmc {
          std::lock_guard<std::mutex> lock(m_);
          return queue_.size();
       }
+
+      unsigned capacity() const {
+         std::lock_guard<std::mutex> lock(m_);
+         return queue_.capacity();
+      }
+
+      unsigned capacity_free() const {
+         std::lock_guard<std::mutex> lock(m_);
+         return queue_.size() - queue_.capacity();
+      }
+
    };
 } // namespace

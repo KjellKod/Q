@@ -35,20 +35,23 @@ namespace spsc {
          : kSize(size)
          , kCapacity(kSize + 1)
          , _tail(0)
-         , _head(0) {
-           _array.reserve(kCapacity);
-         }
+         , _head(0)
+         , _array(kCapacity){
+      }
 
       virtual ~circular_fifo() {}
 
       bool push(const Element& item);
       bool pop(Element& item);
 
-      bool is_empty() const;
-      bool is_full() const;
-      bool is_lock_free() const;
-
-      unsigned size() const { return 1; }
+      bool empty() const;
+      bool full() const;
+      size_t capacity() const;
+      size_t capacity_free() const;
+      size_t size() const;
+      bool lock_free() const;
+      size_t tail() const { return _tail.load(); }
+      size_t head() const { return _head.load(); }
 
 
     private:
@@ -60,7 +63,7 @@ namespace spsc {
       cache_line _pad_storage;
       std::vector<Element> _array;
 
-      cache_line _pad_tail; 
+      cache_line _pad_tail;
       std::atomic <size_t>  _tail;
       cache_line  _pad_head;
       std::atomic<size_t>   _head; // head(output) index
@@ -71,6 +74,7 @@ namespace spsc {
    bool circular_fifo<Element>::push(const Element& item) {
       const auto current_tail = _tail.load(std::memory_order_relaxed);
       const auto next_tail = increment(current_tail);
+
       if (next_tail != _head.load(std::memory_order_acquire)) {
          _array[current_tail] = item;
          _tail.store(next_tail, std::memory_order_release);
@@ -86,8 +90,9 @@ namespace spsc {
    template<typename Element>
    bool circular_fifo<Element>::pop(Element& item) {
       const auto current_head = _head.load(std::memory_order_relaxed);
-      if (current_head == _tail.load(std::memory_order_acquire))
+      if (current_head == _tail.load(std::memory_order_acquire)) {
          return false; // empty queue
+      }
 
       item = _array[current_head];
       _head.store(increment(current_head), std::memory_order_release);
@@ -95,7 +100,7 @@ namespace spsc {
    }
 
    template<typename Element>
-   bool circular_fifo<Element>::is_empty() const {
+   bool circular_fifo<Element>::empty() const {
       // snapshot with acceptance of that this comparison operation is not atomic
       return (_head.load(std::memory_order_relaxed) == _tail.load(std::memory_order_relaxed));
    }
@@ -103,15 +108,32 @@ namespace spsc {
 
 // snapshot with acceptance that this comparison is not atomic
    template<typename Element>
-   bool circular_fifo<Element>::is_full() const {
+   bool circular_fifo<Element>::full() const {
       const auto next_tail = increment(_tail.load(std::memory_order_relaxed)); // aquire, we dont know who call
       return (next_tail == _head.load(std::memory_order_relaxed));
    }
 
 
+
    template<typename Element>
-   bool circular_fifo<Element>::is_lock_free() const {
+   bool circular_fifo<Element>::lock_free() const {
       return (_tail.is_lock_free() && _head.is_lock_free());
    }
+
+   template<typename Element>
+   size_t circular_fifo<Element>::size() const {
+      return ((_tail.load() - _head.load() + kCapacity) % kCapacity);
+   }
+
+   template<typename Element>
+   size_t circular_fifo<Element>::capacity_free() const {
+      return (kCapacity - size() -1);
+   }
+
+   template<typename Element>
+   size_t circular_fifo<Element>::capacity() const {
+      return kSize;
+   }
+
 
 } // spsc
