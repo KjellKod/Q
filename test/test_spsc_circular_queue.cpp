@@ -3,11 +3,16 @@
 #include "q/spsc_circular_fifo.hpp"
 #include <string>
 
+using namespace std;
+using DynamicQ = spsc::dynamic::circular_fifo<string>;
+using FixedQ = spsc::fixed::circular_fifo<string, 10>;
+using FixedSmallQ = spsc::fixed::circular_fifo<string, 3>;
 
-TEST(SPCS_CIRCULAR_QUEUE, Initialization) {
+
+template<typename Q>
+void Initialization(Q& q) {
    using namespace spsc;
    using namespace std;
-   circular_fifo<string> q{10};
    EXPECT_TRUE(q.empty());
    EXPECT_FALSE(q.full());
    EXPECT_TRUE(q.lock_free());
@@ -16,10 +21,20 @@ TEST(SPCS_CIRCULAR_QUEUE, Initialization) {
    EXPECT_EQ(0, q.size());
 }
 
-TEST(SPCS_CIRCULAR_QUEUE, AddOne) {
+
+TEST(SPCS_CIRCULAR_QUEUE, Initialization) {
+   DynamicQ dQ{10};
+   FixedQ fQ{};
+   Initialization(fQ);
+   Initialization(dQ);
+}
+
+
+
+template<typename Q>
+void AddOne(Q& q) {
    using namespace spsc;
    using namespace std;
-   circular_fifo<string> q{10};
    EXPECT_TRUE(q.push("test"));
    EXPECT_FALSE(q.full());
    EXPECT_EQ(10, q.capacity());
@@ -28,10 +43,17 @@ TEST(SPCS_CIRCULAR_QUEUE, AddOne) {
    EXPECT_EQ(1, q.tail());
 }
 
-TEST(SPCS_CIRCULAR_QUEUE, AddRemoveOne) {
-   using namespace spsc;
-   using namespace std;
-   circular_fifo<string> q{10};
+TEST(SPCS_CIRCULAR_QUEUE, AddOne) {
+   DynamicQ dQ{10};
+   FixedQ fQ{};
+   AddOne(fQ);
+   AddOne(dQ);
+}
+
+
+
+template<typename Q>
+void AddRemoveOne(Q& q) {
    std::string t = "test";
    EXPECT_TRUE(q.push(t));
    EXPECT_EQ(1, q.tail());
@@ -45,13 +67,19 @@ TEST(SPCS_CIRCULAR_QUEUE, AddRemoveOne) {
    EXPECT_EQ(1, q.head());
 }
 
-TEST(SPCS_CIRCULAR_QUEUE, LoopTillBeginning) {
-   using namespace spsc;
-   using namespace std;
-   circular_fifo<string> q{3};
+TEST(SPCS_CIRCULAR_QUEUE, AddRemoveOne) {
+   DynamicQ dQ{10};
+   FixedQ fQ{};
+   AddRemoveOne(fQ);
+   AddRemoveOne(dQ);
+}
+
+
+template<typename Q>
+void LoopTillBeginning(Q& q) {
    std::string t = "test";
    for (int i = 0; i < 3; ++i) {
-      
+
       EXPECT_TRUE(q.push(t));
       EXPECT_EQ(1, q.size());
       EXPECT_EQ(2, q.capacity_free());
@@ -84,10 +112,16 @@ TEST(SPCS_CIRCULAR_QUEUE, LoopTillBeginning) {
 }
 
 
-TEST(SPCS_CIRCULAR_QUEUE, Full) {
-   using namespace spsc;
-   using namespace std;
-   circular_fifo<string> q{10};
+TEST(SPCS_CIRCULAR_QUEUE, LoopTillBeginning) {
+   DynamicQ dQ{3};
+   FixedSmallQ fQ{};
+   LoopTillBeginning(fQ);
+   LoopTillBeginning(dQ);
+}
+
+
+template<typename Q>
+void Full(Q& q) {
    for (size_t i = 0; i < 10; ++i) {
       EXPECT_FALSE(q.full());
       q.push(to_string(i));
@@ -99,12 +133,15 @@ TEST(SPCS_CIRCULAR_QUEUE, Full) {
    EXPECT_EQ(10, q.size());
 }
 
+TEST(SPCS_CIRCULAR_QUEUE, Full) {
+   DynamicQ dQ{10};
+   FixedQ fQ{};
+   Full(fQ);
+   Full(dQ);
+}
 
-
-TEST(SPCS_CIRCULAR_QUEUE, AddTillFullRemoveTillEmpty) {
-   using namespace spsc;
-   using namespace std;
-   circular_fifo<string> q{2};
+template<typename Q>
+void AddTillFullRemoveTillEmpty(Q& q) {
    int size = 0;
    int free = 2;
    for (size_t i = 0; i < 10; ++i) {
@@ -124,7 +161,17 @@ TEST(SPCS_CIRCULAR_QUEUE, AddTillFullRemoveTillEmpty) {
          EXPECT_EQ(free, q.capacity_free());
       }
    }
+
 }
+
+TEST(SPCS_CIRCULAR_QUEUE, AddTillFullRemoveTillEmpty) {
+   spsc::fixed::circular_fifo<string, 2> fQ;
+   spsc::dynamic::circular_fifo<string> dQ(2);
+   AddTillFullRemoveTillEmpty(fQ);
+   AddTillFullRemoveTillEmpty(dQ);
+
+}
+
 
 
 
