@@ -4,7 +4,7 @@
 #include <string>
 
 using namespace std;
-using DynamicQ = spsc::dynamic::circular_fifo<string>;
+using FlexibleQ = spsc::flexible::circular_fifo<string>;
 using FixedQ = spsc::fixed::circular_fifo<string, 10>;
 using FixedSmallQ = spsc::fixed::circular_fifo<string, 3>;
 
@@ -23,7 +23,7 @@ void Initialization(Q& q) {
 
 
 TEST(SPCS_CIRCULAR_QUEUE, Initialization) {
-   DynamicQ dQ{10};
+   FlexibleQ dQ{10};
    FixedQ fQ{};
    Initialization(fQ);
    Initialization(dQ);
@@ -33,8 +33,6 @@ TEST(SPCS_CIRCULAR_QUEUE, Initialization) {
 
 template<typename Q>
 void AddOne(Q& q) {
-   using namespace spsc;
-   using namespace std;
    EXPECT_TRUE(q.push("test"));
    EXPECT_FALSE(q.full());
    EXPECT_EQ(10, q.capacity());
@@ -44,7 +42,7 @@ void AddOne(Q& q) {
 }
 
 TEST(SPCS_CIRCULAR_QUEUE, AddOne) {
-   DynamicQ dQ{10};
+   FlexibleQ dQ{10};
    FixedQ fQ{};
    AddOne(fQ);
    AddOne(dQ);
@@ -68,7 +66,7 @@ void AddRemoveOne(Q& q) {
 }
 
 TEST(SPCS_CIRCULAR_QUEUE, AddRemoveOne) {
-   DynamicQ dQ{10};
+   FlexibleQ dQ{10};
    FixedQ fQ{};
    AddRemoveOne(fQ);
    AddRemoveOne(dQ);
@@ -113,7 +111,7 @@ void LoopTillBeginning(Q& q) {
 
 
 TEST(SPCS_CIRCULAR_QUEUE, LoopTillBeginning) {
-   DynamicQ dQ{3};
+   FlexibleQ dQ{3};
    FixedSmallQ fQ{};
    LoopTillBeginning(fQ);
    LoopTillBeginning(dQ);
@@ -134,7 +132,7 @@ void Full(Q& q) {
 }
 
 TEST(SPCS_CIRCULAR_QUEUE, Full) {
-   DynamicQ dQ{10};
+   FlexibleQ dQ{10};
    FixedQ fQ{};
    Full(fQ);
    Full(dQ);
@@ -152,6 +150,8 @@ void AddTillFullRemoveTillEmpty(Q& q) {
          EXPECT_EQ(size, q.size());
          EXPECT_EQ(free, q.capacity_free());
       }
+      EXPECT_TRUE(q.full());
+      EXPECT_EQ(q.size(), q.capacity());
       string t;
       while (!q.empty()) {
          q.pop(t);
@@ -161,15 +161,13 @@ void AddTillFullRemoveTillEmpty(Q& q) {
          EXPECT_EQ(free, q.capacity_free());
       }
    }
-
 }
 
 TEST(SPCS_CIRCULAR_QUEUE, AddTillFullRemoveTillEmpty) {
    spsc::fixed::circular_fifo<string, 2> fQ;
-   spsc::dynamic::circular_fifo<string> dQ(2);
+   spsc::flexible::circular_fifo<string> dQ(2);
    AddTillFullRemoveTillEmpty(fQ);
    AddTillFullRemoveTillEmpty(dQ);
-
 }
 
 

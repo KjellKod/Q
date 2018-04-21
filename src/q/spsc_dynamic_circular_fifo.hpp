@@ -27,7 +27,7 @@
 #include <vector>
 
 namespace spsc {
-   namespace dynamic {
+   namespace flexible {
       template<typename Element>
       class circular_fifo {
        public:
@@ -134,5 +134,5 @@ namespace spsc {
       size_t circular_fifo<Element>::capacity() const {
          return kSize;
       }
-   } // dynamic
+   } // flexible
 } // spsc
