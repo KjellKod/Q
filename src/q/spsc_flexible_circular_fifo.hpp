@@ -32,10 +32,10 @@ namespace spsc {
       class circular_fifo {
        public:
 
-         circular_fifo(const size_t size)
+         explicit circular_fifo(const size_t size)
             : kSize(size)
             , kCapacity(kSize + 1)
-            , _array(kCapacity) 
+            , _array(kCapacity)
             , _tail(0)
             , _head(0) {
          }
@@ -48,6 +48,7 @@ namespace spsc {
          bool full() const;
          size_t capacity() const;
          size_t capacity_free() const;
+         size_t usage() const;
          size_t size() const;
          bool lock_free() const;
          size_t tail() const { return _tail.load(); }
@@ -133,6 +134,11 @@ namespace spsc {
       template<typename Element>
       size_t circular_fifo<Element>::capacity() const {
          return kSize;
+      }
+
+      template<typename Element>
+      size_t circular_fifo<Element>::usage() const {
+         return (100 * size()/kSize);
       }
    } // flexible
 } // spsc

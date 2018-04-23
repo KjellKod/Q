@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "q/spsc.hpp"
+#include "q/mpmc.hpp"
 #include "q/q_api.hpp"
 #include <string>
 
@@ -7,6 +8,7 @@ using namespace std;
 using Type = string;
 using FlexibleQ = spsc::flexible::circular_fifo<Type>;
 using FixedQ = spsc::fixed::circular_fifo<Type, 10>;
+using LockedQ = mpmc::dynamic_lock_queue<Type>;
 
 
 
@@ -61,20 +63,24 @@ TEST(SPCS_CIRCULAR_QUEUE, QAddOne) {
 template<typename Prod, typename Cons>
 void AddTillFullRemoveTillEmpty(Prod& prod, Cons& cons) {
    int size = 0;
-   int free = prod._q->capacity();
-   int maxSize = free * 5;
+   int free = prod._qref.capacity();
+   const int kMax = free;
+   int loopSize = kMax * 2;
 
-   for (size_t i = 0; i < maxSize; ++i) {
+   EXPECT_EQ(0, prod.usage());
+   for (size_t i = 0; i < loopSize; ++i) {
       while (!prod.full()) {
-         prod.push(to_string(i));
+         EXPECT_TRUE(prod.push(to_string(i)));
          ++size;
          --free;
+         EXPECT_EQ((100* prod._qref.size()/prod._qref.capacity()), prod._qref.usage());
          EXPECT_EQ(size, prod.size());
-         EXPECT_EQ(free, prod.capacity_free());
+         EXPECT_EQ(free, prod.capacity_free());    
       }
       EXPECT_TRUE(prod.full());
       EXPECT_TRUE(cons.full());
-      EXPECT_EQ(prod.size(), prod.capacity());
+      EXPECT_EQ(100, prod.usage());
+      EXPECT_EQ(prod.size(), prod.capacity()) << "i: " << i;
       EXPECT_EQ(cons.size(), cons.capacity());
 
       string t;
@@ -82,6 +88,7 @@ void AddTillFullRemoveTillEmpty(Prod& prod, Cons& cons) {
          cons.pop(t);
          --size;
          ++free;
+         EXPECT_EQ((100* prod._qref.size()/prod._qref.capacity()), prod._qref.usage());
          EXPECT_EQ(size, cons.size());
          EXPECT_EQ(free, cons.capacity_free());
       }
@@ -90,10 +97,30 @@ void AddTillFullRemoveTillEmpty(Prod& prod, Cons& cons) {
 
 
 
-TEST(Queue, ADdTillFullRemoveTillEmpty) {
+TEST(Queue, FlexibleQueue_AddTillFullRemoveTillEmpty) {
    auto queue = CreateQueue<FlexibleQ>(2);
    auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
    auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
    AddTillFullRemoveTillEmpty(producer, consumer);
 }
+
+TEST(Queue, FixedQueue_AddTillFullRemoveTillEmpty) {
+   auto queue = CreateQueue<FixedQ>();
+   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
+   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   AddTillFullRemoveTillEmpty(producer, consumer);
+}
+
+TEST(Queue, LockedQ_AddTillFullRemoveTillEmpty) {
+   auto queue = CreateQueue<LockedQ>(2);
+   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
+   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   AddTillFullRemoveTillEmpty(producer, consumer);
+}
+
+
+
+
+
+
 

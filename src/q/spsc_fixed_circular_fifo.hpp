@@ -41,6 +41,7 @@ namespace spsc {
          bool full() const;
          size_t capacity() const;
          size_t capacity_free() const;
+         size_t usage() const;
          size_t size() const;
          bool lock_free() const;
          size_t tail() const { return _tail.load(); }
@@ -121,6 +122,12 @@ namespace spsc {
       template<typename Element, size_t Size>
       size_t circular_fifo<Element, Size>::capacity() const {
          return kSize;
+      }
+
+
+      template<typename Element, size_t Size>
+      size_t circular_fifo<Element, Size>::usage() const {
+         return (100 * size() / kSize);
       }
    } // fixed
 } // spsc

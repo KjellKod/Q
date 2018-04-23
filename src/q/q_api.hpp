@@ -42,6 +42,7 @@ struct Queue {
    bool lock_free() const { return _qref.size(); }
    size_t tail() const { return _qref.tail(); }
    size_t head() const { return _qref.head(); }
+   size_t usage() const { return _qref.usage(); }
 
    std::shared_ptr<Type> _q;
    Type& _qref;

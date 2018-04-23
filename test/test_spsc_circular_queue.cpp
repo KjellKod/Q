@@ -22,7 +22,7 @@ void Initialization(Q& q) {
 }
 
 
-TEST(SPCS_CIRCULAR_QUEUE, Initialization) {
+TEST(SPCS_Queue, Initialization) {
    FlexibleQ dQ{10};
    FixedQ fQ{};
    Initialization(fQ);
@@ -41,7 +41,7 @@ void AddOne(Q& q) {
    EXPECT_EQ(1, q.tail());
 }
 
-TEST(SPCS_CIRCULAR_QUEUE, AddOne) {
+TEST(SPCS_Queue, AddOne) {
    FlexibleQ dQ{10};
    FixedQ fQ{};
    AddOne(fQ);
@@ -65,7 +65,7 @@ void AddRemoveOne(Q& q) {
    EXPECT_EQ(1, q.head());
 }
 
-TEST(SPCS_CIRCULAR_QUEUE, AddRemoveOne) {
+TEST(SPCS_Queue, AddRemoveOne) {
    FlexibleQ dQ{10};
    FixedQ fQ{};
    AddRemoveOne(fQ);
@@ -110,7 +110,7 @@ void LoopTillBeginning(Q& q) {
 }
 
 
-TEST(SPCS_CIRCULAR_QUEUE, LoopTillBeginning) {
+TEST(SPCS_Queue, LoopTillBeginning) {
    FlexibleQ dQ{3};
    FixedSmallQ fQ{};
    LoopTillBeginning(fQ);
@@ -131,7 +131,7 @@ void Full(Q& q) {
    EXPECT_EQ(10, q.size());
 }
 
-TEST(SPCS_CIRCULAR_QUEUE, Full) {
+TEST(SPCS_Queue, Full) {
    FlexibleQ dQ{10};
    FixedQ fQ{};
    Full(fQ);
@@ -163,7 +163,7 @@ void AddTillFullRemoveTillEmpty(Q& q) {
    }
 }
 
-TEST(SPCS_CIRCULAR_QUEUE, AddTillFullRemoveTillEmpty) {
+TEST(SPCS_Queue, AddTillFullRemoveTillEmpty) {
    spsc::fixed::circular_fifo<string, 10> fQ;
    spsc::flexible::circular_fifo<string> dQ(10);
    AddTillFullRemoveTillEmpty(fQ);
