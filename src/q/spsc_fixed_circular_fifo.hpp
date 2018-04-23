@@ -35,7 +35,7 @@ namespace spsc {
          circular_fifo() : _tail(0), _head(0) {}
          virtual ~circular_fifo() {}
 
-         bool push(const Element& item);
+         bool push(Element& item);
          bool pop(Element& item);
          bool empty() const;
          bool full() const;
@@ -62,11 +62,11 @@ namespace spsc {
 
 
       template<typename Element, size_t Size>
-      bool circular_fifo<Element, Size>::push(const Element& item) {
+      bool circular_fifo<Element, Size>::push(Element& item) {
          const auto current_tail = _tail.load(std::memory_order_relaxed);
          const auto next_tail = increment(current_tail);
          if (next_tail != _head.load(std::memory_order_acquire)) {
-            _array[current_tail] = item;
+            _array[current_tail] = std::move(item);
             _tail.store(next_tail, std::memory_order_release);
             return true;
          }
@@ -84,7 +84,7 @@ namespace spsc {
          if (current_head == _tail.load(std::memory_order_acquire))
             return false; // empty queue
 
-         item = _array[current_head];
+         item = std::move(_array[current_head]);
          _head.store(increment(current_head), std::memory_order_release);
          return true;
       }

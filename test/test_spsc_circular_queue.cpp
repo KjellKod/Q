@@ -22,7 +22,7 @@ void Initialization(Q& q) {
 }
 
 
-TEST(SPCS_Queue, Initialization) {
+TEST(SPCS_CircularQueue, Initialization) {
    FlexibleQ dQ{10};
    FixedQ fQ{};
    Initialization(fQ);
@@ -33,7 +33,8 @@ TEST(SPCS_Queue, Initialization) {
 
 template<typename Q>
 void AddOne(Q& q) {
-   EXPECT_TRUE(q.push("test"));
+   std::string arg = "test";
+   EXPECT_TRUE(q.push(arg));
    EXPECT_FALSE(q.full());
    EXPECT_EQ(10, q.capacity());
    EXPECT_EQ(9, q.capacity_free());
@@ -41,7 +42,7 @@ void AddOne(Q& q) {
    EXPECT_EQ(1, q.tail());
 }
 
-TEST(SPCS_Queue, AddOne) {
+TEST(SPCS_CircularQueue, AddOne) {
    FlexibleQ dQ{10};
    FixedQ fQ{};
    AddOne(fQ);
@@ -65,7 +66,7 @@ void AddRemoveOne(Q& q) {
    EXPECT_EQ(1, q.head());
 }
 
-TEST(SPCS_Queue, AddRemoveOne) {
+TEST(SPCS_CircularQueue, AddRemoveOne) {
    FlexibleQ dQ{10};
    FixedQ fQ{};
    AddRemoveOne(fQ);
@@ -110,7 +111,7 @@ void LoopTillBeginning(Q& q) {
 }
 
 
-TEST(SPCS_Queue, LoopTillBeginning) {
+TEST(SPCS_CircularQueue, LoopTillBeginning) {
    FlexibleQ dQ{3};
    FixedSmallQ fQ{};
    LoopTillBeginning(fQ);
@@ -122,7 +123,8 @@ template<typename Q>
 void Full(Q& q) {
    for (size_t i = 0; i < 10; ++i) {
       EXPECT_FALSE(q.full());
-      q.push(to_string(i));
+      std::string number = to_string(i);
+      q.push(number);
       EXPECT_EQ(10, q.capacity());
       EXPECT_EQ(i + 1, q.size());
       EXPECT_EQ(10 - (i + 1), q.capacity_free());
@@ -131,7 +133,7 @@ void Full(Q& q) {
    EXPECT_EQ(10, q.size());
 }
 
-TEST(SPCS_Queue, Full) {
+TEST(SPCS_CircularQueue, Full) {
    FlexibleQ dQ{10};
    FixedQ fQ{};
    Full(fQ);
@@ -145,7 +147,8 @@ void AddTillFullRemoveTillEmpty(Q& q) {
    const int kMax = free;
    for (size_t i = 0; i < kMax*5; ++i) {
       while (!q.full()) {
-         q.push(to_string(i));
+        std::string number = to_string(i);
+        q.push(number);
          ++size;
          --free;
          EXPECT_EQ(size, q.size());;
@@ -163,7 +166,7 @@ void AddTillFullRemoveTillEmpty(Q& q) {
    }
 }
 
-TEST(SPCS_Queue, AddTillFullRemoveTillEmpty) {
+TEST(SPCS_CircularQueue, AddTillFullRemoveTillEmpty) {
    spsc::fixed::circular_fifo<string, 10> fQ;
    spsc::flexible::circular_fifo<string> dQ(10);
    AddTillFullRemoveTillEmpty(fQ);

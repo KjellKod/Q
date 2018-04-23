@@ -23,7 +23,6 @@
 // It should be mentioned the thinking of what goes where
 // it is a "controversy" whether what is tail and what is head
 // http://en.wikipedia.org/wiki/FIFO#Head_or_tail_first
-//
 // This implementation follows "pop on head", "push on tail"
 template<typename Type>
 struct Queue {
@@ -53,14 +52,9 @@ template<typename Type>
 struct Producer : public Queue<Type> {
  public:
    Producer(std::shared_ptr<Type> q): Queue<Type>(q) {}
-   //: Queue<Type>::_q(q)
-   //, Queue<Type>::_qref(*(q.get())) {
-//}
-virtual ~Producer() = default;
-
-template<typename Element>
-bool push(const Element& item) { return Queue<Type>::_qref.push(item); }
-
+   virtual ~Producer() = default;
+   template<typename Element>
+   bool push(Element& item) { return Queue<Type>::_qref.push(item); }
 }; // Producer
 
 
@@ -70,12 +64,7 @@ template<typename Type>
 struct Consumer : public Queue<Type> {
  public:
    Consumer(std::shared_ptr<Type> q) : Queue<Type>(q) {}
-   // : Queue<Type>::_q(q)
-   // , Queue<Type>::_qref(*(q.get())) {
-//   }
-
    virtual ~Consumer() = default;
-
    template<typename Element>
    bool pop(Element& item) { return Queue<Type>::_qref.pop(item); }
 };  // Consumer

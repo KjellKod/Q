@@ -51,7 +51,7 @@ namespace mpmc {
     public:
       explicit dynamic_lock_queue(int maxSize = kUnlimited);
       bool lock_free() const;
-      bool push(T item);
+      bool push(T& item);
       bool pop(T& popped_item);
       void wait_and_pop(T& popped_item);
       bool full();
@@ -76,7 +76,7 @@ namespace mpmc {
    }
 
    template<typename T>
-   bool dynamic_lock_queue<T>::push(T item) {
+   bool dynamic_lock_queue<T>::push(T& item) {
       {
          std::lock_guard<std::mutex> lock(m_);
          if (internal_full()) {
