@@ -21,6 +21,6 @@
 
 #pragma once
 
-#include "q/spsc_dynamic_circular_fifo.hpp"
+#include "q/spsc_flexible_circular_fifo.hpp"
 #include "q/spsc_fixed_circular_fifo.hpp"
 

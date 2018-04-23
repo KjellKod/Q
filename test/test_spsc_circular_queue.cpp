@@ -1,6 +1,6 @@
 
 #include <gtest/gtest.h>
-#include "q/spsc_circular_fifo.hpp"
+#include "q/spsc.hpp"
 #include <string>
 
 using namespace std;
@@ -141,14 +141,14 @@ TEST(SPCS_CIRCULAR_QUEUE, Full) {
 template<typename Q>
 void AddTillFullRemoveTillEmpty(Q& q) {
    int size = 0;
-   int free = 2;
-   for (size_t i = 0; i < 10; ++i) {
+   int free = q.capacity();
+   const int kMax = free;
+   for (size_t i = 0; i < kMax*5; ++i) {
       while (!q.full()) {
          q.push(to_string(i));
          ++size;
          --free;
-         EXPECT_EQ(size, q.size());
-         EXPECT_EQ(free, q.capacity_free());
+         EXPECT_EQ(size, q.size());;
       }
       EXPECT_TRUE(q.full());
       EXPECT_EQ(q.size(), q.capacity());
@@ -164,8 +164,8 @@ void AddTillFullRemoveTillEmpty(Q& q) {
 }
 
 TEST(SPCS_CIRCULAR_QUEUE, AddTillFullRemoveTillEmpty) {
-   spsc::fixed::circular_fifo<string, 2> fQ;
-   spsc::flexible::circular_fifo<string> dQ(2);
+   spsc::fixed::circular_fifo<string, 10> fQ;
+   spsc::flexible::circular_fifo<string> dQ(10);
    AddTillFullRemoveTillEmpty(fQ);
    AddTillFullRemoveTillEmpty(dQ);
 }
