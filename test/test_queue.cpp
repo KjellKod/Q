@@ -7,7 +7,7 @@
 using namespace std;
 using Type = string;
 using FlexibleQ = spsc::flexible::circular_fifo<Type>;
-using FixedQ = spsc::fixed::circular_fifo<Type, 10>;
+using FixedQ = spsc::fixed::circular_fifo<Type, 100>;
 using FixedSmallQ = spsc::fixed::circular_fifo<Type, 2>;
 using LockedQ = mpmc::dynamic_lock_queue<Type>;
 
@@ -37,27 +37,29 @@ void ProdConsInitialization(Prod& prod, Cons& cons ) {
 
 
 TEST(Queue, ProdConsInitialization) {
-   auto queue = CreateQueue<FlexibleQ>(10);
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<FlexibleQ>(10);
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
 }
 
 
-template<typename Prod, typename Cons>
-void QAddOne(Prod& prod, Cons& cons) {
+template<typename Prod>
+void QAddOne(Prod& prod) {
    std::string arg = "test";
    EXPECT_TRUE(prod.push(arg));
    EXPECT_FALSE(prod.full());
-   EXPECT_EQ(10, prod.capacity());
-   EXPECT_EQ(9, prod.capacity_free());
+   EXPECT_EQ(100, prod.capacity());
+   EXPECT_EQ(99, prod.capacity_free());
    EXPECT_EQ(1, prod.size());
    EXPECT_EQ(1, prod.tail());
 }
 
-TEST(SPCS_CIRCULAR_QUEUE, QAddOne) {
-   FlexibleQ dQ{10};
+TEST(Queue, CircularQueue_AddOne) {
+   FlexibleQ dQ{100};
+   QAddOne(dQ);
+
    FixedQ fQ{};
-   QAddOne(dQ, fQ);
+   QAddOne(fQ);
 
 }
 
@@ -66,8 +68,7 @@ template<typename Prod, typename Cons>
 void AddTillFullRemoveTillEmpty(Prod& prod, Cons& cons) {
    int size = 0;
    int free = prod._qref.capacity();
-   const int kMax = free;
-   int loopSize = kMax * 2;
+   int loopSize = 2;
 
    EXPECT_EQ(0, prod.usage());
    for (size_t i = 0; i < loopSize; ++i) {
@@ -101,23 +102,23 @@ void AddTillFullRemoveTillEmpty(Prod& prod, Cons& cons) {
 
 
 TEST(Queue, FlexibleQueue_AddTillFullRemoveTillEmpty) {
-   auto queue = CreateQueue<FlexibleQ>(2);
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<FlexibleQ>(100);
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    AddTillFullRemoveTillEmpty(producer, consumer);
 }
 
 TEST(Queue, FixedQueue_AddTillFullRemoveTillEmpty) {
-   auto queue = CreateQueue<FixedQ>();
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<FixedQ>();
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    AddTillFullRemoveTillEmpty(producer, consumer);
 }
 
 TEST(Queue, LockedQ_AddTillFullRemoveTillEmpty) {
-   auto queue = CreateQueue<LockedQ>(2);
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<LockedQ>(100);
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    AddTillFullRemoveTillEmpty(producer, consumer);
 }
 
@@ -142,23 +143,23 @@ void MoveArgument(Prod& prod, Cons& cons) {
 }
 
 TEST(Queue, FlexibleQ_MoveArgument) {
-   auto queue = CreateQueue<FlexibleQ>(2);
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<FlexibleQ>(2);
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveArgument(producer, consumer);
 }
 
 TEST(Queue, FixedSmallQ_MoveArgument) {
-   auto queue = CreateQueue<FixedSmallQ>();
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<FixedSmallQ>();
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveArgument(producer, consumer);
 }
 
 TEST(Queue, LockedQ_MoveArgument) {
-   auto queue = CreateQueue<LockedQ>(2);
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<LockedQ>(2);
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveArgument(producer, consumer);
 }
 
@@ -189,23 +190,23 @@ namespace {
 }
 
 TEST(Queue, FlexibleQ_MoveUnique) {
-   auto queue = CreateQueue<spsc::flexible::circular_fifo<Unique>>(2);
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<Unique>>(2);
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveUniquePtrArgument(producer, consumer);
 }
 
 TEST(Queue, FixedQ_MoveUnique) {
-   auto queue = CreateQueue<spsc::fixed::circular_fifo<Unique, 2>>();
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<Unique, 2>>();
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveUniquePtrArgument(producer, consumer);
 }
 
 TEST(Queue, LockedQ_MoveUnique) {
-   auto queue = CreateQueue<mpmc::dynamic_lock_queue<Unique>>(2);
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<Unique>>(2);
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveUniquePtrArgument(producer, consumer);
 }
 
@@ -242,23 +243,23 @@ namespace {
 
 
 TEST(Queue, FlexibleQ_NoMoveOfPtr) {
-   auto queue = CreateQueue<spsc::flexible::circular_fifo<Ptr>>(2);
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<Ptr>>(2);
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    NoMovePtrArgument(producer, consumer);
 }
 
 TEST(Queue, FixedQ_NoMoveOfPtr) {
-   auto queue = CreateQueue<spsc::fixed::circular_fifo<Ptr, 2>>();
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<Ptr, 2>>();
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    NoMovePtrArgument(producer, consumer);
 }
 
 TEST(Queue, LockedQ_MpMoveUnique) {
-   auto queue = CreateQueue<mpmc::dynamic_lock_queue<Ptr>>(2);
-   auto producer = std::get<Queue<Type>::ProducerIndex>(queue);
-   auto consumer = std::get<Queue<Type>::ConsumerIndex>(queue);
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<Ptr>>(2);
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
    NoMovePtrArgument(producer, consumer);
 }
 
