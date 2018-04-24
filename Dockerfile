@@ -25,7 +25,7 @@ COPY . /src/
 RUN cd /src
 
 
-RUN git clone https://github.com/KjellKod/q.git -b setup
-RUN cd /src/q/3rdParty/gtest && unzip gtest-1.7.0.zip
-RUN cd /src/q && mkdir build
-RUN cd /src/q/build && cmake .. && make -j && && ./UnitTestRunner
+RUN git clone https://github.com/KjellKod/Q.git -b setup
+RUN cd /src/Q/3rdParty/ && unzip gtest-1.7.0.zip
+RUN cd /src/Q && mkdir build
+RUN cd /src/Q/build && cmake .. && make -j && && ./UnitTestRunner
