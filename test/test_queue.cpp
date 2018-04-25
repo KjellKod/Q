@@ -116,7 +116,7 @@ TEST(Queue, FixedQueue_AddTillFullRemoveTillEmpty) {
 }
 
 TEST(Queue, LockedQ_AddTillFullRemoveTillEmpty) {
-   auto queue = queue_api::CreateQueue<LockedQ>(100);
+   auto queue = queue_api::CreateQueue<LockedQ>(100, std::chrono::milliseconds(1));
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    AddTillFullRemoveTillEmpty(producer, consumer);
@@ -157,7 +157,7 @@ TEST(Queue, FixedSmallQ_MoveArgument) {
 }
 
 TEST(Queue, LockedQ_MoveArgument) {
-   auto queue = queue_api::CreateQueue<LockedQ>(2);
+   auto queue = queue_api::CreateQueue<LockedQ>(2, std::chrono::milliseconds(1));
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveArgument(producer, consumer);
@@ -204,7 +204,7 @@ TEST(Queue, FixedQ_MoveUnique) {
 }
 
 TEST(Queue, LockedQ_MoveUnique) {
-   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<Unique>>(2);
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<Unique>>(2, std::chrono::milliseconds(1));
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveUniquePtrArgument(producer, consumer);
@@ -256,8 +256,8 @@ TEST(Queue, FixedQ_NoMoveOfPtr) {
    NoMovePtrArgument(producer, consumer);
 }
 
-TEST(Queue, LockedQ_MpMoveUnique) {
-   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<Ptr>>(2);
+TEST(Queue, LockedQ_NoMoveUnique) {
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<Ptr>>(2, std::chrono::milliseconds(1));
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    NoMovePtrArgument(producer, consumer);

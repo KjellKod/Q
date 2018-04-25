@@ -29,6 +29,7 @@
 #include <mutex>
 #include <exception>
 #include <condition_variable>
+#include <chrono>
 
 
 /** Multiple producer, multiple consumer (mpmc) thread safe queue
@@ -41,6 +42,7 @@ namespace mpmc {
       std::queue<T> queue_;
       mutable std::mutex m_;
       std::condition_variable data_cond_;
+      std::chrono::milliseconds max_wait_ms_;
 
       dynamic_lock_queue& operator=(const dynamic_lock_queue&) = delete;
       dynamic_lock_queue(const dynamic_lock_queue& other) = delete;
@@ -49,17 +51,21 @@ namespace mpmc {
       size_t internal_capacity() const;
 
     public:
-      explicit dynamic_lock_queue(int maxSize = kUnlimited);
+
+      // -1 : unbounded
+      // 0 ... N : bounded (0 is silly)
+      dynamic_lock_queue(int maxSize, std::chrono::milliseconds maxWaitMs);
+
       bool lock_free() const;
       bool push(T& item);
       bool pop(T& popped_item);
-      void wait_and_pop(T& popped_item);
+      bool wait_and_pop(T& popped_item);
       bool full();
       bool empty() const;
       size_t size() const;
       size_t capacity() const;
       size_t capacity_free() const;
-      size_t usage() const; 
+      size_t usage() const;
 
    };
 
@@ -67,8 +73,9 @@ namespace mpmc {
 
    // maxSize of -1 equals unlimited size
    template<typename T>
-   dynamic_lock_queue<T>::dynamic_lock_queue(int maxSize)
-      : kMaxSize (maxSize) {}
+   dynamic_lock_queue<T>::dynamic_lock_queue(int maxSize, std::chrono::milliseconds maxWaitMs)
+      : kMaxSize (maxSize)
+      , max_wait_ms_(maxWaitMs) {}
 
    template<typename T>
    bool dynamic_lock_queue<T>::lock_free() const {
@@ -101,15 +108,23 @@ namespace mpmc {
    }
 
    template<typename T>
-   void dynamic_lock_queue<T>::wait_and_pop(T& popped_item) {
+   bool dynamic_lock_queue<T>::wait_and_pop(T& popped_item) {
       std::unique_lock<std::mutex> lock(m_);
+      auto const timeout = std::chrono::steady_clock::now() + max_wait_ms_;
       while (queue_.empty()) {
-         data_cond_.wait(lock);
+         if (data_cond_.wait_until(lock, timeout) == std::cv_status::timeout) {
+            break;
+         }
          //  This 'while' loop is equal to
          //  data_cond_.wait(lock, [](bool result){return !queue_.empty();});
       }
+      if (queue_.empty()) {
+         return false;
+      }
+
       popped_item = std::move(queue_.front());
       queue_.pop();
+      return true;
    }
 
    template<typename T>
@@ -145,7 +160,7 @@ namespace mpmc {
    template<typename T>
    size_t dynamic_lock_queue<T>::usage() const {
       std::lock_guard<std::mutex> lock(m_);
-      return (100 * queue_.size()/internal_capacity());
+      return (100 * queue_.size() / internal_capacity());
    }
 
    // private
