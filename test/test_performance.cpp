@@ -1,3 +1,14 @@
+/* Not any company's property but Public-Domain
+* Do with source-code as you will. No requirement to keep this
+* header if need to use it/change it/ or do whatever with it
+*
+* Note that there is No guarantee that this code will work
+* and I take no responsibility for this code and any problems you
+* might get if using it.
+*
+* Originally published at: https://github.com/KjellKod/Q
+*/
+
 #include <gtest/gtest.h>
 #include "q/spsc.hpp"
 #include "q/mpmc.hpp"
@@ -25,6 +36,7 @@ void wait() {
 
 template <typename Sender>
 ResultType Push(Sender q, size_t start, size_t stop) {
+   using namespace std::chrono_literals;
    std::vector<std::string> expected;
    expected.reserve(stop - start);
    producerStart.store(true);
@@ -36,7 +48,8 @@ ResultType Push(Sender q, size_t start, size_t stop) {
       std::string value = std::to_string(i);
       expected.push_back(value);
       while (false == q.push(value)) {
-         std::this_thread::yield();
+         std::this_thread::sleep_for(1us); // thread yield is too aggressive
+
       }
    }
    return expected;
@@ -44,6 +57,7 @@ ResultType Push(Sender q, size_t start, size_t stop) {
 
 template <typename Receiver>
 ResultType Get(Receiver q, size_t start, size_t stop) {
+   using namespace std::chrono_literals;
    std::vector<std::string> received;
    received.reserve(stop - start);
    consumerStart.store(true);
@@ -54,7 +68,7 @@ ResultType Get(Receiver q, size_t start, size_t stop) {
    for (auto i = start; i < stop; ++i) {
       std::string value;
       while (false == q.pop(value)) {
-         std::this_thread::yield();
+         std::this_thread::sleep_for(1us);  // thread yield is too aggressive
       }
       received.push_back(value);
    }
