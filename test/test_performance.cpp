@@ -12,6 +12,7 @@
 
 namespace {
    const size_t kAmount = 1000000;
+   const size_t kSmallQueueSize = 100;
    std::atomic<bool> producerStart{false};
    std::atomic<bool> consumerStart{false};
    using ResultType = std::vector<std::string>;
@@ -99,16 +100,21 @@ TEST(Performance, SPSC_Flexible_CircularFifo) {
 }
 
 
+TEST(Performance, SPSC_Flexible_CircularFifo_Smaller) {
+   auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<std::string>>(kSmallQueueSize);
+   RunSPSC(queue);
+}
+
 TEST(Performance, SPSC_Fixed_CircularFifo) {
    using namespace std;
-   auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<string, kAmount>>();
+   auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<string, kSmallQueueSize>>();
    RunSPSC(queue);
 }
 
 
 TEST(Performance, SPSC_Fixed_CircularFifo_Smaller) {
    using namespace std;
-   auto queue = queue_api::CreateQueue < spsc::fixed::circular_fifo < string, kAmount / 1000 >> ();
+   auto queue = queue_api::CreateQueue < spsc::fixed::circular_fifo < string, kSmallQueueSize>> ();
    RunSPSC(queue);
 }
 
@@ -124,7 +130,7 @@ TEST(Performance, MPMC_1_to_1) {
 TEST(Performance, MPMC_1_to_1_Smaller) {
    using namespace std;
 
-   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kAmount / 1000,
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kSmallQueueSize,
                 std::chrono::milliseconds(1));
    RunSPSC(queue);
 }
@@ -195,9 +201,16 @@ void RunMPSC(T queue) {
 }
 
 
+TEST(Performance, MPMC_4_to_1) {
+   using namespace std;
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kAmount,
+                std::chrono::milliseconds(1));
+   RunMPSC(queue);
+}
+
 TEST(Performance, MPMC_4_to_1_Smaller) {
    using namespace std;
-   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kAmount / 1000,
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kSmallQueueSize,
                 std::chrono::milliseconds(1));
    RunMPSC(queue);
 }
