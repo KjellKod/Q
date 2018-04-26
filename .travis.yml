@@ -13,6 +13,6 @@ before_install:
   - docker pull ubuntu:16.04 
 
 script:
- - docker build .
+ - docker build --build-arg BRANCH=$TRAVIS_BRANCH .
 
  
