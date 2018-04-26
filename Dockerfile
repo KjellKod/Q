@@ -21,7 +21,10 @@ RUN mkdir -p /build/
 # Build
 WORKDIR /build/
 COPY . /build/
-RUN cd /build && git clone -b $BRANCH https://github.com/KjellKod/Q.git  && ls -alh
+RUN ls /build
+RUN cd /build/Q && git branch
+RUN echo "branch is: $BRANCH"
+RUN cd /build && git clone -b "$BRANCH" https://github.com/KjellKod/Q.git  && ls -alh
 RUN cd /build/Q/3rdparty/ && unzip gtest-1.7.0.zip
 RUN cd /build/Q && mkdir build
 RUN cd /build/Q/build && cmake .. && make -j && ./UnitTestRunner
