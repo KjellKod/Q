@@ -22,8 +22,6 @@ RUN mkdir -p /Q/
 WORKDIR /Q/
 COPY . /Q/
 RUN ls /Q
-RUN cd /Q/ && git branch
-RUN echo "branch is: $BRANCH" 
 RUN cd /Q/3rdparty/ && unzip gtest-1.7.0.zip
 RUN cd /Q/ && mkdir build
 RUN cd /Q/build && cmake .. && make -j && ./UnitTestRunner

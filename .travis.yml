@@ -12,9 +12,6 @@ services:
 before_install:
   - docker pull ubuntu:16.04 
 
-env:
-  - TRAVIS_BRANCH="SFINAE"
-   
 script:
  - docker build --build-arg BRANCH=$TRAVIS_BRANCH .
 
