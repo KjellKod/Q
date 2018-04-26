@@ -1,0 +1,7 @@
+shared_queue: 
+
+Add 
+
+Unlimited
+Limited = max size
+Limited = set queue size to reserved max size immediately
