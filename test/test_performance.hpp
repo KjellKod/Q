@@ -1,3 +1,14 @@
+/*
+* Not any company's property but Public-Domain
+* Do with source-code as you will. No requirement to keep this
+* header if need to use it/change it/ or do whatever with it
+*
+* Note that there is No guarantee that this code will work
+* and I take no responsibility for this code and any problems you
+* might get if using it.
+* 
+* Originally published at https://github.com/KjellKod/Q
+*/
 
 #pragma once
 #include <gtest/gtest.h>
@@ -8,24 +19,11 @@
 #include <iostream>
 #include <future>
 #include <q/q_api.hpp>
+#include "test_helper.hpp"
 
 namespace test_performance {
    using ResultType = std::vector<std::string>;
-
-
-   struct StopWatch {
-      using seconds = std::chrono::seconds;
-      using clock = std::chrono::steady_clock;
-      clock::time_point start_;
-
-      StopWatch() : start_(clock::now())
-      {}
-      ~StopWatch() = default;
-
-      uint64_t ElapsedSec() const {
-         return std::chrono::duration_cast<seconds>(clock::now() - start_).count();
-      }
-   };
+   using namespace test_helper;
 
 
    template <typename Sender>
@@ -123,8 +121,8 @@ namespace test_performance {
 
       using namespace std;
       using namespace chrono;
-      auto producer = std::get <queue_api::index::sender>(queue);
-      auto consumer = std::get <queue_api::index::receiver>(queue);
+      auto producer = std::get<queue_api::index::sender>(queue);
+      auto consumer = std::get<queue_api::index::receiver>(queue);
 
       auto t1 = high_resolution_clock::now();
       size_t start = 0;
@@ -138,7 +136,7 @@ namespace test_performance {
       auto received = consResult.get();
       auto t2 = high_resolution_clock::now();
       auto us = duration_cast<microseconds>( t2 - t1 ).count();
-      std::cout << "Push - Pull #" << howMany << " items in: " << us/1000  << " ms" << std::endl;
+      std::cout << "Push - Pull #" << howMany << " items in: " << us / 1000  << " ms" << std::endl;
       std::cout << "Average: " << 1000 * ((float)us / (float) howMany) << " ns" << std::endl;
 
       EXPECT_EQ(howMany, received.size());

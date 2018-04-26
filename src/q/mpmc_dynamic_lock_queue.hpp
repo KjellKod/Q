@@ -38,12 +38,12 @@ namespace mpmc {
    template<typename T>
    class dynamic_lock_queue {
       static const int kUnlimited = -1;
+      static const int kSmallDefault = 100;
       const int kMaxSize;
       std::queue<T> queue_;
       mutable std::mutex m_;
       std::condition_variable data_cond_;
-      std::chrono::milliseconds max_wait_ms_;
-
+   
       dynamic_lock_queue& operator=(const dynamic_lock_queue&) = delete;
       dynamic_lock_queue(const dynamic_lock_queue& other) = delete;
 
@@ -54,12 +54,12 @@ namespace mpmc {
 
       // -1 : unbounded
       // 0 ... N : bounded (0 is silly)
-      dynamic_lock_queue(int maxSize, std::chrono::milliseconds maxWaitMs);
+      dynamic_lock_queue(int maxSize = kSmallDefault);
 
       bool lock_free() const;
       bool push(T& item);
       bool pop(T& popped_item);
-      bool wait_and_pop(T& popped_item);
+      bool wait_and_pop(T& popped_item, std::chrono::milliseconds max_wait);
       bool full();
       bool empty() const;
       size_t size() const;
@@ -73,9 +73,8 @@ namespace mpmc {
 
    // maxSize of -1 equals unlimited size
    template<typename T>
-   dynamic_lock_queue<T>::dynamic_lock_queue(int maxSize, std::chrono::milliseconds maxWaitMs)
-      : kMaxSize (maxSize)
-      , max_wait_ms_(maxWaitMs) {}
+   dynamic_lock_queue<T>::dynamic_lock_queue(int maxSize)
+      : kMaxSize (maxSize){}
 
    template<typename T>
    bool dynamic_lock_queue<T>::lock_free() const {
@@ -108,9 +107,9 @@ namespace mpmc {
    }
 
    template<typename T>
-   bool dynamic_lock_queue<T>::wait_and_pop(T& popped_item) {
+   bool dynamic_lock_queue<T>::wait_and_pop(T& popped_item, std::chrono::milliseconds max_wait) {
       std::unique_lock<std::mutex> lock(m_);
-      auto const timeout = std::chrono::steady_clock::now() + max_wait_ms_;
+      auto const timeout = std::chrono::steady_clock::now() + max_wait;
       while (queue_.empty()) {
          if (data_cond_.wait_until(lock, timeout) == std::cv_status::timeout) {
             break;
