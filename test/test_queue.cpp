@@ -9,10 +9,11 @@
 * Originally published at: https://github.com/KjellKod/Q
 */
 #include <gtest/gtest.h>
-#include "q/spsc.hpp"
-#include "q/mpmc.hpp"
-#include "q/q_api.hpp"
+#include <q/spsc.hpp>
+#include <q/mpmc.hpp>
+#include <q/q_api.hpp>
 #include <string>
+#include "test_helper.hpp"
 
 using namespace std;
 using Type = string;
@@ -51,6 +52,66 @@ TEST(Queue, ProdConsInitialization) {
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
 }
+
+
+struct HasWaitAndPop{
+   std::chrono::milliseconds value;
+   std::string element;
+   HasWaitAndPop() : value(0){}
+   bool wait_and_pop(std::string& x, std::chrono::milliseconds wait_ms) {
+      value = wait_ms;
+      element = x;
+      return false;
+   }
+
+   bool pop(std::string& x) { 
+      using namespace std::chrono_literals;
+      std::this_thread::sleep_for(10s);
+      return true; 
+   }
+};
+
+struct HasPop {
+   size_t value;
+   std::string element;
+   HasPop() : value(0){}
+   bool pop(std::string& x) {
+      element = x;
+      return false; // to ensure that the wait is triggered
+   }
+};
+
+
+
+TEST(Queue, SFINAE_HasWaitAndPop) {
+   using namespace test_helper;
+   auto queue = queue_api::CreateQueue<HasWaitAndPop>();
+   auto consumer = std::get<queue_api::index::receiver>(queue);
+
+   StopWatch watch;
+   std::string msg;
+   std::chrono::milliseconds wait(2 * 1000);
+   auto result = consumer.wait_and_pop(msg, wait); // wait_and_pop but function ignores the 'wait'
+   EXPECT_FALSE(result); 
+   EXPECT_TRUE(watch.ElapsedSec() <= 2);
+}
+
+TEST(Queue, SFINAE_HasPop) {
+   using namespace test_helper;
+   auto queue = queue_api::CreateQueue<HasPop>();
+   auto consumer = std::get<queue_api::index::receiver>(queue);
+
+   StopWatch watch;
+   std::string msg;
+   std::chrono::milliseconds wait(2 * 1000);
+   auto result = consumer.wait_and_pop(msg, wait); // wrapper implements wait
+   EXPECT_FALSE(result); 
+   EXPECT_TRUE(watch.ElapsedSec() >= 2);
+}
+
+
+
+
 
 
 template<typename Prod>
@@ -126,7 +187,7 @@ TEST(Queue, FixedQueue_AddTillFullRemoveTillEmpty) {
 }
 
 TEST(Queue, LockedQ_AddTillFullRemoveTillEmpty) {
-   auto queue = queue_api::CreateQueue<LockedQ>(100, std::chrono::milliseconds(1));
+   auto queue = queue_api::CreateQueue<LockedQ>(100);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    AddTillFullRemoveTillEmpty(producer, consumer);
@@ -167,7 +228,7 @@ TEST(Queue, FixedSmallQ_MoveArgument) {
 }
 
 TEST(Queue, LockedQ_MoveArgument) {
-   auto queue = queue_api::CreateQueue<LockedQ>(2, std::chrono::milliseconds(1));
+   auto queue = queue_api::CreateQueue<LockedQ>(2);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveArgument(producer, consumer);
@@ -214,7 +275,7 @@ TEST(Queue, FixedQ_MoveUnique) {
 }
 
 TEST(Queue, LockedQ_MoveUnique) {
-   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<Unique>>(2, std::chrono::milliseconds(1));
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<Unique>>(2);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveUniquePtrArgument(producer, consumer);
@@ -267,7 +328,7 @@ TEST(Queue, FixedQ_NoMoveOfPtr) {
 }
 
 TEST(Queue, LockedQ_NoMoveUnique) {
-   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<Ptr>>(2, std::chrono::milliseconds(1));
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<Ptr>>(2);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    NoMovePtrArgument(producer, consumer);

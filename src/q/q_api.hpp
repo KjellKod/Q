@@ -17,8 +17,38 @@
 #pragma once
 #include <tuple>
 #include <memory>
+#include <chrono>
 
 namespace queue_api {
+
+   // std::declval converts any type T to a reference type,
+   // making it possible to use member functions in decltype expressions without
+   // construction the object http://en.cppreference.com/w/cpp/utility/declval
+   //
+   // std::decltype returns the reference type (used with declaval)
+   // http://en.cppreference.com/w/cpp/language/decltype
+   // namespace sfinae { 
+   //    template <typename T, typename Element>
+   //    struct wait_and_pop { // Detect if the class has function wait_and_pop(Element&, milliseconds)
+   //       using Yes =  char;
+   //       using No = char[2];
+   //       static Element arg1;
+   //       static std::chrono::milliseconds arg2;
+
+   //       template<typename C, typename Arg> static auto verify(Arg arg, std::chrono::milliseconds wait)
+   //       -> decltype(bool{std::declval<C>().wait_and_pop(arg, wait)}, Yes{});
+
+   //       template<typename> static No& verify(...);
+
+   //       // 'value' is compiled time calculated. If it fits the
+   //       // 'wait_and_pop' signature 'value' is evaluated to true
+   //       static const bool value = sizeof(verify<T>(arg1, arg2)) == sizeof(Yes);
+   //    };
+   // } // sfinae
+
+
+
+
 // Base Queue API without pop() and push()
 // It should be mentioned the thinking of what goes where
 // it is a "controversy" whether what is tail and what is head
@@ -54,7 +84,49 @@ namespace queue_api {
 
       template<typename Element>
       bool push(Element& item) { return Base<QType>::_qref.push(item); }
-   }; 
+   };
+
+
+
+
+   namespace sfinae { 
+      // SFINAE: Substitution Failure Is Not An Error
+      // Decide at compile time what function signature to use
+      // 1. If 'wait_and_pop' exists in the queue it uses that
+      // 2. If only 'pop' exists it implements 'wait_and_pop' expected
+      // -- FYI: The wait is set to increments of 100 ns
+      template <typename T, typename Element>
+      bool wrapper(T& t, Element& e, std::chrono::milliseconds max_wait) {
+         using milliseconds = std::chrono::milliseconds;
+         using clock = std::chrono::steady_clock;
+         using namespace std::chrono_literals;
+         auto t1 = clock::now();
+         bool result = false;
+         while (!(result = t.pop(e))) {
+            std::this_thread::sleep_for(100ns);
+            auto elapsed_ms = std::chrono::duration_cast<milliseconds>(clock::now() - t1);
+            if (elapsed_ms > max_wait) {
+               return result;
+            }
+         }
+         return result;
+      }
+
+      template <typename T, typename Element>
+      auto match_call(T& t, Element& e, std::chrono::milliseconds ms, int) -> decltype( t.wait_and_pop(e, ms) )
+      { return t.wait_and_pop(e, ms); }
+
+      template <typename T, typename Element>
+      auto match_call(T& t, Element& e, std::chrono::milliseconds ms, long) -> decltype( wrapper(t, e, ms) )
+      { return wrapper(t, e, ms); }
+
+      template <typename T, typename Element>
+      int wait_and_pop (T& t, Element& e, std::chrono::milliseconds ms) {
+         // SFINAE magic happens with the '0'.  For the right call it will be deducted ot bhe
+         return match_call(t, e, ms, 0);
+      }
+   }
+
 
 
 
@@ -67,7 +139,13 @@ namespace queue_api {
 
       template<typename Element>
       bool pop(Element& item) { return Base<QType>::_qref.pop(item); }
-   };  // ReceiverQ
+
+      template<typename Element>
+      bool wait_and_pop(Element& item, const std::chrono::milliseconds wait_ms) {
+         return sfinae::wait_and_pop(Base<QType>::_qref, item, wait_ms);
+      }
+   };
+
 
 
 
@@ -78,7 +156,7 @@ namespace queue_api {
    }
 
    enum index {sender = 0, receiver = 1};
-} // QueueAPI
+} // queue_api
 
 
 

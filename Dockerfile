@@ -16,12 +16,12 @@ RUN apt-get install -y unzip zlib1g-dev
 RUN apt-get install -y libboost-all-dev
 
 # Build Preparation
-RUN mkdir -p /build/
+RUN mkdir -p /Q/
 
 # Build
-WORKDIR /build/
-COPY . /build/
-RUN cd /build && git clone -b setup https://github.com/KjellKod/Q.git  && ls -alh
-RUN cd /build/Q/3rdparty/ && unzip gtest-1.7.0.zip
-RUN cd /build/Q && mkdir build
-RUN cd /build/Q/build && cmake .. && make -j && ./UnitTestRunner
+WORKDIR /Q/
+COPY . /Q/
+RUN ls /Q
+RUN cd /Q/3rdparty/ && unzip gtest-1.7.0.zip
+RUN cd /Q/ && mkdir build
+RUN cd /Q/build && cmake .. && make -j && ./UnitTestRunner

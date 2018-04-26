@@ -50,7 +50,7 @@ TEST(Performance, SPSC_Fixed_CircularFifo_Smaller) {
 
 TEST(Performance, MPMC_1_to_1) {
    using namespace std;
-   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kAmount, std::chrono::milliseconds(1));
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kAmount);
    RunSPSC(queue, kAmount);
 }
 
@@ -58,8 +58,7 @@ TEST(Performance, MPMC_1_to_1) {
 TEST(Performance, MPMC_1_to_1_Smaller) {
    using namespace std;
 
-   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kSmallQueueSize,
-                std::chrono::milliseconds(1));
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kSmallQueueSize);
    RunSPSC(queue, kAmount);
 }
 
@@ -89,10 +88,9 @@ TEST(Performance, SPSC_Fixed_20secRun_LargeData) {
 }
 
 
-TEST(Performance, MPMC_4_to_1_20secRun_LargeData) {
+TEST(Performance, MPMC_1_to_4_20secRun_LargeData) {
    using namespace std;
-   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kSmallQueueSize,
-                std::chrono::milliseconds(1));
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kSmallQueueSize);
    const size_t large = 65000;
    std::string payload(large, 'x');
    EXPECT_EQ(large, payload.size());
@@ -102,10 +100,22 @@ TEST(Performance, MPMC_4_to_1_20secRun_LargeData) {
    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
 }
 
+TEST(Performance, MPMC_4_to_1_20secRun_LargeData) {
+   using namespace std;
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kSmallQueueSize);
+   const size_t large = 65000;
+   std::string payload(large, 'x');
+   EXPECT_EQ(large, payload.size());
+   const size_t numberOfProducers = 1;
+   const size_t numberOfConsumers = 4;
+   const size_t kTimeToRunSec = 20;
+   RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
+}
+
+
 TEST(Performance, MPMC_4_to_4_20secRun_LargeData) {
    using namespace std;
-   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kSmallQueueSize,
-                std::chrono::milliseconds(1));
+   auto queue = queue_api::CreateQueue<mpmc::dynamic_lock_queue<string>>(kSmallQueueSize);
    const size_t large = 65000;
    std::string payload(large, 'x');
    EXPECT_EQ(large, payload.size());
