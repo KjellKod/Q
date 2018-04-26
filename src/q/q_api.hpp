@@ -27,7 +27,7 @@ namespace queue_api {
    //
    // std::decltype returns the reference type (used with declaval)
    // http://en.cppreference.com/w/cpp/language/decltype
-   // namespace sfinae { // Substitution Failure Is Not An Error
+   // namespace sfinae { 
    //    template <typename T, typename Element>
    //    struct wait_and_pop { // Detect if the class has function wait_and_pop(Element&, milliseconds)
    //       using Yes =  char;
@@ -89,11 +89,27 @@ namespace queue_api {
 
 
 
-   namespace sfinae {
+   namespace sfinae { 
+      // SFINAE: Substitution Failure Is Not An Error
+      // Decide at compile time what function signature to use
+      // 1. If 'wait_and_pop' exists in the queue it uses that
+      // 2. If only 'pop' exists it implements 'wait_and_pop' expected
+      //   behavior i the 'wrapper'
       template <typename T, typename Element>
-      bool wrapper(T& t, Element& e, std::chrono::milliseconds ms) {
-         std::cout << "wrapper hit" << std::endl;
-         return t.pop(e);
+      bool wrapper(T& t, Element& e, std::chrono::milliseconds max_wait) {
+         using milliseconds = std::chrono::milliseconds;
+         using clock = std::chrono::steady_clock;
+         using namespace std::chrono_literals;
+         auto t1 = clock::now();
+         bool result = false;
+         while (false == (result = t.pop(e))) {
+            std::this_thread::sleep_for(50ns);
+            auto elapsed_ms = std::chrono::duration_cast<milliseconds>(clock::now() - t1);
+            if (elapsed_ms > max_wait) {
+               return result;
+            }
+         }
+         return result;
       }
 
       template <typename T, typename Element>
@@ -128,24 +144,6 @@ namespace queue_api {
       bool wait_and_pop(Element& item, const std::chrono::milliseconds wait_ms) {
          return sfinae::wait_and_pop(Base<QType>::_qref, item, wait_ms);
       }
-      //    using milliseconds = std::chrono::milliseconds;
-      //    using clock = std::chrono::steady_clock;
-      //    using namespace std::chrono_literals;
-
-      //    if (sfinae::wait_and_pop<QType, Element>::value) {
-      //       return Base<QType>::_qref.wait_and_pop(item, wait_ms);
-      //    } else {
-      //       // return function-call with home rolled wait_and_pop
-      //       auto t1 = clock::now();
-      //       while (false == Base<QType>::_qref.pop(item)) {
-      //          std::this_thread::sleep_for(50ns);
-      //          auto elapsed_ms = std::chrono::duration_cast<milliseconds>(clock::now() - t1);//.count();
-      //          if (elapsed_ms > wait_ms) {
-      //             return false;
-      //          }
-      //       }
-      //       return true;
-      //    }
    };
 
 

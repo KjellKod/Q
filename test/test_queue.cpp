@@ -90,10 +90,10 @@ TEST(Queue, SFINAE_HasWaitAndPop) {
 
    StopWatch watch;
    std::string msg;
-   std::chrono::milliseconds wait(10 * 1000);
+   std::chrono::milliseconds wait(2 * 1000);
    auto result = consumer.wait_and_pop(msg, wait); // wait_and_pop but function ignores the 'wait'
    EXPECT_FALSE(result); 
-   EXPECT_TRUE(watch.ElapsedSec() < 10);
+   EXPECT_TRUE(watch.ElapsedSec() <= 2);
 }
 
 TEST(Queue, SFINAE_HasPop) {
@@ -104,39 +104,13 @@ TEST(Queue, SFINAE_HasPop) {
    StopWatch watch;
    std::string msg;
    std::chrono::milliseconds wait(2 * 1000);
-   auto result = consumer.wait_and_pop(msg, wait); // wait_and_pop but function ignores the 'wait'
+   auto result = consumer.wait_and_pop(msg, wait); // wrapper implements wait
    EXPECT_FALSE(result); 
    EXPECT_TRUE(watch.ElapsedSec() >= 2);
 }
 
 
-TEST(Queue, SFINAE_Flexible_MissingFunc)
-{
-   // using namespace queue_api;
-   // using namespace sfinae;
-   // using QType = spsc::flexible::circular_fifo<Type>;
-   // auto exist = wait_and_pop<QType, Type>::value;
-   // EXPECT_FALSE(exist);
-}
 
-TEST(Queue, SFINAE_Fixed_MissingFunc)
-{
-   // using namespace queue_api;
-   // using namespace sfinae;
-   // using QType = spsc::fixed::circular_fifo<Type, 100>;
-   // auto exist = wait_and_pop<QType, Type>::value;
-   // EXPECT_FALSE(exist);
-}
-
-
-TEST(Queue, SFINAE_mpmc_dynammic_HasFunc)
-{
-   // using namespace queue_api;
-   // using namespace sfinae;
-   // using QType = mpmc::dynamic_lock_queue<Type>;
-   // auto exist = wait_and_pop<QType, Type>::value;
-   // EXPECT_TRUE(exist);
-}
 
 
 
