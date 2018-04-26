@@ -94,7 +94,7 @@ namespace queue_api {
       // Decide at compile time what function signature to use
       // 1. If 'wait_and_pop' exists in the queue it uses that
       // 2. If only 'pop' exists it implements 'wait_and_pop' expected
-      //   behavior i the 'wrapper'
+      // -- FYI: The wait is set to increments of 100 ns
       template <typename T, typename Element>
       bool wrapper(T& t, Element& e, std::chrono::milliseconds max_wait) {
          using milliseconds = std::chrono::milliseconds;
@@ -102,8 +102,8 @@ namespace queue_api {
          using namespace std::chrono_literals;
          auto t1 = clock::now();
          bool result = false;
-         while (false == (result = t.pop(e))) {
-            std::this_thread::sleep_for(50ns);
+         while (!(result = t.pop(e))) {
+            std::this_thread::sleep_for(100ns);
             auto elapsed_ms = std::chrono::duration_cast<milliseconds>(clock::now() - t1);
             if (elapsed_ms > max_wait) {
                return result;

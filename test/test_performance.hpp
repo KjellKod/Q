@@ -6,7 +6,7 @@
 * Note that there is No guarantee that this code will work
 * and I take no responsibility for this code and any problems you
 * might get if using it.
-* 
+*
 * Originally published at https://github.com/KjellKod/Q
 */
 
@@ -88,7 +88,6 @@ namespace test_performance {
       return amountPushed;
    }
 
-
    template <typename Receiver>
    size_t GetUntil(Receiver q, const std::string data, const size_t numberOfProducers, std::atomic<size_t>& producerCount, std::atomic<size_t>& consumerCount, std::atomic<bool>& stopRunning) {
       using namespace std::chrono_literals;
@@ -101,10 +100,14 @@ namespace test_performance {
       size_t amountReceived = 0;
       while (!stopRunning.load()) {
          std::string value;
-         while (false == q.pop(value) && !stopRunning.load()) {
-            std::this_thread::sleep_for(100ns); // yield is too aggressive
+         bool result = false;
+         std::chrono::milliseconds wait{10};
+         while (!(result = q.wait_and_pop(value, wait))) {
+            if (stopRunning.load()) {
+               break;
+            }
          }
-         if (!stopRunning.load()) {
+         if (result) {
             EXPECT_EQ(data.size(), value.size());
             EXPECT_FALSE(value.empty());
             ++amountReceived;
@@ -112,7 +115,6 @@ namespace test_performance {
       }
       return amountReceived;
    }
-
 
    template<typename T>
    void RunSPSC(T queue, const int howMany) {
