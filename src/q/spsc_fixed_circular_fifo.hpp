@@ -106,7 +106,7 @@ namespace spsc {
 
       template<typename Element, size_t Size>
       bool circular_fifo<Element, Size>::lock_free() const {
-         return (tail_.is_lock_free() && head_.is_lock_free());
+         return std::atomic<size_t>{}.is_lock_free();
       }
 
       template<typename Element, size_t Size>
