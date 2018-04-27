@@ -126,8 +126,8 @@ namespace test_performance {
 
       using namespace std;
       using namespace chrono;
-      auto producer = std::get <queue_api::index::sender>(queue);
-      auto consumer = std::get <queue_api::index::receiver>(queue);
+      auto producer = std::get<queue_api::index::sender>(queue);
+      auto consumer = std::get<queue_api::index::receiver>(queue);
 
       auto t1 = high_resolution_clock::now();
       size_t start = 0;
@@ -159,8 +159,8 @@ namespace test_performance {
 
       using namespace std;
       using namespace std::chrono;
-      auto producer = std::get <queue_api::index::sender>(queue);
-      auto consumer = std::get <queue_api::index::receiver>(queue);
+      auto producer = std::get<queue_api::index::sender>(queue);
+      auto consumer = std::get<queue_api::index::receiver>(queue);
       std::vector<std::future<size_t>> producerResult;
       producerResult.reserve(numberProducers);
 
@@ -170,7 +170,7 @@ namespace test_performance {
       }
       std::vector<std::future<size_t>> consumerResult;
       consumerResult.reserve(numberConsumers);
-      for (size_t i = 0; i < numberProducers; ++i) {
+      for (size_t i = 0; i < numberConsumers; ++i) {
          consumerResult.emplace_back(std::async(std::launch::async, GetUntil<decltype(consumer)>, consumer, data, numberConsumers,
                                                 std::ref(producerCount), std::ref(consumerCount), std::ref(consumerStop)));
       }
@@ -195,8 +195,12 @@ namespace test_performance {
          amountConsumed += result.get();
       }
 
+      // amoundProduced >= amountConsumed
+      // amountProduced <= amountConsumed + 100
+      EXPECT_TRUE(amountProduced >= amountConsumed);
+      EXPECT_TRUE(amountProduced <= amountConsumed + producer.capacity());
+      
       auto elapsedTimeSec = elapsedRun.ElapsedSec();
-      EXPECT_GE(amountConsumed + 100, amountProduced);
       std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
       std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
       std::cout << "Transation GByte/s: " << amountConsumed* data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;

@@ -83,6 +83,48 @@ struct HasPop {
 
 
 
+TEST(Queue, BaseAPI_Flexible) {
+   auto queue = queue_api::CreateQueue<FlexibleQ>(10);
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
+   EXPECT_TRUE(producer.empty());
+   EXPECT_FALSE(producer.full());
+   EXPECT_EQ(10, producer.capacity());
+   EXPECT_EQ(10, producer.capacity_free());
+   EXPECT_EQ(0, producer.size());
+   EXPECT_TRUE(producer.lock_free());
+   EXPECT_EQ(0, producer.usage());
+}
+
+TEST(Queue, BaseAPI_Fixed) {
+   auto queue = queue_api::CreateQueue<FixedQ>();
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
+   EXPECT_TRUE(producer.empty());
+   EXPECT_FALSE(producer.full());
+   EXPECT_EQ(100, producer.capacity());
+   EXPECT_EQ(100, producer.capacity_free());
+   EXPECT_EQ(0, producer.size());
+   EXPECT_TRUE(producer.lock_free());
+   EXPECT_EQ(0, producer.usage());
+}
+
+
+TEST(Queue, BaseAPI_DynamicLocked) {
+   auto queue = queue_api::CreateQueue<LockedQ>(10);
+   auto producer = std::get<queue_api::index::sender>(queue);
+   auto consumer = std::get<queue_api::index::receiver>(queue);
+   EXPECT_TRUE(producer.empty());
+   EXPECT_FALSE(producer.full());
+   EXPECT_EQ(10, producer.capacity());
+   EXPECT_EQ(10, producer.capacity_free());
+   EXPECT_EQ(0, producer.size());
+   EXPECT_FALSE(producer.lock_free());  // NOT lock -free
+   EXPECT_EQ(0, producer.usage());
+}
+
+
+
 TEST(Queue, SFINAE_HasWaitAndPop) {
    using namespace test_helper;
    auto queue = queue_api::CreateQueue<HasWaitAndPop>();

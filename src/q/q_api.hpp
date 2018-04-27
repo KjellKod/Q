@@ -66,7 +66,7 @@ namespace queue_api {
       size_t capacity() const { return _qref.capacity(); }
       size_t capacity_free() const { return _qref.capacity_free(); }
       size_t size() const { return _qref.size(); }
-      bool lock_free() const { return _qref.size(); }
+      bool lock_free() const { return _qref.lock_free(); }
       size_t usage() const { return _qref.usage(); }
 
       std::shared_ptr<QType> _q;
