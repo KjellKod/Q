@@ -54,7 +54,7 @@ namespace mpmc {
 
       // -1 : unbounded
       // 0 ... N : bounded (0 is silly)
-      flexible_lock_queue(int maxSize = kSmallDefault);
+      flexible_lock_queue(const int maxSize = kSmallDefault);
 
       bool lock_free() const;
       bool push(T& item);

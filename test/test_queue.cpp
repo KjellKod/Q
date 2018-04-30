@@ -47,11 +47,24 @@ void ProdConsInitialization(Prod& prod, Cons& cons ) {
 }
 
 
+
+
 TEST(Queue, ProdConsInitialization) {
    auto queue = queue_api::CreateQueue<FlexibleQ>(10);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
 }
+
+
+
+TEST(Queue, ProdConsInitializationCopy) {
+   auto queue = queue_api::CreateQueue<FlexibleQ>(10);
+   Sender<FlexibleQ> sender1= std::get<queue_api::index::sender>(queue);
+   Sender<FlexibleQ> sender2=(std::get<queue_api::index::sender>(queue));
+   Sender<FlexibleQ> receiver1= std::get<queue_api::index::receiver>(queue);
+   Sender<FlexibleQ> receiver2=(std::get<queue_api::index::receiver>(queue));
+}
+
 
 
 struct HasWaitAndPop{
