@@ -59,7 +59,8 @@ TEST(Queue, ProdConsInitialization) {
 
 TEST(Queue, ProdConsInitializationCopy) {
    using namespace queue_api;
-   auto queue = CreateQueue<FlexibleQ>(10);
+   using QueuePair = std::pair<Sender<FlexibleQ>, Receiver<FlexibleQ>>;
+   QueuePair queue  = CreateQueue<FlexibleQ>(10);
    Sender<FlexibleQ> sender1 = std::get<index::sender>(queue);
    Sender<FlexibleQ> sender2(std::get<index::sender>(queue));
    Receiver<FlexibleQ> receiver1 = std::get<index::receiver>(queue);
