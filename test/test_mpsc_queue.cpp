@@ -34,4 +34,132 @@ TEST(MPSC, CreateOneQueue) {
    EXPECT_TRUE(consumer.lock_free());
 }
 
-//  test    size_t increment(size_t idx) const;
+
+TEST(MPSC, CreateManyQueues) {
+   using element = std::string;
+   using qtype = spsc::flexible::circular_fifo<element>;
+   constexpr auto senderID = queue_api::index::sender;
+   constexpr auto receiverID = queue_api::index::receiver;
+
+   constexpr size_t kSize = 10;
+   constexpr size_t kSizeTotal = kSize * kSize;
+   std::vector<queue_api::Sender<qtype>> senders;
+   std::vector<queue_api::Receiver<qtype>> receivers;
+   for ( size_t i = 0; i < 10; ++i) {
+      auto queue = queue_api::CreateQueue<qtype>(10);
+      senders.push_back(std::get<senderID>(queue));
+      receivers.push_back(std::get<receiverID>(queue));
+   }
+
+   mpsc::roundrobin_receiver<qtype> consumer({receivers});
+   EXPECT_EQ(kSizeTotal, consumer.capacity());
+   EXPECT_EQ(kSizeTotal, consumer.capacity_free());
+}
+
+TEST(MPSC, RoundRobinOfOne) {
+   using element = std::string;
+   using qtype = spsc::flexible::circular_fifo<element>;
+   auto queue = queue_api::CreateQueue<qtype>(2);
+   auto temporary = std::get<queue_api::index::receiver>(queue);
+   // convert the setup to a MPSC setup
+   mpsc::roundrobin_receiver<qtype> consumer({temporary});
+
+   size_t current = 0;
+   current = consumer.increment(current);
+   EXPECT_EQ(0, current);
+   current = consumer.increment(current);
+   EXPECT_EQ(0, current);
+}
+
+TEST(MPSC, RoundRobinOfMany) {
+   using element = std::string;
+   using qtype = spsc::flexible::circular_fifo<element>;
+   auto q1 = queue_api::CreateQueue<qtype>(2);
+   auto q2 = queue_api::CreateQueue<qtype>(2);
+   auto r1 = std::get<queue_api::index::receiver>(q1);
+   auto r2 = std::get<queue_api::index::receiver>(q2);
+
+   // convert the setup to a MPSC setup
+   //
+   mpsc::roundrobin_receiver<qtype> consumer({r1, r2});
+
+   size_t current = 0;
+   current = consumer.increment(current);
+   EXPECT_EQ(1, current);
+   current = consumer.increment(current);
+   EXPECT_EQ(0, current);
+   current = consumer.increment(current);
+   EXPECT_EQ(1, current);
+}
+
+TEST(MPSC, full) {
+   using element = std::string;
+   using qtype = spsc::flexible::circular_fifo<element>;
+   auto q1 = queue_api::CreateQueue<qtype>(1);
+   auto q2 = queue_api::CreateQueue<qtype>(1);
+   auto r1 = std::get<queue_api::index::receiver>(q1);
+   auto s1 = std::get<queue_api::index::sender>(q1);
+   auto r2 = std::get<queue_api::index::receiver>(q2);
+   auto s2 = std::get<queue_api::index::sender>(q2);
+
+   // convert the setup to a MPSC setup
+   //
+   mpsc::roundrobin_receiver<qtype> consumer({r1, r2});
+   std::string arg;
+   s1.push(arg);
+   EXPECT_TRUE(r1.full());
+   EXPECT_FALSE(r2.full());
+   EXPECT_FALSE(consumer.full());
+
+   s2.push(arg);
+   EXPECT_TRUE(r1.full());
+   EXPECT_TRUE(r2.full());
+   EXPECT_TRUE(consumer.full());
+}
+
+TEST(MPSC, size) {
+   using element = std::string;
+   using qtype = spsc::flexible::circular_fifo<element>;
+   auto q1 = queue_api::CreateQueue<qtype>(1);
+   auto q2 = queue_api::CreateQueue<qtype>(1);
+   auto r1 = std::get<queue_api::index::receiver>(q1);
+   auto s1 = std::get<queue_api::index::sender>(q1);
+   auto r2 = std::get<queue_api::index::receiver>(q2);
+   auto s2 = std::get<queue_api::index::sender>(q2);
+
+   // convert the setup to a MPSC setup
+   //
+   mpsc::roundrobin_receiver<qtype> consumer({r1, r2});
+   std::string arg;
+   EXPECT_EQ(2, consumer.capacity());
+   EXPECT_EQ(2, consumer.capacity_free());
+   s1.push(arg);
+   EXPECT_EQ(1, consumer.size());
+   EXPECT_EQ(1, consumer.capacity_free());
+
+   s2.push(arg);
+   EXPECT_EQ(2, consumer.size());
+   EXPECT_EQ(0, consumer.capacity_free());
+}
+
+TEST(MPSC, usage) {
+   using element = std::string;
+   using qtype = spsc::flexible::circular_fifo<element>;
+   auto q1 = queue_api::CreateQueue<qtype>(1);
+   auto q2 = queue_api::CreateQueue<qtype>(1);
+   auto r1 = std::get<queue_api::index::receiver>(q1);
+   auto s1 = std::get<queue_api::index::sender>(q1);
+   auto r2 = std::get<queue_api::index::receiver>(q2);
+   auto s2 = std::get<queue_api::index::sender>(q2);
+
+   // convert the setup to a MPSC setup
+   //
+   mpsc::roundrobin_receiver<qtype> consumer({r1, r2});
+   std::string arg;
+   EXPECT_EQ(0, consumer.usage());
+   s1.push(arg);
+   EXPECT_EQ(50, consumer.usage());
+
+   s2.push(arg);
+   EXPECT_EQ(100, consumer.usage());
+}

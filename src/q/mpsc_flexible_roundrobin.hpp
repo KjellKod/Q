@@ -101,9 +101,8 @@ namespace mpsc {
    // }
 
    template<typename QType>
-   size_t roundrobin_receiver<QType>::increment(size_t idx) const 
-   { 
-      return (idx + 1) % receivers_.size(); 
+   size_t roundrobin_receiver<QType>::increment(size_t idx) const {
+      return (idx + 1) % receivers_.size();
    }
 
    template<typename QType>
@@ -126,7 +125,11 @@ namespace mpsc {
 
    template<typename QType>
    size_t roundrobin_receiver<QType>::capacity() const {
-      return receivers_.capacity() * receivers_.size();
+      size_t max = 0;
+      for (auto r : receivers_) {
+         max += r.capacity();
+      }
+      return max;
    }
 
    template<typename QType>
@@ -159,11 +162,10 @@ namespace mpsc {
 
    template<typename QType>
    bool roundrobin_receiver<QType>::lock_free() const {
-      return receivers_[0].lock_free();
+      bool lockless = true;
+      for (auto r : receivers_) {
+         lockless = lockless && r.lock_free();
+      }
+      return lockless;
    }
-
-
 } // mpsc
-
-
-
