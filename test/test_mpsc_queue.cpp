@@ -142,6 +142,43 @@ TEST(MPSC, size) {
    EXPECT_EQ(0, consumer.capacity_free());
 }
 
+
+TEST(MPSC, pop) {
+   using element = std::string;
+   using qtype = spsc::flexible::circular_fifo<element>;
+   auto q1 = queue_api::CreateQueue<qtype>(1);
+   auto q2 = queue_api::CreateQueue<qtype>(1);
+   auto r1 = std::get<queue_api::index::receiver>(q1);
+   auto s1 = std::get<queue_api::index::sender>(q1);
+   auto r2 = std::get<queue_api::index::receiver>(q2);
+   auto s2 = std::get<queue_api::index::sender>(q2);
+
+   // convert the setup to a MPSC setup
+   //
+   mpsc::roundrobin_receiver<qtype> consumer({r1, r2});
+   std::string arg = "s0";
+   s1.push(arg);
+
+   std::string recv;
+   EXPECT_TRUE(consumer.pop(recv));
+   EXPECT_EQ("s0", recv);
+
+   arg = "s1";
+   s1.push(arg);
+   arg = "s2";
+   s2.push(arg);
+
+   EXPECT_TRUE(consumer.pop(recv));
+   EXPECT_EQ("s2", recv);
+   EXPECT_TRUE(consumer.pop(recv));
+   EXPECT_EQ("s1", recv);
+
+   recv = "";
+   EXPECT_FALSE(consumer.pop(recv));
+   EXPECT_EQ("", recv);
+}
+
+
 TEST(MPSC, usage) {
    using element = std::string;
    using qtype = spsc::flexible::circular_fifo<element>;

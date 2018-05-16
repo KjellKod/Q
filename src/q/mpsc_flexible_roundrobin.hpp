@@ -1,3 +1,6 @@
+#pragma once
+
+
 /*
 * Not any company's property but Public-Domain
 * Do with source-code as you will. No requirement to keep this
@@ -26,7 +29,7 @@ IMPORTANT:
 
 #include "q/spsc_flexible_circular_fifo.hpp"
 #include "q/q_api.hpp"
-
+#include <chrono>
 #include <vector>
 #include <utility>
 
@@ -48,21 +51,11 @@ namespace mpsc {
       roundrobin_receiver(std::vector<queue_api::Receiver<QType>> receivers);
       virtual ~roundrobin_receiver() = default;
 
-      //template<typename Element>
-      //bool pop(Element& item)
+      template<typename Element>
+      bool pop(Element& item);
 
       template<typename Element>
-      bool pop(Element& item) {
-         bool result = false;
-         const size_t loop_check = receivers_.size();
-
-         size_t count = 0;
-         while (!result && count++ < loop_check) {
-            result = receivers_[current_].pop(item);
-            current_ = increment(current_);
-         }
-         return result;
-      }
+      bool wait_and_pop(Element& item, const std::chrono::milliseconds wait_ms);
 
       size_t increment(size_t idx) const;
       bool empty() const;
@@ -72,6 +65,7 @@ namespace mpsc {
       size_t usage() const;
       size_t size() const;
       bool lock_free() const;
+
 
     private:
       std::vector<queue_api::Receiver<QType>> receivers_;
@@ -86,19 +80,42 @@ namespace mpsc {
 
    }
 
+   template<typename QType>
+   template<typename Element>
+   bool roundrobin_receiver<QType>::pop(Element& item) {
+      bool result = false;
+      const size_t loop_check = receivers_.size();
 
-   // template<typename Element>
-   // bool roundrobin_receiver<QType>::pop(Element& item) {
-   //    bool result = false;
-   //    const size_t loop_check = receivers_.size();
+      size_t count = 0;
+      while (!result && count++ < loop_check) {
+         result = receivers_[current_].pop(item);
+         current_ = increment(current_);
+      }
+      return result;
+   }
 
-   //    size_t count = 0;
-   //    while (!result && count++ < loop_check) {
-   //       result = receivers_[current_].pop(item);
-   //       current_ = increment(current_);
-   //    }
-   //    return result;
-   // }
+
+   template<typename QType>
+   template<typename Element>
+   bool roundrobin_receiver<QType>::wait_and_pop(Element& item, const std::chrono::milliseconds max_wait) {
+      using milliseconds = std::chrono::milliseconds;
+      using clock = std::chrono::steady_clock;
+      using namespace std::chrono_literals;
+      auto t1 = clock::now();
+      bool result = false;
+      const size_t wrap = current_;
+      while (!result) {
+         result = pop(item);
+         auto elapsed_ms = std::chrono::duration_cast<milliseconds>(clock::now() - t1);
+         if (elapsed_ms > max_wait) {
+            break;
+         }
+         if (false == result && wrap == current_) {
+            std::this_thread::sleep_for(100ns);
+         }
+      }
+      return result;
+   }
 
    template<typename QType>
    size_t roundrobin_receiver<QType>::increment(size_t idx) const {

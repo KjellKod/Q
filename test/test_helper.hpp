@@ -18,6 +18,7 @@ namespace test_helper {
    struct StopWatch {
       using seconds = std::chrono::seconds;
       using milliseconds = std::chrono::milliseconds;
+      using nanoseconds = std::chrono::nanoseconds;
       using clock = std::chrono::steady_clock;
       clock::time_point start_;
 
@@ -30,6 +31,9 @@ namespace test_helper {
       }
       uint64_t ElapsedMs() const {
          return std::chrono::duration_cast<milliseconds>(clock::now() - start_).count();
+      }
+      uint64_t ElapsedNs() const {
+         return std::chrono::duration_cast<nanoseconds>(clock::now() - start_).count();
       }
    };
 }

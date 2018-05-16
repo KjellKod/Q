@@ -19,6 +19,7 @@
 #include <iostream>
 #include <future>
 #include <q/q_api.hpp>
+#include <q/mpsc_flexible_roundrobin.hpp>
 #include "test_helper.hpp"
 
 namespace test_performance {
@@ -68,7 +69,9 @@ namespace test_performance {
       return received;
    }
    template <typename Sender>
-   size_t PushUntil(Sender q, std::string data, const size_t numberOfConsumers, std::atomic<size_t>& producerCount, std::atomic<size_t>& consumerCount, std::atomic<bool>& stopRunning) {
+   size_t PushUntil(Sender q, std::string data,
+                    std::atomic<size_t>& producerCount,
+                    std::atomic<bool>& stopRunning) {
       using namespace std::chrono_literals;
       producerCount++;
       using namespace std::chrono_literals;
@@ -87,7 +90,9 @@ namespace test_performance {
 
 
    template <typename Receiver>
-   size_t GetUntil(Receiver q, const std::string data, const size_t numberOfProducers, std::atomic<size_t>& producerCount, std::atomic<size_t>& consumerCount, std::atomic<bool>& stopRunning) {
+   size_t GetUntil(Receiver q, const std::string data,
+                   std::atomic<size_t>& consumerCount,
+                   std::atomic<bool>& stopRunning) {
       using namespace std::chrono_literals;
       consumerCount++;
 
@@ -165,14 +170,18 @@ namespace test_performance {
       producerResult.reserve(numberProducers);
 
       for (size_t i = 0; i < numberProducers; ++i) {
-         producerResult.emplace_back(std::async(std::launch::async, PushUntil<decltype(producer)>, producer, data, numberProducers,
-                                                std::ref(producerCount), std::ref(consumerCount), std::ref(producerStop)));
+         producerResult.emplace_back(std::async(std::launch::async, PushUntil<decltype(producer)>,
+                                                producer, data,
+                                                std::ref(producerCount),
+                                                std::ref(producerStop)));
       }
       std::vector<std::future<size_t>> consumerResult;
       consumerResult.reserve(numberConsumers);
       for (size_t i = 0; i < numberConsumers; ++i) {
-         consumerResult.emplace_back(std::async(std::launch::async, GetUntil<decltype(consumer)>, consumer, data, numberConsumers,
-                                                std::ref(producerCount), std::ref(consumerCount), std::ref(consumerStop)));
+         consumerResult.emplace_back(std::async(std::launch::async, GetUntil<decltype(consumer)>,
+                                                consumer, data,
+                                                std::ref(consumerCount),
+                                                std::ref(consumerStop)));
       }
 
       using namespace std::chrono_literals;
@@ -190,18 +199,87 @@ namespace test_performance {
          amountProduced += result.get();
       }
       consumerStop.store(true);
-      float amountConsumed = 0;
+      size_t amountConsumed = 0;
       for (auto& result : consumerResult) {
          amountConsumed += result.get();
       }
 
       // amoundProduced >= amountConsumed
       // amountProduced <= amountConsumed + 100
-      EXPECT_TRUE(amountProduced >= amountConsumed);
-      EXPECT_TRUE(amountProduced <= amountConsumed + producer.capacity());
-      
-      auto elapsedTimeSec = elapsedRun.ElapsedSec();
+      EXPECT_GE(amountProduced, amountConsumed) << "produced: " << amountProduced 
+         << ", consumed: " << amountConsumed << ", capacity: " << producer.capacity();
+
+      auto elapsedTimeNs = elapsedRun.ElapsedNs();
+      auto elapsedTimeSec = elapsedTimeNs / (1000000000);
       std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
+      std::cout << "Average trandsaction: " << elapsedTimeNs / amountConsumed  << " ns" << std::endl;
+      std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
+      std::cout << "Transation GByte/s: " << amountConsumed* data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;
+   }
+
+
+   template<typename QType, typename QTypePair>
+   void RunMPSC(std::vector<QTypePair> queues, std::string data, const size_t timeToRunInSec) {
+      std::atomic<size_t> producerCount{0};
+      std::atomic<size_t> consumerCount{0};
+      std::atomic<bool> producerStop{false};
+      std::atomic<bool> consumerStop{false};
+
+      std::vector<queue_api::Receiver<QType>> receivers;
+      std::vector<queue_api::Sender<QType>> senders;
+
+      for (auto q : queues) {
+         receivers.push_back(std::get<queue_api::index::receiver>(q));
+         senders.push_back(std::get<queue_api::index::sender>(q));
+      }
+      const size_t numberProducers = senders.size();
+      mpsc::roundrobin_receiver<QType> consumer(receivers);
+
+      std::vector<std::future<size_t>> producerResult;
+      producerResult.reserve(senders.size());
+
+      for (size_t i = 0; i < senders.size(); ++i) {
+         auto producer = senders[i];
+         producerResult.emplace_back(std::async(std::launch::async, PushUntil<decltype(producer)>, senders[i], data,
+                                                std::ref(producerCount), std::ref(producerStop)));
+      }
+      std::vector<std::future<size_t>> consumerResult;
+      const size_t numberConsumers = 1;
+      consumerResult.reserve(numberConsumers);
+      consumerResult.emplace_back(std::async(std::launch::async, GetUntil<decltype(consumer)>, consumer, data,
+                                             std::ref(consumerCount), std::ref(consumerStop)));
+
+
+      using namespace std::chrono_literals;
+      while (consumerCount.load() < numberConsumers && producerCount.load() < numberProducers) {
+         std::this_thread::sleep_for(1us);
+      }
+      StopWatch elapsedRun;
+      while (elapsedRun.ElapsedSec() < timeToRunInSec) {
+         std::this_thread::sleep_for(1us);
+      }
+
+      producerStop.store(true);
+      size_t amountProduced = 0;
+      for (auto& result : producerResult) {
+         amountProduced += result.get();
+      }
+      consumerStop.store(true);
+      size_t amountConsumed = 0;
+      for (auto& result : consumerResult) {
+         amountConsumed += result.get();
+      }
+
+      // amoundProduced >= amountConsumed
+      // amountProduced <= amountConsumed + 100
+      EXPECT_GE(amountProduced, amountConsumed) << 
+         "produced: " << amountProduced << ", consumed: " << amountConsumed  << ", capacity: " << consumer.capacity();
+
+      auto elapsedTimeNs = elapsedRun.ElapsedNs();
+      auto elapsedTimeSec = elapsedTimeNs / (1000000000);
+      std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;   
+      std::cout << "Average trandsaction: " << elapsedTimeNs / amountConsumed   << " ns" << std::endl;
+
       std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
       std::cout << "Transation GByte/s: " << amountConsumed* data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;
    }
