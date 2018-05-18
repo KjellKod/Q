@@ -10,9 +10,10 @@
 
 #include <gtest/gtest.h>
 #include <string>
-#include "q/mpsc_flexible_roundrobin.hpp"
+#include "q/mpsc_receiver_round_robin.hpp"
 #include "q/spsc_flexible_circular_fifo.hpp"
 #include "q/q_api.hpp"
+
 
 TEST(MPSC, CreateOneQueue) {
    using element = std::string;
@@ -22,7 +23,7 @@ TEST(MPSC, CreateOneQueue) {
    auto temporary = std::get<queue_api::index::receiver>(queue);
 
    // convert the setup to a MPSC setup
-   mpsc::roundrobin_receiver<qtype> consumer({temporary});
+   mpsc::round_robin::Receiver<qtype> consumer({temporary});
 
    std::string e;
    EXPECT_FALSE(consumer.pop(e));
@@ -51,7 +52,7 @@ TEST(MPSC, CreateManyQueues) {
       receivers.push_back(std::get<receiverID>(queue));
    }
 
-   mpsc::roundrobin_receiver<qtype> consumer({receivers});
+   mpsc::round_robin::Receiver<qtype> consumer({receivers});
    EXPECT_EQ(kSizeTotal, consumer.capacity());
    EXPECT_EQ(kSizeTotal, consumer.capacity_free());
 }
@@ -62,7 +63,7 @@ TEST(MPSC, RoundRobinOfOne) {
    auto queue = queue_api::CreateQueue<qtype>(2);
    auto temporary = std::get<queue_api::index::receiver>(queue);
    // convert the setup to a MPSC setup
-   mpsc::roundrobin_receiver<qtype> consumer({temporary});
+   mpsc::round_robin::Receiver<qtype> consumer({temporary});
 
    size_t current = 0;
    current = consumer.increment(current);
@@ -81,7 +82,7 @@ TEST(MPSC, RoundRobinOfMany) {
 
    // convert the setup to a MPSC setup
    //
-   mpsc::roundrobin_receiver<qtype> consumer({r1, r2});
+   mpsc::round_robin::Receiver<qtype> consumer({r1, r2});
 
    size_t current = 0;
    current = consumer.increment(current);
@@ -104,7 +105,7 @@ TEST(MPSC, full) {
 
    // convert the setup to a MPSC setup
    //
-   mpsc::roundrobin_receiver<qtype> consumer({r1, r2});
+   mpsc::round_robin::Receiver<qtype> consumer({r1, r2});
    std::string arg;
    s1.push(arg);
    EXPECT_TRUE(r1.full());
@@ -129,7 +130,7 @@ TEST(MPSC, size) {
 
    // convert the setup to a MPSC setup
    //
-   mpsc::roundrobin_receiver<qtype> consumer({r1, r2});
+   mpsc::round_robin::Receiver<qtype> consumer({r1, r2});
    std::string arg;
    EXPECT_EQ(2, consumer.capacity());
    EXPECT_EQ(2, consumer.capacity_free());
@@ -155,7 +156,7 @@ TEST(MPSC, pop) {
 
    // convert the setup to a MPSC setup
    //
-   mpsc::roundrobin_receiver<qtype> consumer({r1, r2});
+   mpsc::round_robin::Receiver<qtype> consumer({r1, r2});
    std::string arg = "s0";
    s1.push(arg);
 
@@ -191,7 +192,7 @@ TEST(MPSC, usage) {
 
    // convert the setup to a MPSC setup
    //
-   mpsc::roundrobin_receiver<qtype> consumer({r1, r2});
+   mpsc::round_robin::Receiver<qtype> consumer({r1, r2});
    std::string arg;
    EXPECT_EQ(0, consumer.usage());
    s1.push(arg);

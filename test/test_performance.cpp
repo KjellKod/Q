@@ -14,7 +14,6 @@
 #include <q/mpmc.hpp>
 #include <thread>
 #include <algorithm>
-#include <q/mpsc_flexible_roundrobin.hpp>
 
 namespace {
    const size_t kAmount = 1000000;

@@ -19,7 +19,7 @@
 #include <iostream>
 #include <future>
 #include <q/q_api.hpp>
-#include <q/mpsc_flexible_roundrobin.hpp>
+#include <q/mpsc_receiver_round_robin.hpp>
 #include "test_helper.hpp"
 
 namespace test_performance {
@@ -206,8 +206,8 @@ namespace test_performance {
 
       // amoundProduced >= amountConsumed
       // amountProduced <= amountConsumed + 100
-      EXPECT_GE(amountProduced, amountConsumed) << "produced: " << amountProduced 
-         << ", consumed: " << amountConsumed << ", capacity: " << producer.capacity();
+      EXPECT_GE(amountProduced, amountConsumed) << "produced: " << amountProduced
+            << ", consumed: " << amountConsumed << ", capacity: " << producer.capacity();
 
       auto elapsedTimeNs = elapsedRun.ElapsedNs();
       auto elapsedTimeSec = elapsedTimeNs / (1000000000);
@@ -233,7 +233,7 @@ namespace test_performance {
          senders.push_back(std::get<queue_api::index::sender>(q));
       }
       const size_t numberProducers = senders.size();
-      mpsc::roundrobin_receiver<QType> consumer(receivers);
+      mpsc::round_robin::Receiver<QType> consumer(receivers);
 
       std::vector<std::future<size_t>> producerResult;
       producerResult.reserve(senders.size());
@@ -272,12 +272,12 @@ namespace test_performance {
 
       // amoundProduced >= amountConsumed
       // amountProduced <= amountConsumed + 100
-      EXPECT_GE(amountProduced, amountConsumed) << 
-         "produced: " << amountProduced << ", consumed: " << amountConsumed  << ", capacity: " << consumer.capacity();
+      EXPECT_GE(amountProduced, amountConsumed) <<
+            "produced: " << amountProduced << ", consumed: " << amountConsumed  << ", capacity: " << consumer.capacity();
 
       auto elapsedTimeNs = elapsedRun.ElapsedNs();
       auto elapsedTimeSec = elapsedTimeNs / (1000000000);
-      std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;   
+      std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
       std::cout << "Average trandsaction: " << elapsedTimeNs / amountConsumed   << " ns" << std::endl;
 
       std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
