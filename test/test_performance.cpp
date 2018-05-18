@@ -100,19 +100,20 @@ TEST(Performance, MPMC_1_to_4_20secRun_LargeData) {
    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
 }
 
-TEST(Performance, MPMC_4_to_1_20secRun_LargeData) {
+
+TEST(Performance, MPMC_1_to_4_20secRun_SmallData) {
    using namespace std;
    auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
-   const size_t large = 65000;
-   std::string payload(large, 'x');
-   EXPECT_EQ(large, payload.size());
-   const size_t numberOfProducers = 4;
-   const size_t numberOfConsumers = 1;
+   const size_t small = 10;
+   std::string payload(small, 'x');
+   EXPECT_EQ(small, payload.size());
+   const size_t numberOfProducers = 1;
+   const size_t numberOfConsumers = 4;
    const size_t kTimeToRunSec = 20;
    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
 }
 
-TEST(Performance, MPSC_4_to_1_20secRun_LargeData) {
+TEST(Performance, lock_free__SPMC_1_to_4_20secRun_LargeData) {
    using namespace std;
    using element = std::string;
    using qtype = spsc::flexible::circular_fifo<element>;
@@ -125,6 +126,82 @@ TEST(Performance, MPSC_4_to_1_20secRun_LargeData) {
    const size_t large = 65000;
    std::string payload(large, 'x');
    EXPECT_EQ(large, payload.size());
+   const size_t kTimeToRunSec = 20;
+   RunSPMC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
+}
+
+TEST(Performance, lock_free__SPMC_1_to_4_20secRun_SmallData) {
+   using namespace std;
+   using element = std::string;
+   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
+   std::vector<qtype_pair> queues;
+   for (size_t i = 0; i < 4; ++i) {
+      queues.push_back(queue_api::CreateQueue<qtype>(kSmallQueueSize));
+   }
+
+   const size_t small = 10;
+   std::string payload(small, 'x');
+   EXPECT_EQ(small, payload.size());
+   const size_t kTimeToRunSec = 20;
+   RunSPMC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
+}
+
+
+TEST(Performance, MPMC_4_to_1_20secRun_LargeData) {
+   using namespace std;
+   auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
+   const size_t large = 65000;
+   std::string payload(large, 'x');
+   EXPECT_EQ(large, payload.size());
+   const size_t numberOfProducers = 4;
+   const size_t numberOfConsumers = 1;
+   const size_t kTimeToRunSec = 20;
+   RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
+}
+
+TEST(Performance, MPMC_4_to_1_20secRun_SmallData) {
+   using namespace std;
+   auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
+   const size_t small = 10;
+   std::string payload(small, 'x');
+   EXPECT_EQ(small, payload.size());
+   const size_t numberOfProducers = 4;
+   const size_t numberOfConsumers = 1;
+   const size_t kTimeToRunSec = 20;
+   RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
+}
+
+TEST(Performance, lock_free__MPSC_4_to_1_20secRun_LargeData) {
+   using namespace std;
+   using element = std::string;
+   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
+   std::vector<qtype_pair> queues;
+   for (size_t i = 0; i < 4; ++i) {
+      queues.push_back(queue_api::CreateQueue<qtype>(kSmallQueueSize));
+   }
+
+   const size_t large = 65000;
+   std::string payload(large, 'x');
+   EXPECT_EQ(large, payload.size());
+   const size_t kTimeToRunSec = 20;
+   RunMPSC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
+}
+
+TEST(Performance, lock_free__MPSC_4_to_1_20secRun_SmallData) {
+   using namespace std;
+   using element = std::string;
+   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
+   std::vector<qtype_pair> queues;
+   for (size_t i = 0; i < 4; ++i) {
+      queues.push_back(queue_api::CreateQueue<qtype>(kSmallQueueSize));
+   }
+
+   const size_t small = 10;
+   std::string payload(small, 'x');
+   EXPECT_EQ(small, payload.size());
    const size_t kTimeToRunSec = 20;
    RunMPSC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
 }

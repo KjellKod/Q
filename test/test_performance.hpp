@@ -20,6 +20,7 @@
 #include <future>
 #include <q/q_api.hpp>
 #include <q/mpsc_receiver_round_robin.hpp>
+#include <q/spmc_sender_round_robin.hpp>
 #include "test_helper.hpp"
 
 namespace test_performance {
@@ -78,9 +79,9 @@ namespace test_performance {
 
       StopWatch watch;
       size_t amountPushed = 0;
-      while (!stopRunning.load()) {
+      while (!stopRunning.load(std::memory_order_relaxed)) {
          std::string value = data;
-         while (false == q.push(value) && !stopRunning.load()) {
+         while (false == q.push(value) && !stopRunning.load(std::memory_order_relaxed)) {
             std::this_thread::sleep_for(100ns); // yield is too aggressive
          }
          ++amountPushed;
@@ -99,12 +100,12 @@ namespace test_performance {
       StopWatch watch;
       size_t amountReceived = 0;
       size_t byteReceived = 0;
-      while (!stopRunning.load()) {
+      while (!stopRunning.load(std::memory_order_relaxed)) {
          std::string value;
          bool result = false;
          std::chrono::milliseconds wait{10};
          while (!(result = q.wait_and_pop(value, wait))) {
-            if (stopRunning.load()) {
+            if (stopRunning.load(std::memory_order_relaxed)) {
                break;
             }
          }
@@ -193,12 +194,12 @@ namespace test_performance {
          std::this_thread::sleep_for(1us);
       }
 
-      producerStop.store(true);
+      producerStop.store(true, std::memory_order_release);
       size_t amountProduced = 0;
       for (auto& result : producerResult) {
          amountProduced += result.get();
       }
-      consumerStop.store(true);
+      consumerStop.store(true, std::memory_order_release);
       size_t amountConsumed = 0;
       for (auto& result : consumerResult) {
          amountConsumed += result.get();
@@ -212,7 +213,7 @@ namespace test_performance {
       auto elapsedTimeNs = elapsedRun.ElapsedNs();
       auto elapsedTimeSec = elapsedTimeNs / (1000000000);
       std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
-      std::cout << "Average trandsaction: " << elapsedTimeNs / amountConsumed  << " ns" << std::endl;
+      std::cout << "Average transaction: " << elapsedTimeNs / amountConsumed  << " ns" << std::endl;
       std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
       std::cout << "Transation GByte/s: " << amountConsumed* data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;
    }
@@ -259,12 +260,12 @@ namespace test_performance {
          std::this_thread::sleep_for(1us);
       }
 
-      producerStop.store(true);
+      producerStop.store(true, std::memory_order_release);
       size_t amountProduced = 0;
       for (auto& result : producerResult) {
          amountProduced += result.get();
       }
-      consumerStop.store(true);
+      consumerStop.store(true, std::memory_order_release);
       size_t amountConsumed = 0;
       for (auto& result : consumerResult) {
          amountConsumed += result.get();
@@ -278,10 +279,75 @@ namespace test_performance {
       auto elapsedTimeNs = elapsedRun.ElapsedNs();
       auto elapsedTimeSec = elapsedTimeNs / (1000000000);
       std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
-      std::cout << "Average trandsaction: " << elapsedTimeNs / amountConsumed   << " ns" << std::endl;
+      std::cout << "Average transaction: " << elapsedTimeNs / amountConsumed   << " ns" << std::endl;
 
       std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
       std::cout << "Transation GByte/s: " << amountConsumed* data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;
    }
+
+   template<typename QType, typename QTypePair>
+   void RunSPMC(std::vector<QTypePair> queues, std::string data, const size_t timeToRunInSec) {
+      std::atomic<size_t> producerCount{0};
+      std::atomic<size_t> consumerCount{0};
+      std::atomic<bool> producerStop{false};
+      std::atomic<bool> consumerStop{false};
+
+      std::vector<queue_api::Receiver<QType>> receivers;
+      std::vector<queue_api::Sender<QType>> senders;
+
+      for (auto q : queues) {
+         receivers.push_back(std::get<queue_api::index::receiver>(q));
+         senders.push_back(std::get<queue_api::index::sender>(q));
+      }
+      const size_t numberConsumers = senders.size();
+      spmc::round_robin::Sender<QType> producer(senders);
+      std::vector<std::future<size_t>> producerResult;
+      const size_t numberProducers = 1;
+      producerResult.reserve(numberProducers);
+      producerResult.emplace_back(std::async(std::launch::async, PushUntil<decltype(producer)>, producer, data,
+                                             std::ref(producerCount), std::ref(producerStop)));
+
+      std::vector<std::future<size_t>> consumerResult;
+      consumerResult.reserve(receivers.size());
+      for (size_t i = 0; i < receivers.size(); ++i) {
+         auto consumer = receivers[i];
+         consumerResult.emplace_back(std::async(std::launch::async, GetUntil<decltype(consumer)>, receivers[i], data,
+                                                std::ref(consumerCount), std::ref(consumerStop)));
+      }
+
+      using namespace std::chrono_literals;
+      while (consumerCount.load() < numberConsumers && producerCount.load() < numberProducers) {
+         std::this_thread::sleep_for(1us);
+      }
+      StopWatch elapsedRun;
+      while (elapsedRun.ElapsedSec() < timeToRunInSec) {
+         std::this_thread::sleep_for(1us);
+      }
+
+      producerStop.store(true, std::memory_order_release);
+      size_t amountProduced = 0;
+      for (auto& result : producerResult) {
+         amountProduced += result.get();
+      }
+      consumerStop.store(true, std::memory_order_release);
+      size_t amountConsumed = 0;
+      for (auto& result : consumerResult) {
+         amountConsumed += result.get();
+      }
+
+      // amoundProduced >= amountConsumed
+      // amountProduced <= amountConsumed + 100
+      EXPECT_GE(amountProduced, amountConsumed) <<
+            "produced: " << amountProduced << ", consumed: " << amountConsumed  << ", capacity: " << producer.capacity();
+
+      auto elapsedTimeNs = elapsedRun.ElapsedNs();
+      auto elapsedTimeSec = elapsedTimeNs / (1000000000);
+      std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
+      std::cout << "Average transaction: " << elapsedTimeNs / amountConsumed   << " ns" << std::endl;
+
+      std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
+      std::cout << "Transation GByte/s: " << amountConsumed* data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;
+   }
+
 
 } // namespace performance_tests

@@ -37,16 +37,16 @@ IMPORTANT:
 // MPSC : Many Single Producers - Single Consumer
 namespace spmc {
    namespace round_robin {
-      // Use case: Many producers, one consumer.
-      // Instead of using a MPMC queue you can use the MPSC
-      //                          (Many Single Producer - One Single Consumer) queue.
+      // Use case: One Producer Many Consumers  
+      // Instead of using a MPMC queue you can use the SPMC
+      //                          (One Single Consumer) - Many Single Producer (spsc queues)- 
       //
-      // The Consumer will round-robin fetch attempts in a fair scheduling policy
+      // The Producer will round-robin fetch attempts in a fair scheduling policy
       // the lock-free base type will typcially make this a much faster choice than using the mutex
       // protected MPSC
       //
       // WARNING: The same constraints as SPSC are in place for this queue. Only ONE thread may
-      // act as the consumer
+      // act as the producer
       template<typename QType>
       class Sender : public ::round_robin::API<QType, queue_api::Sender<QType>> {
        public:
