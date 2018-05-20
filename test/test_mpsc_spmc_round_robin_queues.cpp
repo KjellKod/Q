@@ -15,7 +15,6 @@
 #include "q/spsc_flexible_circular_fifo.hpp"
 #include "q/q_api.hpp"
 
-
 TEST(MPSC_SPMC, CreateOneQueue_MPSC) {
    using element = std::string;
    using qtype = spsc::flexible::circular_fifo<element>;
@@ -35,7 +34,6 @@ TEST(MPSC_SPMC, CreateOneQueue_MPSC) {
    EXPECT_EQ(0, consumer.size());
    EXPECT_TRUE(consumer.lock_free());
 }
-
 
 TEST(MPSC_SPMC, CreateManyQueues) {
    using element = std::string;
@@ -144,7 +142,6 @@ TEST(MPSC_SPMC, size) {
    EXPECT_EQ(0, consumer.capacity_free());
 }
 
-
 TEST(MPSC_SPMC, pop) {
    using element = std::string;
    using qtype = spsc::flexible::circular_fifo<element>;
@@ -180,7 +177,6 @@ TEST(MPSC_SPMC, pop) {
    EXPECT_EQ("", recv);
 }
 
-
 TEST(MPSC_SPMC, usage) {
    using element = std::string;
    using qtype = spsc::flexible::circular_fifo<element>;
@@ -203,8 +199,6 @@ TEST(MPSC_SPMC, usage) {
    EXPECT_EQ(100, consumer.usage());
 }
 
-
-
 TEST(MPSC_SPMC, CreateOneQueue_SPMC) {
    using element = std::string;
    using qtype = spsc::flexible::circular_fifo<element>;
@@ -224,7 +218,6 @@ TEST(MPSC_SPMC, CreateOneQueue_SPMC) {
    EXPECT_TRUE(producer.lock_free());
    EXPECT_TRUE(producer.push(e));
 }
-
 
 TEST(MPSC_SPMC, CreateManyQueues_SPMC) {
    using element = std::string;
@@ -246,7 +239,6 @@ TEST(MPSC_SPMC, CreateManyQueues_SPMC) {
    EXPECT_EQ(kSizeTotal, consumer.capacity());
    EXPECT_EQ(kSizeTotal, consumer.capacity_free());
 }
-
 
 TEST(MPSC_SPMC, push_SPMC) {
    using element = std::string;
