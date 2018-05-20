@@ -17,8 +17,8 @@
 * 1. It is a "fair" scheduling in that each queue gets the same opportunity to push an item through.
 * 2. Each queue has FIFO guarantees.
 * 3. Between the queues there is no FIFO guarantee
-* 4. A producer SPSC queue that is congested will have items that takes longer time to go through than a SPSC queue 
-*    that is not congested. The Consumer pops each queue in a round-robin manner.
+* 4. A producer SPSC queue that is congested will have items that takes longer time to go through than a 
+*    SPSC queue that is not congested. The Consumer pops each queue in a round-robin manner.
 * 5. If there is no item available in the 'current' queue the POP(..) attempt will go to the next
 *    queue until at most all queues are visited once.
 */
