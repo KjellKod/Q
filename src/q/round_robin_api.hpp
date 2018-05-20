@@ -125,7 +125,6 @@ namespace round_robin {
       return used;
    }
 
-
    template<typename QType, typename QueueUsageApi>
    bool API<QType, QueueUsageApi>::lock_free() const {
       bool lockless = true;
