@@ -229,7 +229,7 @@ namespace test_performance {
       std::vector<queue_api::Receiver<QType>> receivers;
       std::vector<queue_api::Sender<QType>> senders;
 
-      for (auto q : queues) {
+      for (auto& q : queues) {
          receivers.push_back(std::get<queue_api::index::receiver>(q));
          senders.push_back(std::get<queue_api::index::sender>(q));
       }
@@ -295,7 +295,7 @@ namespace test_performance {
       std::vector<queue_api::Receiver<QType>> receivers;
       std::vector<queue_api::Sender<QType>> senders;
 
-      for (auto q : queues) {
+      for (auto& q : queues) {
          receivers.push_back(std::get<queue_api::index::receiver>(q));
          senders.push_back(std::get<queue_api::index::sender>(q));
       }

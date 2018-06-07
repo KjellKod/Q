@@ -75,7 +75,7 @@ namespace round_robin {
    template<typename QType, typename QueueUsageApi>
    bool API<QType, QueueUsageApi>::empty() const {
       bool isempty = true;
-      for (auto r : queues_) {
+      for (const auto& r : queues_) {
          isempty = isempty && r.empty();
       }
       return isempty;
@@ -84,7 +84,7 @@ namespace round_robin {
    template<typename QType, typename QueueUsageApi>
    bool API<QType, QueueUsageApi>::full() const {
       bool isfull = true;
-      for (auto r : queues_) {
+      for (const auto& r : queues_) {
          isfull = isfull && r.full();
       }
       return isfull;
@@ -93,7 +93,7 @@ namespace round_robin {
    template<typename QType, typename QueueUsageApi>
    size_t API<QType, QueueUsageApi>::capacity() const {
       size_t max = 0;
-      for (auto r : queues_) {
+      for (const auto& r : queues_) {
          max += r.capacity();
       }
       return max;
@@ -102,7 +102,7 @@ namespace round_robin {
    template<typename QType, typename QueueUsageApi>
    size_t API<QType, QueueUsageApi>::capacity_free() const {
       size_t empty = 0;
-      for (auto r : queues_) {
+      for (const auto& r : queues_) {
          empty += r.capacity_free();
       }
       return empty;
@@ -111,7 +111,7 @@ namespace round_robin {
    template<typename QType, typename QueueUsageApi>
    size_t API<QType, QueueUsageApi>::usage() const {
       size_t percent_used = 0;
-      for (auto r : queues_) {
+      for (const auto& r : queues_) {
          percent_used += r.usage();
       }
       return (percent_used / queues_.size());
@@ -120,7 +120,7 @@ namespace round_robin {
    template<typename QType, typename QueueUsageApi>
    size_t API<QType, QueueUsageApi>::size() const {
       size_t used = 0;
-      for (auto r : queues_) {
+      for (const auto& r : queues_) {
          used += r.size();
       }
       return used;
@@ -130,7 +130,7 @@ namespace round_robin {
    template<typename QType, typename QueueUsageApi>
    bool API<QType, QueueUsageApi>::lock_free() const {
       bool lockless = true;
-      for (auto r : queues_) {
+      for (const auto& r : queues_) {
          lockless = lockless && r.lock_free();
       }
       return lockless;
