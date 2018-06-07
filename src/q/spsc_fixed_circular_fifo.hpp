@@ -58,6 +58,8 @@ namespace spsc {
          alignas(64) std::atomic <size_t>  tail_;
          cache_line  padhead_;
          alignas(64) std::atomic<size_t>   head_; // head(output) index
+         cache_line padend_;
+
       };
 
 

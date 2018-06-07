@@ -68,6 +68,7 @@ namespace spsc {
          std::atomic <size_t>  tail_;
          cache_line  padhead_;
          std::atomic<size_t>   head_; // head(output) index
+         cache_line padend_;
       };
 
 
