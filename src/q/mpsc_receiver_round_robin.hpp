@@ -1,6 +1,3 @@
-#pragma once
-
-
 /*
 * Not any company's property but Public-Domain
 * Do with source-code as you will. No requirement to keep this
@@ -10,22 +7,22 @@
 * and I take no responsibility for this code and any problems you
 * might get if using it.
 * First published at: github.com/kjellkod/Q
-*/
-
-/*
-MPSC - Multiple Producers - Sincle Consumer.
-The queue consists of a set of SPSC queues.
-Each (P)roducer has a dedicated queue
-The (C)onsumer pops the queues in a round-robin manner.
-
-IMPORTANT:
-1. It is a "fair" scheduling in that each queue gets the same opportunity to push an item through.
-2. Each queue has FIFO guarantees.
-3. Between the queues there is no FIFO guarantee
-4. A producer SPSC queue that is congested will have items that takes longer time to go through than a SPSC queue that is not congested. The Consumer pops each queue in a round-robin manner.
-5. If there is no item available in the 'current' queue the POP(..) attempt will go to the next
+*
+* MPSC - Multiple Producers - Sincle Consumer.
+* The queue consists of a set of SPSC queues.
+* Each (P)roducer has a dedicated queue
+* The (C)onsumer pops the queues in a round-robin manner.
+*
+* IMPORTANT:
+* 1. It is a "fair" scheduling in that each queue gets the same opportunity to push an item through.
+* 2. Each queue has FIFO guarantees.
+* 3. Between the queues there is no FIFO guarantee
+* 4. A producer SPSC queue that is congested will have items that takes longer time to go through than a SPSC queue that is not congested. The Consumer pops each queue in a round-robin manner.
+* 5. If there is no item available in the 'current' queue the POP(..) attempt will go to the next
    queue until at most all queues are visited once.
 */
+
+#pragma once
 
 #include "q/spsc_flexible_circular_fifo.hpp"
 #include "q/q_api.hpp"
@@ -82,7 +79,6 @@ namespace mpsc {
          }
          return result;
       }
-
 
       template<typename QType>
       template<typename Element>
