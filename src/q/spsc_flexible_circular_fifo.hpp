@@ -10,6 +10,9 @@
 * Code & platform dependent issues with it was originally
 * published at http://www.kjellkod.cc/threadsafecircularqueue
 * 2012-16-19  @author Kjell Hedström, hedstrom@kjellkod.cc
+* First approach for this was in 2007 I think, a significant update happend in 2009. 
+* I also wrote an article about it a few years later: 
+* https://kjellkod.wordpress.com/2012/11/28/c-debt-paid-in-full-wait-free-lock-free-queue/
 *
 * Modified from KjellKod's code at:
 * https://github.com/KjellKod/lock-free-wait-free-circularfifo
