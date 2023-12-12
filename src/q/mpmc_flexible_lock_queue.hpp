@@ -170,6 +170,6 @@ namespace mpmc {
       if (kMaxSize == kUnlimited) {
          return false;
       }
-      return (queue_.size() >= kMaxSize);
+      return (queue_.size() >= static_cast<size_t>(kMaxSize));
    }
 }  // namespace mpmc

@@ -174,9 +174,9 @@ TEST(Queue, CircularQueue_AddOne) {
 
 template <typename Prod, typename Cons>
 void AddTillFullRemoveTillEmpty(Prod& prod, Cons& cons) {
-   int size = 0;
-   int free = prod._qref.capacity();
-   int loopSize = 2;
+   size_t size = 0;
+   size_t free = prod._qref.capacity();
+   size_t loopSize = 2;
 
    EXPECT_EQ(0, prod.usage());
    for (size_t i = 0; i < loopSize; ++i) {

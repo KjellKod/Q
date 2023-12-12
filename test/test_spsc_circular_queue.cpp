@@ -80,7 +80,7 @@ TEST(SPCS_CircularQueue, AddRemoveOne) {
 template <typename Q>
 void LoopTillBeginning(Q& q) {
    std::string t = "test";
-   for (int i = 0; i < 3; ++i) {
+   for (auto i = 0; i < 3; ++i) {
 
       EXPECT_TRUE(q.push(t));
       EXPECT_EQ(1, q.size());
@@ -143,9 +143,9 @@ TEST(SPCS_CircularQueue, Full) {
 
 template <typename Q>
 void AddTillFullRemoveTillEmpty(Q& q) {
-   int size = 0;
-   int free = q.capacity();
-   const int kMax = free;
+   size_t size = 0;
+   size_t free = q.capacity();
+   const size_t kMax = free;
    for (size_t i = 0; i < kMax * 5; ++i) {
       while (!q.full()) {
          std::string number = to_string(i);
