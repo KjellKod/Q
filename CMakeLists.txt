@@ -16,6 +16,8 @@ if ( NOT VERSION )
    execute_process(COMMAND bash "-c" "git rev-list --branches HEAD | wc -l | tr -d ' ' | tr -d '\n'" OUTPUT_VARIABLE GIT_VERSION WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 
+message( STATUS "Compiler: ${CMAKE_C_COMPILER}")
+
 set(MINOR_VERSION 1)
 math(EXPR VERSION-BASE ${GIT_VERSION}/255)
 math(EXPR VERSION-REMAINDER ${GIT_VERSION}%255)
@@ -42,7 +44,7 @@ endif()
 # change to c++20 in version 2.0
 if (MSVC)
 else()
-   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -Wall -Wunused -stdlib=libc++ -std=c++20  -pthread -D_GLIBCXX_USE_NANOSLEEP")
+   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -Wall -Wunused -std=c++2a  -pthread -D_GLIBCXX_USE_NANOSLEEP")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
