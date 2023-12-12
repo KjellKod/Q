@@ -25,17 +25,16 @@
 
 #pragma once
 
-#include <queue>
-#include <mutex>
-#include <exception>
-#include <condition_variable>
 #include <chrono>
-
+#include <condition_variable>
+#include <exception>
+#include <mutex>
+#include <queue>
 
 /** Multiple producer, multiple consumer (mpmc) thread safe queue
 * protected by mutex. Since 'return by reference' is used this queue won't throw */
 namespace mpmc {
-   template<typename T>
+   template <typename T>
    class flexible_lock_queue {
       static const int kUnlimited = -1;
       static const int kSmallDefault = 100;
@@ -43,15 +42,14 @@ namespace mpmc {
       std::queue<T> queue_;
       mutable std::mutex m_;
       std::condition_variable data_cond_;
-   
+
       flexible_lock_queue& operator=(const flexible_lock_queue&) = delete;
       flexible_lock_queue(const flexible_lock_queue& other) = delete;
 
       bool internal_full() const;
       size_t internal_capacity() const;
 
-    public:
-
+     public:
       // -1 : unbounded
       // 0 ... N : bounded (0 is silly)
       flexible_lock_queue(const int maxSize = kSmallDefault);
@@ -66,22 +64,19 @@ namespace mpmc {
       size_t capacity() const;
       size_t capacity_free() const;
       size_t usage() const;
-
    };
 
-
-
    // maxSize of -1 equals unlimited size
-   template<typename T>
-   flexible_lock_queue<T>::flexible_lock_queue(int maxSize)
-      : kMaxSize (maxSize){}
+   template <typename T>
+   flexible_lock_queue<T>::flexible_lock_queue(int maxSize) :
+       kMaxSize(maxSize) {}
 
-   template<typename T>
+   template <typename T>
    bool flexible_lock_queue<T>::lock_free() const {
       return false;
    }
 
-   template<typename T>
+   template <typename T>
    bool flexible_lock_queue<T>::push(T& item) {
       {
          std::lock_guard<std::mutex> lock(m_);
@@ -89,13 +84,12 @@ namespace mpmc {
             return false;
          }
          queue_.push(std::move(item));
-      } // lock_guard off
+      }  // lock_guard off
       data_cond_.notify_one();
       return true;
    }
 
-
-   template<typename T>
+   template <typename T>
    bool flexible_lock_queue<T>::pop(T& popped_item) {
       std::lock_guard<std::mutex> lock(m_);
       if (queue_.empty()) {
@@ -106,7 +100,7 @@ namespace mpmc {
       return true;
    }
 
-   template<typename T>
+   template <typename T>
    bool flexible_lock_queue<T>::wait_and_pop(T& popped_item, std::chrono::milliseconds max_wait) {
       std::unique_lock<std::mutex> lock(m_);
       auto const timeout = std::chrono::steady_clock::now() + max_wait;
@@ -126,44 +120,44 @@ namespace mpmc {
       return true;
    }
 
-   template<typename T>
+   template <typename T>
    bool flexible_lock_queue<T>::full() {
       std::lock_guard<std::mutex> lock(m_);
       return internal_full();
    }
 
-   template<typename T>
+   template <typename T>
    bool flexible_lock_queue<T>::empty() const {
       std::lock_guard<std::mutex> lock(m_);
       return queue_.empty();
    }
 
-   template<typename T>
+   template <typename T>
    size_t flexible_lock_queue<T>::size() const {
       std::lock_guard<std::mutex> lock(m_);
       return queue_.size();
    }
 
-   template<typename T>
+   template <typename T>
    size_t flexible_lock_queue<T>::capacity() const {
       std::lock_guard<std::mutex> lock(m_);
       return internal_capacity();
    }
 
-   template<typename T>
+   template <typename T>
    size_t flexible_lock_queue<T>::capacity_free() const {
       std::lock_guard<std::mutex> lock(m_);
       return internal_capacity() - queue_.size();
    }
 
-   template<typename T>
+   template <typename T>
    size_t flexible_lock_queue<T>::usage() const {
       std::lock_guard<std::mutex> lock(m_);
       return (100 * queue_.size() / internal_capacity());
    }
 
    // private
-   template<typename T>
+   template <typename T>
    size_t flexible_lock_queue<T>::internal_capacity() const {
       if (kMaxSize == kUnlimited) {
          return std::numeric_limits<unsigned int>::max();
@@ -171,13 +165,11 @@ namespace mpmc {
       return kMaxSize;
    }
 
-
-   template<typename T>
+   template <typename T>
    bool flexible_lock_queue<T>::internal_full() const {
       if (kMaxSize == kUnlimited) {
          return false;
       }
       return (queue_.size() >= kMaxSize);
    }
-} // mpmc
-
+}  // namespace mpmc

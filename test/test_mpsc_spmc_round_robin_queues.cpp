@@ -11,9 +11,9 @@
 #include <gtest/gtest.h>
 #include <string>
 #include "q/mpsc_receiver_round_robin.hpp"
+#include "q/q_api.hpp"
 #include "q/spmc_sender_round_robin.hpp"
 #include "q/spsc_flexible_circular_fifo.hpp"
-#include "q/q_api.hpp"
 
 TEST(MPSC_SPMC, CreateOneQueue_MPSC) {
    using element = std::string;
@@ -45,7 +45,7 @@ TEST(MPSC_SPMC, CreateManyQueues) {
    constexpr size_t kSizeTotal = kSize * kSize;
    std::vector<queue_api::Sender<qtype>> senders;
    std::vector<queue_api::Receiver<qtype>> receivers;
-   for ( size_t i = 0; i < 10; ++i) {
+   for (size_t i = 0; i < 10; ++i) {
       auto queue = queue_api::CreateQueue<qtype>(10);
       senders.push_back(std::get<senderID>(queue));
       receivers.push_back(std::get<receiverID>(queue));
@@ -229,7 +229,7 @@ TEST(MPSC_SPMC, CreateManyQueues_SPMC) {
    constexpr size_t kSizeTotal = kSize * kSize;
    std::vector<queue_api::Sender<qtype>> senders;
    std::vector<queue_api::Receiver<qtype>> receivers;
-   for ( size_t i = 0; i < 10; ++i) {
+   for (size_t i = 0; i < 10; ++i) {
       auto queue = queue_api::CreateQueue<qtype>(10);
       senders.push_back(std::get<senderID>(queue));
       receivers.push_back(std::get<receiverID>(queue));

@@ -22,8 +22,8 @@ namespace test_helper {
       using clock = std::chrono::steady_clock;
       clock::time_point start_;
 
-      StopWatch() : start_(clock::now())
-      {}
+      StopWatch() :
+          start_(clock::now()) {}
       ~StopWatch() = default;
 
       uint64_t ElapsedSec() const {
@@ -36,4 +36,4 @@ namespace test_helper {
          return std::chrono::duration_cast<nanoseconds>(clock::now() - start_).count();
       }
    };
-}
+}  // namespace test_helper

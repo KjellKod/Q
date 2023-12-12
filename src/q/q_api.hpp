@@ -15,9 +15,10 @@
 */
 
 #pragma once
-#include <tuple>
-#include <memory>
 #include <chrono>
+#include <memory>
+#include <tuple>
+#include <thread>
 
 namespace queue_api {
 
@@ -27,7 +28,7 @@ namespace queue_api {
    //
    // std::decltype returns the reference type (used with declaval)
    // http://en.cppreference.com/w/cpp/language/decltype
-   // namespace sfinae { 
+   // namespace sfinae {
    //    template <typename T, typename Element>
    //    struct wait_and_pop { // Detect if the class has function wait_and_pop(Element&, milliseconds)
    //       using Yes =  char;
@@ -46,22 +47,19 @@ namespace queue_api {
    //    };
    // } // sfinae
 
-
-
-
-// Base Queue API without pop() and push()
-// It should be mentioned the thinking of what goes where
-// it is a "controversy" whether what is tail and what is head
-// http://en.wikipedia.org/wiki/FIFO#Head_or_tail_first
-// This implementation follows "pop on head", "push on tail"
-   template<typename QType>
+   // Base Queue API without pop() and push()
+   // It should be mentioned the thinking of what goes where
+   // it is a "controversy" whether what is tail and what is head
+   // http://en.wikipedia.org/wiki/FIFO#Head_or_tail_first
+   // This implementation follows "pop on head", "push on tail"
+   template <typename QType>
    struct Base {
-      Base(std::shared_ptr<QType> q)
-         : _q(q)
-         , _qref(*(q.get())) {
+      Base(std::shared_ptr<QType> q) :
+          _q(q),
+          _qref(*(q.get())) {
       }
 
-      bool empty() const { return _qref.empty();}
+      bool empty() const { return _qref.empty(); }
       bool full() const { return _qref.full(); }
       size_t capacity() const { return _qref.capacity(); }
       size_t capacity_free() const { return _qref.capacity_free(); }
@@ -73,23 +71,19 @@ namespace queue_api {
       QType& _qref;
    };
 
-
-
-// struct with: push() + base Queue API
-   template<typename QType>
+   // struct with: push() + base Queue API
+   template <typename QType>
    struct Sender : public Base<QType> {
-    public:
-      Sender(std::shared_ptr<QType> q): Base<QType>(q) {}
+     public:
+      Sender(std::shared_ptr<QType> q) :
+          Base<QType>(q) {}
       virtual ~Sender() = default;
 
-      template<typename Element>
+      template <typename Element>
       bool push(Element& item) { return Base<QType>::_qref.push(item); }
    };
 
-
-
-
-   namespace sfinae { 
+   namespace sfinae {
       // SFINAE: Substitution Failure Is Not An Error
       // Decide at compile time what function signature to use
       // 1. If 'wait_and_pop' exists in the queue it uses that
@@ -113,57 +107,47 @@ namespace queue_api {
       }
 
       template <typename T, typename Element>
-      auto match_call(T& t, Element& e, std::chrono::milliseconds ms, int) -> decltype( t.wait_and_pop(e, ms) )
-      { return t.wait_and_pop(e, ms); }
+      auto match_call(T& t, Element& e, std::chrono::milliseconds ms, int) -> decltype(t.wait_and_pop(e, ms)) {
+         return t.wait_and_pop(e, ms);
+      }
 
       template <typename T, typename Element>
-      auto match_call(T& t, Element& e, std::chrono::milliseconds ms, long) -> decltype( wrapper(t, e, ms) )
-      { return wrapper(t, e, ms); }
+      auto match_call(T& t, Element& e, std::chrono::milliseconds ms, long) -> decltype(wrapper(t, e, ms)) {
+         return wrapper(t, e, ms);
+      }
 
       template <typename T, typename Element>
-      int wait_and_pop (T& t, Element& e, std::chrono::milliseconds ms) {
+      int wait_and_pop(T& t, Element& e, std::chrono::milliseconds ms) {
          // SFINAE magic happens with the '0'.
          // For the matching call the '0' will be typed to int.
          // For non-matching call it will be typed to long
          return match_call(t, e, ms, 0);
       }
-   }
+   }  // namespace sfinae
 
-
-
-
-// struct with : pop() + base Queue API
-   template<typename QType>
+   // struct with : pop() + base Queue API
+   template <typename QType>
    struct Receiver : public Base<QType> {
-    public:
-      Receiver(std::shared_ptr<QType> q) :  Base<QType>(q) {}
+     public:
+      Receiver(std::shared_ptr<QType> q) :
+          Base<QType>(q) {}
       virtual ~Receiver() = default;
 
-      template<typename Element>
+      template <typename Element>
       bool pop(Element& item) { return Base<QType>::_qref.pop(item); }
 
-      template<typename Element>
+      template <typename Element>
       bool wait_and_pop(Element& item, const std::chrono::milliseconds wait_ms) {
          return sfinae::wait_and_pop(Base<QType>::_qref, item, wait_ms);
       }
    };
 
-
-
-
-   template<typename QType, typename... Args>
-   std::pair<Sender<QType>, Receiver<QType>> CreateQueue(Args&& ... args) {
-      std::shared_ptr<QType> ptr = std::make_shared<QType>(std::forward< Args >(args)...);
-      return std::make_pair(Sender<QType> {ptr}, Receiver<QType> {ptr});
+   template <typename QType, typename... Args>
+   std::pair<Sender<QType>, Receiver<QType>> CreateQueue(Args&&... args) {
+      std::shared_ptr<QType> ptr = std::make_shared<QType>(std::forward<Args>(args)...);
+      return std::make_pair(Sender<QType>{ptr}, Receiver<QType>{ptr});
    }
 
-   enum index {sender = 0, receiver = 1};
-} // queue_api
-
-
-
-
-
-
-
-
+   enum index { sender = 0,
+                receiver = 1 };
+}  // namespace queue_api
