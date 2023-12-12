@@ -10,16 +10,15 @@
 * Originally published at: https://github.com/KjellKod/Q
 */
 #include <gtest/gtest.h>
-#include "q/spsc.hpp"
 #include <string>
+#include "q/spsc.hpp"
 
 using namespace std;
 using FlexibleQ = spsc::flexible::circular_fifo<string>;
 using FixedQ = spsc::fixed::circular_fifo<string, 10>;
 using FixedSmallQ = spsc::fixed::circular_fifo<string, 3>;
 
-
-template<typename Q>
+template <typename Q>
 void Initialization(Q& q) {
    using namespace spsc;
    using namespace std;
@@ -31,7 +30,6 @@ void Initialization(Q& q) {
    EXPECT_EQ(0, q.size());
 }
 
-
 TEST(SPCS_CircularQueue, Initialization) {
    FlexibleQ dQ{10};
    FixedQ fQ{};
@@ -39,9 +37,7 @@ TEST(SPCS_CircularQueue, Initialization) {
    Initialization(dQ);
 }
 
-
-
-template<typename Q>
+template <typename Q>
 void AddOne(Q& q) {
    std::string arg = "test";
    EXPECT_TRUE(q.push(arg));
@@ -59,9 +55,7 @@ TEST(SPCS_CircularQueue, AddOne) {
    AddOne(dQ);
 }
 
-
-
-template<typename Q>
+template <typename Q>
 void AddRemoveOne(Q& q) {
    std::string t = "test";
    EXPECT_TRUE(q.push(t));
@@ -83,8 +77,7 @@ TEST(SPCS_CircularQueue, AddRemoveOne) {
    AddRemoveOne(dQ);
 }
 
-
-template<typename Q>
+template <typename Q>
 void LoopTillBeginning(Q& q) {
    std::string t = "test";
    for (int i = 0; i < 3; ++i) {
@@ -120,7 +113,6 @@ void LoopTillBeginning(Q& q) {
    EXPECT_EQ(0, q.head());
 }
 
-
 TEST(SPCS_CircularQueue, LoopTillBeginning) {
    FlexibleQ dQ{3};
    FixedSmallQ fQ{};
@@ -128,8 +120,7 @@ TEST(SPCS_CircularQueue, LoopTillBeginning) {
    LoopTillBeginning(dQ);
 }
 
-
-template<typename Q>
+template <typename Q>
 void Full(Q& q) {
    for (size_t i = 0; i < 10; ++i) {
       EXPECT_FALSE(q.full());
@@ -150,18 +141,19 @@ TEST(SPCS_CircularQueue, Full) {
    Full(dQ);
 }
 
-template<typename Q>
+template <typename Q>
 void AddTillFullRemoveTillEmpty(Q& q) {
    int size = 0;
    int free = q.capacity();
    const int kMax = free;
-   for (size_t i = 0; i < kMax*5; ++i) {
+   for (size_t i = 0; i < kMax * 5; ++i) {
       while (!q.full()) {
-        std::string number = to_string(i);
-        q.push(number);
+         std::string number = to_string(i);
+         q.push(number);
          ++size;
          --free;
-         EXPECT_EQ(size, q.size());;
+         EXPECT_EQ(size, q.size());
+         ;
       }
       EXPECT_TRUE(q.full());
       EXPECT_EQ(q.size(), q.capacity());
@@ -182,15 +174,3 @@ TEST(SPCS_CircularQueue, AddTillFullRemoveTillEmpty) {
    AddTillFullRemoveTillEmpty(fQ);
    AddTillFullRemoveTillEmpty(dQ);
 }
-
-
-
-
-
-
-
-
-
-
-
-

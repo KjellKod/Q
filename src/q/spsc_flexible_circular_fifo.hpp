@@ -31,16 +31,15 @@
 
 namespace spsc {
    namespace flexible {
-      template<typename Element>
+      template <typename Element>
       class circular_fifo {
-       public:
-
-         explicit circular_fifo(const size_t size)
-            : kSize(size)
-            , kCapacity(kSize + 1)
-            , array_(kCapacity)
-            , tail_(0)
-            , head_(0) {
+        public:
+         explicit circular_fifo(const size_t size) :
+             kSize(size),
+             kCapacity(kSize + 1),
+             array_(kCapacity),
+             tail_(0),
+             head_(0) {
          }
 
          virtual ~circular_fifo() {}
@@ -57,8 +56,7 @@ namespace spsc {
          size_t tail() const { return tail_.load(); }
          size_t head() const { return head_.load(); }
 
-
-       private:
+        private:
          typedef char cache_line[64];
          size_t increment(size_t idx) const { return (idx + 1) % kCapacity; }
          const size_t kSize;
@@ -68,14 +66,13 @@ namespace spsc {
          std::vector<Element> array_;
 
          cache_line padtail_;
-         std::atomic <size_t>  tail_;
-         cache_line  padhead_;
-         std::atomic<size_t>   head_; // head(output) index
+         std::atomic<size_t> tail_;
+         cache_line padhead_;
+         std::atomic<size_t> head_;  // head(output) index
          cache_line padend_;
       };
 
-
-      template<typename Element>
+      template <typename Element>
       bool circular_fifo<Element>::push(Element& item) {
          const auto currenttail_ = tail_.load(std::memory_order_relaxed);
          const auto nexttail_ = increment(currenttail_);
@@ -86,17 +83,16 @@ namespace spsc {
             return true;
          }
 
-         return false; // full queue
+         return false;  // full queue
       }
 
-
-// Pop by Consumer can only update the head (load with relaxed, store with release)
-//     the tail must be accessed with at least aquire
-      template<typename Element>
+      // Pop by Consumer can only update the head (load with relaxed, store with release)
+      //     the tail must be accessed with at least aquire
+      template <typename Element>
       bool circular_fifo<Element>::pop(Element& item) {
          const auto currenthead_ = head_.load(std::memory_order_relaxed);
          if (currenthead_ == tail_.load(std::memory_order_acquire)) {
-            return false; // empty queue
+            return false;  // empty queue
          }
 
          item = std::move(array_[currenthead_]);
@@ -104,44 +100,43 @@ namespace spsc {
          return true;
       }
 
-      template<typename Element>
+      template <typename Element>
       bool circular_fifo<Element>::empty() const {
          // snapshot with acceptance of that this comparison operation is not atomic
          return (head_.load(std::memory_order_relaxed) == tail_.load(std::memory_order_relaxed));
       }
 
-
-// snapshot with acceptance that this comparison is not atomic
-      template<typename Element>
+      // snapshot with acceptance that this comparison is not atomic
+      template <typename Element>
       bool circular_fifo<Element>::full() const {
-         const auto nexttail_ = increment(tail_.load(std::memory_order_relaxed)); // aquire, we dont know who call
+         const auto nexttail_ = increment(tail_.load(std::memory_order_relaxed));  // aquire, we dont know who call
          return (nexttail_ == head_.load(std::memory_order_relaxed));
       }
 
-
-      template<typename Element>
+      template <typename Element>
       bool circular_fifo<Element>::lock_free() const {
          return std::atomic<size_t>{}.is_lock_free();
       }
 
-      template<typename Element>
+      template <typename Element>
       size_t circular_fifo<Element>::size() const {
          return ((tail_.load() - head_.load() + kCapacity) % kCapacity);
       }
 
-      template<typename Element>
+      template <typename Element>
       size_t circular_fifo<Element>::capacity_free() const {
          return (kCapacity - size() - 1);
       }
 
-      template<typename Element>
+      template <typename Element>
       size_t circular_fifo<Element>::capacity() const {
          return kSize;
       }
 
-      template<typename Element>
+      // percent usage
+      template <typename Element>
       size_t circular_fifo<Element>::usage() const {
-         return (100 * size()/kSize);
+         return (100 * size() / kSize);
       }
-   } // flexible
-} // spsc
+   }  // namespace flexible
+}  // namespace spsc

@@ -25,11 +25,11 @@
 *    queue until at most all queues are visited once.
 */
 
-#pragma once 
+#pragma once
 
-#include "q/q_api.hpp"
-#include <vector>
 #include <utility>
+#include <vector>
+#include "q/q_api.hpp"
 
 namespace round_robin {
    // Use case: Many producers, one consumer.(each with dedicated queue)
@@ -37,9 +37,9 @@ namespace round_robin {
    //
    // WARNING: The same constraints as SPSC are in place for the round robin queues.
    // Only ONE thread may touch each queue's end API (receiver side, or sender side)
-   template<typename QType, typename QueueUsageApi>
+   template <typename QType, typename QueueUsageApi>
    class API {
-    public:
+     public:
       API(std::vector<QueueUsageApi> queues);
       virtual ~API() = default;
 
@@ -52,26 +52,23 @@ namespace round_robin {
       size_t size() const;
       bool lock_free() const;
 
-
-    protected:
+     protected:
       std::vector<QueueUsageApi> queues_;
       size_t current_;
    };
 
-
-   template<typename QType, typename QueueUsageApi>
-   API<QType, QueueUsageApi>::API(std::vector<QueueUsageApi> queues)
-      : queues_(queues)
-      , current_(0) {
-
+   template <typename QType, typename QueueUsageApi>
+   API<QType, QueueUsageApi>::API(std::vector<QueueUsageApi> queues) :
+       queues_(queues),
+       current_(0) {
    }
 
-   template<typename QType, typename QueueUsageApi>
+   template <typename QType, typename QueueUsageApi>
    size_t API<QType, QueueUsageApi>::increment(size_t idx) const {
       return (idx + 1) % queues_.size();
    }
 
-   template<typename QType, typename QueueUsageApi>
+   template <typename QType, typename QueueUsageApi>
    bool API<QType, QueueUsageApi>::empty() const {
       bool isempty = true;
       for (const auto& r : queues_) {
@@ -80,7 +77,7 @@ namespace round_robin {
       return isempty;
    }
 
-   template<typename QType, typename QueueUsageApi>
+   template <typename QType, typename QueueUsageApi>
    bool API<QType, QueueUsageApi>::full() const {
       bool isfull = true;
       for (const auto& r : queues_) {
@@ -89,7 +86,7 @@ namespace round_robin {
       return isfull;
    }
 
-   template<typename QType, typename QueueUsageApi>
+   template <typename QType, typename QueueUsageApi>
    size_t API<QType, QueueUsageApi>::capacity() const {
       size_t max = 0;
       for (const auto& r : queues_) {
@@ -98,7 +95,7 @@ namespace round_robin {
       return max;
    }
 
-   template<typename QType, typename QueueUsageApi>
+   template <typename QType, typename QueueUsageApi>
    size_t API<QType, QueueUsageApi>::capacity_free() const {
       size_t empty = 0;
       for (const auto& r : queues_) {
@@ -107,7 +104,7 @@ namespace round_robin {
       return empty;
    }
 
-   template<typename QType, typename QueueUsageApi>
+   template <typename QType, typename QueueUsageApi>
    size_t API<QType, QueueUsageApi>::usage() const {
       size_t percent_used = 0;
       for (const auto& r : queues_) {
@@ -116,7 +113,7 @@ namespace round_robin {
       return (percent_used / queues_.size());
    }
 
-   template<typename QType, typename QueueUsageApi>
+   template <typename QType, typename QueueUsageApi>
    size_t API<QType, QueueUsageApi>::size() const {
       size_t used = 0;
       for (const auto& r : queues_) {
@@ -125,7 +122,7 @@ namespace round_robin {
       return used;
    }
 
-   template<typename QType, typename QueueUsageApi>
+   template <typename QType, typename QueueUsageApi>
    bool API<QType, QueueUsageApi>::lock_free() const {
       bool lockless = true;
       for (const auto& r : queues_) {
@@ -133,4 +130,4 @@ namespace round_robin {
       }
       return lockless;
    }
-} // round_robin?API
+}  // namespace round_robin

@@ -9,9 +9,9 @@
 * Originally published at: https://github.com/KjellKod/Q
 */
 #include <gtest/gtest.h>
-#include <q/spsc.hpp>
 #include <q/mpmc.hpp>
 #include <q/q_api.hpp>
+#include <q/spsc.hpp>
 #include <string>
 #include "test_helper.hpp"
 
@@ -22,10 +22,8 @@ using FixedQ = spsc::fixed::circular_fifo<Type, 100>;
 using FixedSmallQ = spsc::fixed::circular_fifo<Type, 2>;
 using LockedQ = mpmc::flexible_lock_queue<Type>;
 
-
-
-template<typename Prod, typename Cons>
-void ProdConsInitialization(Prod& prod, Cons& cons ) {
+template <typename Prod, typename Cons>
+void ProdConsInitialization(Prod& prod, Cons& cons) {
    EXPECT_TRUE(prod.empty());
    EXPECT_TRUE(cons.empty());
 
@@ -34,7 +32,6 @@ void ProdConsInitialization(Prod& prod, Cons& cons ) {
 
    EXPECT_TRUE(prod.lock_free());
    EXPECT_TRUE(cons.lock_free());
-
 
    EXPECT_EQ(10, prod.capacity());
    EXPECT_EQ(10, cons.capacity());
@@ -46,57 +43,50 @@ void ProdConsInitialization(Prod& prod, Cons& cons ) {
    EXPECT_EQ(0, cons.size());
 }
 
-
-
-
 TEST(Queue, ProdConsInitialization) {
    auto queue = queue_api::CreateQueue<FlexibleQ>(10);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
 }
 
-
-
 TEST(Queue, ProdConsInitializationCopy) {
    using namespace queue_api;
    using QueuePair = std::pair<Sender<FlexibleQ>, Receiver<FlexibleQ>>;
-   QueuePair queue  = CreateQueue<FlexibleQ>(10);
+   QueuePair queue = CreateQueue<FlexibleQ>(10);
    Sender<FlexibleQ> sender1 = std::get<index::sender>(queue);
    Sender<FlexibleQ> sender2(std::get<index::sender>(queue));
    Receiver<FlexibleQ> receiver1 = std::get<index::receiver>(queue);
    Receiver<FlexibleQ> receiver2(std::get<index::receiver>(queue));
 }
 
-
-
-struct HasWaitAndPop{
+struct HasWaitAndPop {
    std::chrono::milliseconds value;
    std::string element;
-   HasWaitAndPop() : value(0){}
+   HasWaitAndPop() :
+       value(0) {}
    bool wait_and_pop(std::string& x, std::chrono::milliseconds wait_ms) {
       value = wait_ms;
       element = x;
       return false;
    }
 
-   bool pop(std::string& x) { 
+   bool pop(std::string& x) {
       using namespace std::chrono_literals;
       std::this_thread::sleep_for(10s);
-      return true; 
+      return true;
    }
 };
 
 struct HasPop {
    size_t value;
    std::string element;
-   HasPop() : value(0){}
+   HasPop() :
+       value(0) {}
    bool pop(std::string& x) {
       element = x;
-      return false; // to ensure that the wait is triggered
+      return false;  // to ensure that the wait is triggered
    }
 };
-
-
 
 TEST(Queue, BaseAPI_Flexible) {
    auto queue = queue_api::CreateQueue<FlexibleQ>(10);
@@ -124,7 +114,6 @@ TEST(Queue, BaseAPI_Fixed) {
    EXPECT_EQ(0, producer.usage());
 }
 
-
 TEST(Queue, BaseAPI_DynamicLocked) {
    auto queue = queue_api::CreateQueue<LockedQ>(10);
    auto producer = std::get<queue_api::index::sender>(queue);
@@ -138,8 +127,6 @@ TEST(Queue, BaseAPI_DynamicLocked) {
    EXPECT_EQ(0, producer.usage());
 }
 
-
-
 TEST(Queue, SFINAE_HasWaitAndPop) {
    using namespace test_helper;
    auto queue = queue_api::CreateQueue<HasWaitAndPop>();
@@ -148,8 +135,8 @@ TEST(Queue, SFINAE_HasWaitAndPop) {
    StopWatch watch;
    std::string msg;
    std::chrono::milliseconds wait(2 * 1000);
-   auto result = consumer.wait_and_pop(msg, wait); // wait_and_pop but function ignores the 'wait'
-   EXPECT_FALSE(result); 
+   auto result = consumer.wait_and_pop(msg, wait);  // wait_and_pop but function ignores the 'wait'
+   EXPECT_FALSE(result);
    EXPECT_TRUE(watch.ElapsedSec() <= 2);
 }
 
@@ -161,17 +148,12 @@ TEST(Queue, SFINAE_HasPop) {
    StopWatch watch;
    std::string msg;
    std::chrono::milliseconds wait(2 * 1000);
-   auto result = consumer.wait_and_pop(msg, wait); // wrapper implements wait
-   EXPECT_FALSE(result); 
+   auto result = consumer.wait_and_pop(msg, wait);  // wrapper implements wait
+   EXPECT_FALSE(result);
    EXPECT_TRUE(watch.ElapsedSec() >= 2);
 }
 
-
-
-
-
-
-template<typename Prod>
+template <typename Prod>
 void QAddOne(Prod& prod) {
    std::string arg = "test";
    EXPECT_TRUE(prod.push(arg));
@@ -188,11 +170,9 @@ TEST(Queue, CircularQueue_AddOne) {
 
    FixedQ fQ{};
    QAddOne(fQ);
-
 }
 
-
-template<typename Prod, typename Cons>
+template <typename Prod, typename Cons>
 void AddTillFullRemoveTillEmpty(Prod& prod, Cons& cons) {
    int size = 0;
    int free = prod._qref.capacity();
@@ -227,8 +207,6 @@ void AddTillFullRemoveTillEmpty(Prod& prod, Cons& cons) {
    }
 }
 
-
-
 TEST(Queue, FlexibleQueue_AddTillFullRemoveTillEmpty) {
    auto queue = queue_api::CreateQueue<FlexibleQ>(100);
    auto producer = std::get<queue_api::index::sender>(queue);
@@ -250,8 +228,7 @@ TEST(Queue, LockedQ_AddTillFullRemoveTillEmpty) {
    AddTillFullRemoveTillEmpty(producer, consumer);
 }
 
-
-template<typename Prod, typename Cons>
+template <typename Prod, typename Cons>
 void MoveArgument(Prod& prod, Cons& cons) {
    std::string arg = "hello";
    EXPECT_TRUE(prod.push(arg));
@@ -291,9 +268,7 @@ TEST(Queue, LockedQ_MoveArgument) {
    MoveArgument(producer, consumer);
 }
 
-
-
-template<typename Prod, typename Cons>
+template <typename Prod, typename Cons>
 void MoveUniquePtrArgument(Prod& prod, Cons& cons) {
    auto arg = make_unique<string>("hello");
    EXPECT_TRUE(prod.push(arg));
@@ -338,10 +313,9 @@ TEST(Queue, LockedQ_MoveUnique) {
    MoveUniquePtrArgument(producer, consumer);
 }
 
-
 // Raw pointers are not transformed to nullptr
 // since move semantics won't affect them
-template<typename Prod, typename Cons>
+template <typename Prod, typename Cons>
 void NoMovePtrArgument(Prod& prod, Cons& cons) {
    auto arg1 = make_unique<string>("hello");
    auto arg1ptr = arg1.get();
@@ -369,7 +343,6 @@ namespace {
    using Ptr = string*;
 }
 
-
 TEST(Queue, FlexibleQ_NoMoveOfPtr) {
    auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<Ptr>>(2);
    auto producer = std::get<queue_api::index::sender>(queue);
@@ -390,4 +363,3 @@ TEST(Queue, LockedQ_NoMoveUnique) {
    auto consumer = std::get<queue_api::index::receiver>(queue);
    NoMovePtrArgument(producer, consumer);
 }
-
