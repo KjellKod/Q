@@ -44,7 +44,7 @@ void consumeMessages(ReceiverQ& receiver, std::atomic<bool>& keep_working) {
 
 
 int main() {
-   // Create a flexible SPSC queue with a dynamic size, determined at runtime initialization
+   // Create a flexible SPSC queue with a dynamic size, determined at runtime initialization.
    auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<std::string>>(10);
 
    // Get the sender and receiver endpoints of the queue
