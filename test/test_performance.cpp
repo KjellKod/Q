@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <q/mpmc.hpp>
 #include <q/spsc.hpp>
-#include <test_performance.hpp>
+#include "test_performance.hpp"
 #include <thread>
 
 namespace {
