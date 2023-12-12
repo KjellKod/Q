@@ -5,14 +5,14 @@ name: CMake on multiple platforms
 
 on:
   push:
-      paths-ignore:
-      - docs/**
-      - '**.md'
+      # paths-ignore:
+      # - docs/**
+      # - '**.md'
     branches: [ "master" ]
   pull_request:
-      paths-ignore:
-      - docs/**
-      - '**.md'
+      # paths-ignore:
+      # - docs/**
+      # - '**.md'
     branches: [ "master" ]
 
 env:
@@ -73,7 +73,7 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
-        
+
     # - name: Create Build Environment
     #   # Some projects don't allow in-source building, so create a separate build directory
     #   # We'll use this as our working directory for all subsequent commands
