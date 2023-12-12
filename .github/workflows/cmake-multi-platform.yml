@@ -5,14 +5,12 @@ name: CMake on multiple platforms
 
 on:
   push:
-      # paths-ignore:
-      # - docs/**
-      # - '**.md'
+      paths-ignore:
+      - '**.md'
     branches: [ "master" ]
   pull_request:
-      # paths-ignore:
-      # - docs/**
-      # - '**.md'
+      paths-ignore:
+      - '**.md'
     branches: [ "master" ]
       
 env:
