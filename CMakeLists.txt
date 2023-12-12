@@ -39,12 +39,12 @@ if(SYSTEM_INCLUDE)
    include_directories(${SYSTEM_INCLUDE})
 endif()
 
-
+# change to c++20 in version 2.0
 if (APPLE)
-   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -Wall -Wunused -std=c++20  -pthread -D_GLIBCXX_USE_NANOSLEEP")
+   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -Wall -Wunused -std=c++14  -pthread -D_GLIBCXX_USE_NANOSLEEP")
 else()
    set(PLATFORM_LINK_LIBRIES rt)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wunused -std=c++20 -pthread -lrt -D_GLIBCXX_USE_NANOSLEEP -D_GLIBCXX_USE_SCHED_YIELD")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wunused -std=c++14 -pthread -lrt -D_GLIBCXX_USE_NANOSLEEP -D_GLIBCXX_USE_SCHED_YIELD")
 endif()
 
 
