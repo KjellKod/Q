@@ -38,14 +38,16 @@ jobs:
         c_compiler: [gcc, clang]
         include:
           - os: ubuntu-latest
+            c_compiler: gcc
             cpp_compiler: g++
           - os: macos-latest
+            c_compiler: clang
             cpp_compiler: clang++
         exclude:
           - os: ubuntu-latest
-            cpp_compiler: clang++
+            c_compiler: clang
           - os: macos-latest
-            cpp_compiler: g++               
+            c_compiler: gcc               
 
     steps:
     - uses: actions/checkout@v3
