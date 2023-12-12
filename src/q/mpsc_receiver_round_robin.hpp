@@ -24,12 +24,12 @@
 
 #pragma once
 
-#include "q/spsc_flexible_circular_fifo.hpp"
+#include <chrono>
+#include <utility>
+#include <vector>
 #include "q/q_api.hpp"
 #include "q/round_robin_api.hpp"
-#include <chrono>
-#include <vector>
-#include <utility>
+#include "q/spsc_flexible_circular_fifo.hpp"
 
 // MPSC : Many Single Producers - Single Consumer
 namespace mpsc {
@@ -44,30 +44,27 @@ namespace mpsc {
       //
       // WARNING: The same constraints as SPSC are in place for this queue. Only ONE thread may
       // act as the consumer
-      template<typename QType>
+      template <typename QType>
       class Receiver : public ::round_robin::API<QType, queue_api::Receiver<QType>> {
-       public:
-
+        public:
          using QueueAPI = ::round_robin::API<QType, queue_api::Receiver<QType>>;
 
          Receiver(std::vector<queue_api::Receiver<QType>> Receivers);
          virtual ~Receiver() = default;
 
-         template<typename Element>
+         template <typename Element>
          bool pop(Element& item);
 
-         template<typename Element>
+         template <typename Element>
          bool wait_and_pop(Element& item, const std::chrono::milliseconds wait_ms);
       };
 
+      template <typename QType>
+      Receiver<QType>::Receiver(std::vector<queue_api::Receiver<QType>> receivers) :
+          QueueAPI(receivers) {}
 
-      template<typename QType>
-      Receiver<QType>::Receiver(std::vector<queue_api::Receiver<QType>> receivers)
-         : QueueAPI(receivers)
-      {}
-
-      template<typename QType>
-      template<typename Element>
+      template <typename QType>
+      template <typename Element>
       bool Receiver<QType>::pop(Element& item) {
          bool result = false;
          const size_t loop_check = QueueAPI::queues_.size();
@@ -80,8 +77,8 @@ namespace mpsc {
          return result;
       }
 
-      template<typename QType>
-      template<typename Element>
+      template <typename QType>
+      template <typename Element>
       bool Receiver<QType>::wait_and_pop(Element& item, const std::chrono::milliseconds max_wait) {
          using milliseconds = std::chrono::milliseconds;
          using clock = std::chrono::steady_clock;
@@ -101,5 +98,5 @@ namespace mpsc {
          }
          return result;
       }
-   } // round_robin
-} // mpsc
+   }  // namespace round_robin
+}  // namespace mpsc

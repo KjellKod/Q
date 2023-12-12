@@ -23,16 +23,16 @@
 
 namespace spsc {
    namespace fixed {
-      template<typename Element, size_t Size>
+      template <typename Element, size_t Size>
       class circular_fifo {
-       public:
-
+        public:
          typedef char cache_line[64];
          enum alignas(64) { kSize = Size };
-         enum alignas(64) { kCapacity = kSize + 1 };       // http://en.cppreference.com/w/cpp/types/aligned_storage
+         enum alignas(64) { kCapacity = kSize + 1 };  // http://en.cppreference.com/w/cpp/types/aligned_storage
 
-
-         circular_fifo() : tail_(0), head_(0) {}
+         circular_fifo() :
+             tail_(0),
+             head_(0) {}
          virtual ~circular_fifo() {}
 
          bool push(Element& item);
@@ -47,23 +47,19 @@ namespace spsc {
          size_t tail() const { return tail_.load(); }
          size_t head() const { return head_.load(); }
 
-
-
-       private:
+        private:
          size_t increment(size_t idx) const { return (idx + 1) % kCapacity; }
 
          cache_line pad_storage_;
          alignas(64) Element array_[kCapacity];
          cache_line padtail_;
-         alignas(64) std::atomic <size_t>  tail_;
-         cache_line  padhead_;
-         alignas(64) std::atomic<size_t>   head_; // head(output) index
+         alignas(64) std::atomic<size_t> tail_;
+         cache_line padhead_;
+         alignas(64) std::atomic<size_t> head_;  // head(output) index
          cache_line padend_;
-
       };
 
-
-      template<typename Element, size_t Size>
+      template <typename Element, size_t Size>
       bool circular_fifo<Element, Size>::push(Element& item) {
          const auto currenttail_ = tail_.load(std::memory_order_relaxed);
          const auto nexttail_ = increment(currenttail_);
@@ -73,63 +69,58 @@ namespace spsc {
             return true;
          }
 
-         return false; // full queue
-
+         return false;  // full queue
       }
 
-
-// Pop by Consumer can only update the head (load with relaxed, store with release)
-//     the tail must be accessed with at least aquire
-      template<typename Element, size_t Size>
+      // Pop by Consumer can only update the head (load with relaxed, store with release)
+      //     the tail must be accessed with at least aquire
+      template <typename Element, size_t Size>
       bool circular_fifo<Element, Size>::pop(Element& item) {
          const auto currenthead_ = head_.load(std::memory_order_relaxed);
          if (currenthead_ == tail_.load(std::memory_order_acquire))
-            return false; // empty queue
+            return false;  // empty queue
 
          item = std::move(array_[currenthead_]);
          head_.store(increment(currenthead_), std::memory_order_release);
          return true;
       }
 
-      template<typename Element, size_t Size>
+      template <typename Element, size_t Size>
       bool circular_fifo<Element, Size>::empty() const {
          // snapshot with acceptance of that this comparison operation is not atomic
          return (head_.load(std::memory_order_relaxed) == tail_.load(std::memory_order_relaxed));
       }
 
-
-// snapshot with acceptance that this comparison is not atomic
-      template<typename Element, size_t Size>
+      // snapshot with acceptance that this comparison is not atomic
+      template <typename Element, size_t Size>
       bool circular_fifo<Element, Size>::full() const {
-         const auto nexttail_ = increment(tail_.load(std::memory_order_relaxed)); // aquire, we dont know who call
+         const auto nexttail_ = increment(tail_.load(std::memory_order_relaxed));  // aquire, we dont know who call
          return (nexttail_ == head_.load(std::memory_order_relaxed));
       }
 
-
-      template<typename Element, size_t Size>
+      template <typename Element, size_t Size>
       bool circular_fifo<Element, Size>::lock_free() const {
          return std::atomic<size_t>{}.is_lock_free();
       }
 
-      template<typename Element, size_t Size>
+      template <typename Element, size_t Size>
       size_t circular_fifo<Element, Size>::size() const {
          return ((tail_.load() - head_.load() + kCapacity) % kCapacity);
       }
 
-      template<typename Element, size_t Size>
+      template <typename Element, size_t Size>
       size_t circular_fifo<Element, Size>::capacity_free() const {
          return (kCapacity - size() - 1);
       }
 
-      template<typename Element, size_t Size>
+      template <typename Element, size_t Size>
       size_t circular_fifo<Element, Size>::capacity() const {
          return kSize;
       }
 
-
-      template<typename Element, size_t Size>
+      template <typename Element, size_t Size>
       size_t circular_fifo<Element, Size>::usage() const {
          return (100 * size() / kSize);
       }
-   } // fixed
-} // spsc
+   }  // namespace fixed
+}  // namespace spsc

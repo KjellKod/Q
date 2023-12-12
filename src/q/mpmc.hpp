@@ -15,7 +15,6 @@
 * https://github.com/KjellKod/g3log/src/g3log/shared_queue.hpp
 */
 
-
 #pragma once
 
 #include "q/mpmc_flexible_lock_queue.hpp"

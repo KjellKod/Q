@@ -23,19 +23,19 @@
 *    queue until at most all queues are visited once.
 */
 
-#include "q/spsc_flexible_circular_fifo.hpp"
+#include <chrono>
+#include <utility>
+#include <vector>
 #include "q/q_api.hpp"
 #include "q/round_robin_api.hpp"
-#include <chrono>
-#include <vector>
-#include <utility>
+#include "q/spsc_flexible_circular_fifo.hpp"
 
 // MPSC : Many Single Producers - Single Consumer
 namespace spmc {
    namespace round_robin {
-      // Use case: One Producer Many Consumers  
+      // Use case: One Producer Many Consumers
       // Instead of using a MPMC queue you can use the SPMC
-      //                          (One Single Consumer) - Many Single Producer (spsc queues)- 
+      //                          (One Single Consumer) - Many Single Producer (spsc queues)-
       //
       // The Producer will round-robin fetch attempts in a fair scheduling policy
       // the lock-free base type will typcially make this a much faster choice than using the mutex
@@ -43,27 +43,24 @@ namespace spmc {
       //
       // WARNING: The same constraints as SPSC are in place for this queue. Only ONE thread may
       // act as the producer
-      template<typename QType>
+      template <typename QType>
       class Sender : public ::round_robin::API<QType, queue_api::Sender<QType>> {
-       public:
-
+        public:
          using QueueAPI = ::round_robin::API<QType, queue_api::Sender<QType>>;
 
          Sender(std::vector<queue_api::Sender<QType>> senders);
          virtual ~Sender() = default;
 
-         template<typename Element>
+         template <typename Element>
          bool push(Element& item);
       };
 
+      template <typename QType>
+      Sender<QType>::Sender(std::vector<queue_api::Sender<QType>> senders) :
+          QueueAPI(senders) {}
 
-      template<typename QType>
-      Sender<QType>::Sender(std::vector<queue_api::Sender<QType>> senders)
-         : QueueAPI(senders)
-      {}
-
-      template<typename QType>
-      template<typename Element>
+      template <typename QType>
+      template <typename Element>
       bool Sender<QType>::push(Element& item) {
          bool result = false;
          const size_t loop_check = QueueAPI::queues_.size();
@@ -75,5 +72,5 @@ namespace spmc {
          }
          return result;
       }
-   } // round_robin
-} // spmc
+   }  // namespace round_robin
+}  // namespace spmc

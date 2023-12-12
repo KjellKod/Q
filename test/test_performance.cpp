@@ -9,16 +9,16 @@
 * Originally published at: https://github.com/KjellKod/Q
 */
 
-#include <test_performance.hpp>
-#include <q/spsc.hpp>
-#include <q/mpmc.hpp>
-#include <thread>
 #include <algorithm>
+#include <q/mpmc.hpp>
+#include <q/spsc.hpp>
+#include <test_performance.hpp>
+#include <thread>
 
 namespace {
    const size_t kAmount = 1000000;
    const size_t kSmallQueueSize = 100;
-}
+}  // namespace
 
 using namespace test_performance;
 
@@ -26,7 +26,6 @@ TEST(Performance, SPSC_Flexible_CircularFifo) {
    auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<std::string>>(kAmount);
    RunSPSC(queue, kAmount);
 }
-
 
 TEST(Performance, SPSC_Flexible_CircularFifo_Smaller) {
    auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<std::string>>(kSmallQueueSize);
@@ -39,14 +38,11 @@ TEST(Performance, SPSC_Fixed_CircularFifo) {
    RunSPSC(queue, kAmount);
 }
 
-
 TEST(Performance, SPSC_Fixed_CircularFifo_Smaller) {
    using namespace std;
-   auto queue = queue_api::CreateQueue < spsc::fixed::circular_fifo < string, kSmallQueueSize>> ();
+   auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<string, kSmallQueueSize>>();
    RunSPSC(queue, kAmount);
 }
-
-
 
 TEST(Performance, MPMC_1_to_1) {
    using namespace std;
@@ -54,14 +50,12 @@ TEST(Performance, MPMC_1_to_1) {
    RunSPSC(queue, kAmount);
 }
 
-
 TEST(Performance, MPMC_1_to_1_Smaller) {
    using namespace std;
 
    auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
    RunSPSC(queue, kAmount);
 }
-
 
 TEST(Performance, SPSC_Flexible_20secRun_LargeData) {
    using namespace std;
@@ -87,7 +81,6 @@ TEST(Performance, SPSC_Fixed_20secRun_LargeData) {
    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
 }
 
-
 TEST(Performance, MPMC_1_to_4_20secRun_LargeData) {
    using namespace std;
    auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
@@ -99,7 +92,6 @@ TEST(Performance, MPMC_1_to_4_20secRun_LargeData) {
    const size_t kTimeToRunSec = 20;
    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
 }
-
 
 TEST(Performance, MPMC_1_to_4_20secRun_SmallData) {
    using namespace std;
@@ -146,7 +138,6 @@ TEST(Performance, lock_free__SPMC_1_to_4_20secRun_SmallData) {
    const size_t kTimeToRunSec = 20;
    RunSPMC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
 }
-
 
 TEST(Performance, MPMC_4_to_1_20secRun_LargeData) {
    using namespace std;
@@ -206,7 +197,6 @@ TEST(Performance, lock_free__MPSC_4_to_1_20secRun_SmallData) {
    RunMPSC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
 }
 
-
 TEST(Performance, MPMC_4_to_4_20secRun_LargeData) {
    using namespace std;
    auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
@@ -218,4 +208,3 @@ TEST(Performance, MPMC_4_to_4_20secRun_LargeData) {
    const size_t kTimeToRunSec = 20;
    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
 }
-
