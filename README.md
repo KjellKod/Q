@@ -11,7 +11,7 @@ This lock-free queue is safe to use between one producer thread and one consumer
 
 _The SPSC is a powerful building block from which you can create more lock-free complicated queue structures if number of producers and consumers are known at creation time._ 
 
-Please see [spsc documentation][spsc.md] for details. 
+Please see [spsc documentation](spsc.md) for details. 
 
 
 
