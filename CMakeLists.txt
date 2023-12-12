@@ -16,6 +16,8 @@ if ( NOT VERSION )
    execute_process(COMMAND bash "-c" "git rev-list --branches HEAD | wc -l | tr -d ' ' | tr -d '\n'" OUTPUT_VARIABLE GIT_VERSION WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 
+message( STATUS "Compiler: ${CMAKE_C_COMPILER}")
+
 set(MINOR_VERSION 1)
 math(EXPR VERSION-BASE ${GIT_VERSION}/255)
 math(EXPR VERSION-REMAINDER ${GIT_VERSION}%255)
@@ -40,12 +42,16 @@ if(SYSTEM_INCLUDE)
 endif()
 
 # change to c++20 in version 2.0
-if (APPLE)
-   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -Wall -Wunused -std=c++14  -pthread -D_GLIBCXX_USE_NANOSLEEP")
-else()
-   set(PLATFORM_LINK_LIBRIES rt)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wunused -std=c++14 -pthread -lrt -D_GLIBCXX_USE_NANOSLEEP -D_GLIBCXX_USE_SCHED_YIELD")
+if (MSVC)
+else ()
+   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -Wall -Wunused -std=c++17  -pthread -D_GLIBCXX_USE_NANOSLEEP")
 endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+   add_compile_options("-stdlib=libc++")
+   #add_compile_options("-std=c++20")
+endif()
+
 
 
 file(GLOB SRC_FILES ${PROJECT_SRC}/g3log/*.h ${PROJECT_SRC}/q/*.hpp ${PROJECT_SRC}/*.cpp)
