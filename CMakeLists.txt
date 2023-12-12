@@ -40,14 +40,15 @@ if(SYSTEM_INCLUDE)
 endif()
 
 # change to c++20 in version 2.0
-if (APPLE)
-   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -Wall -Wunused -stdlib=libc++ -std=c++20  -pthread -D_GLIBCXX_USE_NANOSLEEP")
-elseif(MSVC)
-   #? 
+if (MSVC)
 else()
-   set(PLATFORM_LINK_LIBRIES rt)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wunused -stdlib=libc++ -std=c++20 -pthread -lrt -D_GLIBCXX_USE_NANOSLEEP -D_GLIBCXX_USE_SCHED_YIELD")
+   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -Wall -Wunused -stdlib=libc++ -std=c++20  -pthread -D_GLIBCXX_USE_NANOSLEEP")
 endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+   add_compile_options("-stdlib=libc++")
+endif()
+
 
 
 file(GLOB SRC_FILES ${PROJECT_SRC}/g3log/*.h ${PROJECT_SRC}/q/*.hpp ${PROJECT_SRC}/*.cpp)
