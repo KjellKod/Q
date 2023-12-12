@@ -79,7 +79,7 @@ From [queue_api::Receiver: public Base<QType>](https://github.com/KjellKod/Q/blo
 Please see the [examples/spsc_main.cpp](examples/spsc_main.cpp) for example usage. 
 
 
-
+# NOT YET DOCUMENTED API
 
 2. **MPMC:** *multiple producer, multiple consumer*
     - `lock flexible-lock-queue`: runtime, at construction, set max size of queue or set to unlimited in size
