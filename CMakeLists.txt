@@ -44,7 +44,7 @@ endif()
 # change to c++20 in version 2.0
 if (MSVC)
 else()
-   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -Wall -Wunused -std=c++2a  -pthread -D_GLIBCXX_USE_NANOSLEEP")
+   set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} -Wall -Wunused -std=c++17  -pthread -D_GLIBCXX_USE_NANOSLEEP")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
