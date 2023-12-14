@@ -13,7 +13,7 @@
 #include <q/q_api.hpp>
 #include <q/spsc.hpp>
 #include <string>
-#include "test_helper.hpp"
+#include "StopWatch.hpp"
 
 using namespace std;
 using Type = string;
@@ -128,7 +128,6 @@ TEST(Queue, BaseAPI_DynamicLocked) {
 }
 
 TEST(Queue, SFINAE_HasWaitAndPop) {
-   using namespace test_helper;
    auto queue = queue_api::CreateQueue<HasWaitAndPop>();
    auto consumer = std::get<queue_api::index::receiver>(queue);
 
@@ -141,7 +140,6 @@ TEST(Queue, SFINAE_HasWaitAndPop) {
 }
 
 TEST(Queue, SFINAE_HasPop) {
-   using namespace test_helper;
    auto queue = queue_api::CreateQueue<HasPop>();
    auto consumer = std::get<queue_api::index::receiver>(queue);
 

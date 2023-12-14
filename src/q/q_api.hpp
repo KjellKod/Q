@@ -17,8 +17,8 @@
 #pragma once
 #include <chrono>
 #include <memory>
-#include <tuple>
 #include <thread>
+#include <tuple>
 
 namespace queue_api {
 
@@ -71,18 +71,6 @@ namespace queue_api {
       QType& _qref;
    };
 
-   // struct with: push() + base Queue API
-   template <typename QType>
-   struct Sender : public Base<QType> {
-     public:
-      Sender(std::shared_ptr<QType> q) :
-          Base<QType>(q) {}
-      virtual ~Sender() = default;
-
-      template <typename Element>
-      bool push(Element& item) { return Base<QType>::_qref.push(item); }
-   };
-
    namespace sfinae {
       // SFINAE: Substitution Failure Is Not An Error
       // Decide at compile time what function signature to use
@@ -123,7 +111,60 @@ namespace queue_api {
          // For non-matching call it will be typed to long
          return match_call(t, e, ms, 0);
       }
+      // =======================================
+      template <typename T, typename Element>
+      bool push_wrapper(T& t, Element& e, std::chrono::milliseconds max_wait) {
+         using milliseconds = std::chrono::milliseconds;
+         using clock = std::chrono::steady_clock;
+         using namespace std::chrono_literals;
+         auto t1 = clock::now();
+         bool result = false;
+         while (!(result = t.push(e))) {
+            std::this_thread::sleep_for(100ns);
+            auto elapsed_ms = std::chrono::duration_cast<milliseconds>(clock::now() - t1);
+            if (elapsed_ms > max_wait) {
+               return result;
+            }
+         }
+         return result;
+      }
+
+      template <typename T, typename Element>
+      auto push_match_call(T& t, Element& e, std::chrono::milliseconds ms, int) -> decltype(t.wait_and_push(e, ms)) {
+         return t.wait_and_pop(e, ms);
+      }
+
+      template <typename T, typename Element>
+      auto push_match_call(T& t, Element& e, std::chrono::milliseconds ms, long) -> decltype(wrapper(t, e, ms)) {
+         return push_wrapper(t, e, ms);
+      }
+
+      template <typename T, typename Element>
+      int wait_and_push(T& t, Element& e, std::chrono::milliseconds ms) {
+         // SFINAE magic happens with the '0'.
+         // For the matching call the '0' will be typed to int.
+         // For non-matching call it will be typed to long
+         return push_match_call(t, e, ms, 0);
+      }
+
    }  // namespace sfinae
+
+   // struct with: push() + base Queue API
+   template <typename QType>
+   struct Sender : public Base<QType> {
+     public:
+      Sender(std::shared_ptr<QType> q) :
+          Base<QType>(q) {}
+      virtual ~Sender() = default;
+
+      template <typename Element>
+      bool push(Element& item) { return Base<QType>::_qref.push(item); }
+
+      template <typename Element>
+      bool wait_and_push(Element& item, const std::chrono::milliseconds wait_ms) {
+         return sfinae::wait_and_push(Base<QType>::_qref, item, wait_ms);
+      }
+   };
 
    // struct with : pop() + base Queue API
    template <typename QType>

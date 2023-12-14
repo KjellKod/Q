@@ -13,7 +13,7 @@ using receiver_type = std::shared_ptr<queue_api::Receiver<spsc_queue_type>>;
 
 void produceMessages(queue_api::Sender<spsc::flexible::circular_fifo<std::string>>& sender, std::atomic<bool>& should_continue_working) {
    std::vector<std::string> greetings = {"Hello", "Bonjour", "Tjena", "Ciao", "Hola", "Hallo", "Hei", "Aloha", "Shalom", "Namaste",
-                     "Hello", "Bonjour", "Tjena", "Ciao", "Hola", "Hallo", "Hei", "Aloha", "Shalom", "Namaste"};
+                                         "Hello", "Bonjour", "Tjena", "Ciao", "Hola", "Hallo", "Hei", "Aloha", "Shalom", "Namaste"};
 
    size_t counter = 0;
    for (auto greet : greetings) {
@@ -29,7 +29,7 @@ void produceMessages(queue_api::Sender<spsc::flexible::circular_fifo<std::string
 }
 
 // we can use template signature to make it easier for the input arguments
-template<typename ReceiverQ>
+template <typename ReceiverQ>
 void consumeMessages(ReceiverQ& receiver, std::atomic<bool>& keep_working) {
 
    std::string msg;
@@ -42,7 +42,6 @@ void consumeMessages(ReceiverQ& receiver, std::atomic<bool>& keep_working) {
    }
 }
 
-
 int main() {
    // Create a flexible SPSC queue with a dynamic size, determined at runtime initialization.
    auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<std::string>>(10);
@@ -53,7 +52,7 @@ int main() {
    std::thread producer_thread(produceMessages, std::ref(senderQ), std::ref(keep_working));
 
    auto receiverQ = std::get<queue_api::index::receiver>(queue);
-   // similar as above, but showing how template calling can make the thread-function API easier. 
+   // similar as above, but showing how template calling can make the thread-function API easier.
    std::thread consumer_thread(consumeMessages<decltype(receiverQ)>, std::ref(receiverQ), std::ref(keep_working));
 
    // Wait for both threads to complete
@@ -61,4 +60,3 @@ int main() {
    consumer_thread.join();
    return 0;
 }
-
