@@ -134,7 +134,7 @@ TEST(Queue, SFINAE_HasWaitAndPop) {
    StopWatch watch;
    std::string msg;
    std::chrono::milliseconds wait(2 * 1000);
-   auto result = consumer.wait_and_pop(msg, wait);  // wait_and_pop but function ignores the 'wait'
+   auto result = consumer.wait_and_pop(msg, wait);  // wait_and_pop but the bogus mock function ignores the 'wait'. We only verify SFINAE
    EXPECT_FALSE(result);
    EXPECT_TRUE(watch.ElapsedSec() <= 2);
 }
@@ -146,7 +146,7 @@ TEST(Queue, SFINAE_HasPop) {
    StopWatch watch;
    std::string msg;
    std::chrono::milliseconds wait(2 * 1000);
-   auto result = consumer.wait_and_pop(msg, wait);  // wrapper implements wait
+   auto result = consumer.wait_and_pop(msg, wait);  // wrapper implements wait. This is the actual function. we have the desired max wait. 
    EXPECT_FALSE(result);
    EXPECT_TRUE(watch.ElapsedSec() >= 2);
 }

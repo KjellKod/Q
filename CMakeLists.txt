@@ -75,3 +75,7 @@ INCLUDE (${Q_SOURCE_DIR}/test/test.cmake)
 # EXAMPLES
 # ============================================================================
 INCLUDE (${Q_SOURCE_DIR}/examples/examples.cmake)
+# ==========================================================================
+# Benchmark    
+# ============================================================================
+INCLUDE (${Q_SOURCE_DIR}/benchmark/benchmark.cmake)
