@@ -15,6 +15,7 @@
 #include <chrono>
 #include <future>
 #include <iostream>
+#include <cassert>
 #include <string>
 #include <vector>
 #include "q/q_api.hpp"

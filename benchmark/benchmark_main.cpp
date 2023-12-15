@@ -25,12 +25,12 @@ namespace {
 void print_result(const benchmark_result& result) {
    double average_call_time_ns = result.mean_msgs_per_second ? 1e9 / result.mean_msgs_per_second : 0;
 
-   std::cout << std::left << std::setw(2) << result.runs << ", "
-             << std::setw(5) << result.num_producer_threads << ", "
+   std::cout << std::left << std::setw(6) << result.runs << ", "
+             << std::setw(6) << result.num_producer_threads << ", "
              << std::setw(6) << result.num_consumer_threads << ", "
-             << std::setw(16) << result.mean_msgs_per_second << ", "
-             << std::setw(14) << result.min_msgs_per_second << ", "
-             << std::setw(14) << result.max_msgs_per_second << ", "
+             << std::setw(12) << result.mean_msgs_per_second << ", "
+             << std::setw(12) << result.min_msgs_per_second << ", "
+             << std::setw(12) << result.max_msgs_per_second << ", "
              << std::setw(10) << average_call_time_ns << ","
              << std::setw(30) << result.comment << std::endl;
 }

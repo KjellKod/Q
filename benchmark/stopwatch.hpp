@@ -21,7 +21,7 @@ namespace benchmark {
       using milliseconds = std::chrono::milliseconds;
       using microseconds = std::chrono::microseconds;
       using nanoseconds = std::chrono::nanoseconds;
-      using clock = std::chrono::steady_clock;
+      using clock = std::chrono::high_resolution_clock;
       clock::time_point start_;
 
       stopwatch() :
