@@ -17,17 +17,15 @@ namespace benchmark {
       auto consumer = std::get<queue_api::index::receiver>(queue);
 
       benchmark::stopwatch watch;
-      size_t start = 1;
       size_t stop = howMany;
       auto prodResult = std::async(std::launch::async, benchmark::Push<decltype(producer)>,
                                    producer, stop, std::ref(producerStart), std::ref(consumerStart));
-      //    auto consResult = std::async(std::launch::async, benchmark::Get<decltype(consumer)>,
-      //                                 consumer, stop, std::ref(producerStart), std::ref(consumerStart));
+      auto consResult = std::async(std::launch::async, benchmark::Get<decltype(consumer)>,
+                                   consumer, stop, std::ref(producerStart), std::ref(consumerStart));
 
-      // //    auto sent = prodResult.get();
-      //    auto received = consResult.get();
-      // //    Q_CHECK_EQ(sent.total_sum, received.total_sum);
-      //    return {watch.elapsed_ns(), received.sum};
-      return {0, 0};
+      auto sent = prodResult.get();
+      auto received = consResult.get();
+      Q_CHECK_EQ(sent.total_sum, received.total_sum);
+      return {watch.elapsed_ns(), received.total_sum};
    }
 }  // namespace benchmark

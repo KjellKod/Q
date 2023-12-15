@@ -29,13 +29,22 @@
       }                                                                           \
    } while (0)
 
+#define Q_CHECK(expr)                                           \
+   do {                                                         \
+      if (!(expr)) {                                            \
+         std::cout << "Line " << __LINE__ << ": CHECK failed, " \
+                   << #expr << " is not true" << std::endl;     \
+         assert((expr));                                        \
+      }                                                         \
+   } while (0)
+
 namespace benchmark {
    struct result_t {
       uint64_t total_sum;
       uint64_t elapsed_time_in_us;
    };
 
-   const size_t kMaxWaitMs = 1000;
+   const std::chrono::milliseconds kMaxWaitMs(1000);
 
    template <typename Sender>
    result_t Push(Sender q, const size_t stop, std::atomic<bool>& producerStart, std::atomic<bool>& consumerStart) {
@@ -44,11 +53,10 @@ namespace benchmark {
       while (!consumerStart.load()) {
          std::this_thread::sleep_for(100ns);
       }
-
       benchmark::stopwatch watch;
       uint64_t sum = 0;
-      for (auto i = 1; i <= stop + 1; ++i) {
-         q.wait_and_push(i, kMaxWaitMs);
+      for (unsigned int i = 1; i <= stop + 1; ++i) {
+         Q_CHECK(q.wait_and_push(i, kMaxWaitMs));
          sum += i;
       }
       return {sum, watch.elapsed_ns()};
@@ -61,13 +69,15 @@ namespace benchmark {
       while (!producerStart.load()) {
          std::this_thread::sleep_for(100ns);
       }
-
       benchmark::stopwatch watch;
       uint64_t sum = 0;
-      for (auto i = 1; i <= stop; ++i) {
-         auto value = 0;
-         assert(q.wait_and_pop(value, kMaxWaitMs));
+      for (;;) {
+         unsigned int value = 0;
+         Q_CHECK(q.wait_and_pop(value, kMaxWaitMs));
          sum += value;
+         if (value == stop) {
+            break;
+         }
       }
       return {sum, watch.elapsed_ns()};
    }
