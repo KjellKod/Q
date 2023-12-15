@@ -20,7 +20,7 @@ using Type = string;
 using FlexibleQ = spsc::flexible::circular_fifo<Type>;
 using FixedQ = spsc::fixed::circular_fifo<Type, 100>;
 using FixedSmallQ = spsc::fixed::circular_fifo<Type, 2>;
-using LockedQ = mpmc::flexible_lock_queue<Type>;
+using LockedQ = mpmc::lock_queue<Type>;
 
 template <typename Prod, typename Cons>
 void ProdConsInitialization(Prod& prod, Cons& cons) {
@@ -358,7 +358,7 @@ TEST(Queue, FixedQ_MoveUnique) {
 }
 
 TEST(Queue, LockedQ_MoveUnique) {
-   auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<Unique>>(2);
+   auto queue = queue_api::CreateQueue<mpmc::lock_queue<Unique>>(2);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveUniquePtrArgument(producer, consumer);
@@ -409,7 +409,7 @@ TEST(Queue, FixedQ_NoMoveOfPtr) {
 }
 
 TEST(Queue, LockedQ_NoMoveUnique) {
-   auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<Ptr>>(2);
+   auto queue = queue_api::CreateQueue<mpmc::lock_queue<Ptr>>(2);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    NoMovePtrArgument(producer, consumer);

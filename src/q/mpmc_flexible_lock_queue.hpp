@@ -35,7 +35,7 @@
 * protected by mutex. Since 'return by reference' is used this queue won't throw */
 namespace mpmc {
    template <typename T>
-   class flexible_lock_queue {
+   class lock_queue {
       static const int kUnlimited = -1;
       static const int kSmallDefault = 100;
       const int kMaxSize;
@@ -43,8 +43,8 @@ namespace mpmc {
       mutable std::mutex m_;
       std::condition_variable data_cond_;
 
-      flexible_lock_queue& operator=(const flexible_lock_queue&) = delete;
-      flexible_lock_queue(const flexible_lock_queue& other) = delete;
+      lock_queue& operator=(const lock_queue&) = delete;
+      lock_queue(const lock_queue& other) = delete;
 
       bool internal_full() const;
       size_t internal_capacity() const;
@@ -52,7 +52,7 @@ namespace mpmc {
      public:
       // -1 : unbounded
       // 0 ... N : bounded (0 is silly)
-      flexible_lock_queue(const int maxSize = kSmallDefault);
+      lock_queue(const int maxSize = kSmallDefault);
 
       bool lock_free() const;
       bool push(T& item);
@@ -68,16 +68,16 @@ namespace mpmc {
 
    // maxSize of -1 equals unlimited size
    template <typename T>
-   flexible_lock_queue<T>::flexible_lock_queue(int maxSize) :
+   lock_queue<T>::lock_queue(int maxSize) :
        kMaxSize(maxSize) {}
 
    template <typename T>
-   bool flexible_lock_queue<T>::lock_free() const {
+   bool lock_queue<T>::lock_free() const {
       return false;
    }
 
    template <typename T>
-   bool flexible_lock_queue<T>::push(T& item) {
+   bool lock_queue<T>::push(T& item) {
       {
          std::lock_guard<std::mutex> lock(m_);
          if (internal_full()) {
@@ -90,7 +90,7 @@ namespace mpmc {
    }
 
    template <typename T>
-   bool flexible_lock_queue<T>::pop(T& popped_item) {
+   bool lock_queue<T>::pop(T& popped_item) {
       std::lock_guard<std::mutex> lock(m_);
       if (queue_.empty()) {
          return false;
@@ -101,7 +101,7 @@ namespace mpmc {
    }
 
    template <typename T>
-   bool flexible_lock_queue<T>::wait_and_pop(T& popped_item, std::chrono::milliseconds max_wait) {
+   bool lock_queue<T>::wait_and_pop(T& popped_item, std::chrono::milliseconds max_wait) {
       std::unique_lock<std::mutex> lock(m_);
       auto const timeout = std::chrono::steady_clock::now() + max_wait;
       while (queue_.empty()) {
@@ -121,44 +121,44 @@ namespace mpmc {
    }
 
    template <typename T>
-   bool flexible_lock_queue<T>::full() {
+   bool lock_queue<T>::full() {
       std::lock_guard<std::mutex> lock(m_);
       return internal_full();
    }
 
    template <typename T>
-   bool flexible_lock_queue<T>::empty() const {
+   bool lock_queue<T>::empty() const {
       std::lock_guard<std::mutex> lock(m_);
       return queue_.empty();
    }
 
    template <typename T>
-   size_t flexible_lock_queue<T>::size() const {
+   size_t lock_queue<T>::size() const {
       std::lock_guard<std::mutex> lock(m_);
       return queue_.size();
    }
 
    template <typename T>
-   size_t flexible_lock_queue<T>::capacity() const {
+   size_t lock_queue<T>::capacity() const {
       std::lock_guard<std::mutex> lock(m_);
       return internal_capacity();
    }
 
    template <typename T>
-   size_t flexible_lock_queue<T>::capacity_free() const {
+   size_t lock_queue<T>::capacity_free() const {
       std::lock_guard<std::mutex> lock(m_);
       return internal_capacity() - queue_.size();
    }
 
    template <typename T>
-   size_t flexible_lock_queue<T>::usage() const {
+   size_t lock_queue<T>::usage() const {
       std::lock_guard<std::mutex> lock(m_);
       return (100 * queue_.size() / internal_capacity());
    }
 
    // private
    template <typename T>
-   size_t flexible_lock_queue<T>::internal_capacity() const {
+   size_t lock_queue<T>::internal_capacity() const {
       if (kMaxSize == kUnlimited) {
          return std::numeric_limits<unsigned int>::max();
       }
@@ -166,7 +166,7 @@ namespace mpmc {
    }
 
    template <typename T>
-   bool flexible_lock_queue<T>::internal_full() const {
+   bool lock_queue<T>::internal_full() const {
       if (kMaxSize == kUnlimited) {
          return false;
       }

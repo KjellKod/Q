@@ -62,14 +62,14 @@
 
 // // TEST(Performance, MPMC_1_to_1) {
 // //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kAmount);
+// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kAmount);
 // //    RunSPSC(queue, kAmount);
 // // }
 
 // // TEST(Performance, MPMC_1_to_1_Smaller) {
 // //    using namespace std;
 
-// //    auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
+// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
 // //    RunSPSC(queue, kAmount);
 // // }
 
@@ -99,7 +99,7 @@
 
 // // TEST(Performance, DISABLED_MPMC_1_to_4_20secRun_LargeData) {
 // //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
+// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
 // //    const size_t large = 65000;
 // //    std::string payload(large, 'x');
 // //    EXPECT_EQ(large, payload.size());
@@ -111,7 +111,7 @@
 
 // // TEST(Performance, DISABLED_MPMC_1_to_4_20secRun_SmallData) {
 // //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
+// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
 // //    const size_t small = 10;
 // //    std::string payload(small, 'x');
 // //    EXPECT_EQ(small, payload.size());
@@ -157,7 +157,7 @@
 
 // // TEST(Performance, DISABLED_MPMC_4_to_1_20secRun_LargeData) {
 // //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
+// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
 // //    const size_t large = 65000;
 // //    std::string payload(large, 'x');
 // //    EXPECT_EQ(large, payload.size());
@@ -169,7 +169,7 @@
 
 // // TEST(Performance, DISABLED_MPMC_4_to_1_20secRun_SmallData) {
 // //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
+// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
 // //    const size_t small = 10;
 // //    std::string payload(small, 'x');
 // //    EXPECT_EQ(small, payload.size());
@@ -215,7 +215,7 @@
 
 // // TEST(Performance, DISABLED_MPMC_4_to_4_20secRun_LargeData) {
 // //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::flexible_lock_queue<string>>(kSmallQueueSize);
+// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
 // //    const size_t large = 65000;
 // //    std::string payload(large, 'x');
 // //    EXPECT_EQ(large, payload.size());

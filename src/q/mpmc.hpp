@@ -17,4 +17,4 @@
 
 #pragma once
 
-#include "q/mpmc_flexible_lock_queue.hpp"
+#include "q/mpmc_lock_queue.hpp"
