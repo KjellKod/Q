@@ -55,7 +55,7 @@ namespace benchmark {
       }
       benchmark::stopwatch watch;
       uint64_t sum = 0;
-      for (unsigned int i = 1; i <= stop + 1; ++i) {
+      for (unsigned int i = 1; i <= stop; ++i) {
          Q_CHECK(q.wait_and_push(i, kMaxWaitMs));
          sum += i;
       }
