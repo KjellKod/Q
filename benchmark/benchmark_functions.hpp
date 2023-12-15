@@ -51,7 +51,7 @@ namespace benchmark {
       using namespace std::chrono_literals;
       producerStart.store(true);
       while (!consumerStart.load()) {
-         std::this_thread::sleep_for(100ns);
+         std::this_thread::sleep_for(10ns);
       }
       benchmark::stopwatch watch;
       uint64_t sum = 0;
@@ -67,7 +67,7 @@ namespace benchmark {
       using namespace std::chrono_literals;
       consumerStart.store(true);
       while (!producerStart.load()) {
-         std::this_thread::sleep_for(100ns);
+         std::this_thread::sleep_for(10ns);
       }
       benchmark::stopwatch watch;
       uint64_t sum = 0;
@@ -124,7 +124,7 @@ namespace benchmark {
 //    //          }
 //    //          if (result) {
 //    //             EXPECT_EQ(data.size(), value.size());
-//    //             EXPECT_FALSE(value.empty());
+//    //             EXPECT_FALSE(value.was_empty());
 //    //             ++amountReceived;
 //    //             byteReceived += value.size();
 //    //          }
