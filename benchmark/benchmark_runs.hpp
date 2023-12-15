@@ -31,6 +31,6 @@ namespace benchmark {
       Q_CHECK_EQ(sent.total_sum, received.total_sum);
       Q_CHECK(watch.elapsed_ns() >= sent.elapsed_time_in_ns);
       Q_CHECK(watch.elapsed_ns() >= received.elapsed_time_in_ns);
-      return {received.total_sum,std::max(sent.elapsed_time_in_ns, received.elapsed_time_in_ns)};
+      return {received.total_sum, std::max(sent.elapsed_time_in_ns, received.elapsed_time_in_ns)};
    }
 }  // namespace benchmark

@@ -41,7 +41,7 @@
 namespace benchmark {
    struct result_t {
       uint64_t total_sum;
-      uint64_t elapsed_time_in_us;
+      uint64_t elapsed_time_in_ns;
    };
 
    const std::chrono::milliseconds kMaxWaitMs(1000);
@@ -75,8 +75,8 @@ namespace benchmark {
          unsigned int value = 0;
          Q_CHECK(q.wait_and_pop(value, kMaxWaitMs));
          sum += value;
-         if (value == stop) 
-Ò            break;
+         if (value == stop) {
+            break;
          }
       }
       return {sum, watch.elapsed_ns()};
