@@ -13,7 +13,7 @@
 #include <q/q_api.hpp>
 #include <q/spsc.hpp>
 #include <string>
-#include "StopWatch.hpp"
+#include "stopwatch.hpp"
 
 using namespace std;
 using Type = string;
@@ -88,6 +88,35 @@ struct HasPop {
    }
 };
 
+struct HasWaitAndPush {
+   std::chrono::milliseconds value;
+   std::string element;
+   HasWaitAndPush() :
+       value(0) {}
+   bool wait_and_push(std::string& x, std::chrono::milliseconds wait_ms) {
+      value = wait_ms;
+      element = x;
+      return false;
+   }
+
+   bool push(std::string& x) {
+      using namespace std::chrono_literals;
+      std::this_thread::sleep_for(10s);
+      return true;
+   }
+};
+
+struct HasPush {
+   size_t value;
+   std::string element;
+   HasPush() :
+       value(0) {}
+   bool push(std::string& x) {
+      element = x;
+      return false;  // to ensure that the wait is triggered
+   }
+};
+
 TEST(Queue, BaseAPI_Flexible) {
    auto queue = queue_api::CreateQueue<FlexibleQ>(10);
    auto producer = std::get<queue_api::index::sender>(queue);
@@ -131,24 +160,48 @@ TEST(Queue, SFINAE_HasWaitAndPop) {
    auto queue = queue_api::CreateQueue<HasWaitAndPop>();
    auto consumer = std::get<queue_api::index::receiver>(queue);
 
-   StopWatch watch;
+   benchmark::stopwatch watch;
    std::string msg;
    std::chrono::milliseconds wait(2 * 1000);
    auto result = consumer.wait_and_pop(msg, wait);  // wait_and_pop but the bogus mock function ignores the 'wait'. We only verify SFINAE
    EXPECT_FALSE(result);
-   EXPECT_TRUE(watch.ElapsedSec() <= 2);
+   EXPECT_TRUE(watch.elapsed_sec() <= 2);
 }
 
 TEST(Queue, SFINAE_HasPop) {
    auto queue = queue_api::CreateQueue<HasPop>();
    auto consumer = std::get<queue_api::index::receiver>(queue);
 
-   StopWatch watch;
+   benchmark::stopwatch watch;
    std::string msg;
    std::chrono::milliseconds wait(2 * 1000);
-   auto result = consumer.wait_and_pop(msg, wait);  // wrapper implements wait. This is the actual function. we have the desired max wait. 
+   auto result = consumer.wait_and_pop(msg, wait);  // wrapper implements wait. This is the actual function. we have the desired max wait.
    EXPECT_FALSE(result);
-   EXPECT_TRUE(watch.ElapsedSec() >= 2);
+   EXPECT_TRUE(watch.elapsed_sec() >= 2);
+}
+
+TEST(Queue, SFINAE_HasWaitAndPushp) {
+   auto queue = queue_api::CreateQueue<HasWaitAndPush>();
+   auto producer = std::get<queue_api::index::sender>(queue);
+
+   benchmark::stopwatch watch;
+   std::string msg;
+   std::chrono::milliseconds wait(2 * 1000);
+   auto result = producer.wait_and_push(msg, wait);  // wait_and_pop but the bogus mock function ignores the 'wait'. We only verify SFINAE
+   EXPECT_FALSE(result);
+   EXPECT_TRUE(watch.elapsed_sec() <= 2);
+}
+
+TEST(Queue, SFINAE_HasPush) {
+   auto queue = queue_api::CreateQueue<HasPush>();
+   auto consumer = std::get<queue_api::index::sender>(queue);
+
+   benchmark::stopwatch watch;
+   std::string msg;
+   std::chrono::milliseconds wait(2 * 1000);
+   auto result = consumer.wait_and_push(msg, wait);  // wrapper implements wait. This is the actual function. we have the desired max wait.
+   EXPECT_FALSE(result);
+   EXPECT_TRUE(watch.elapsed_sec() >= 2);
 }
 
 template <typename Prod>

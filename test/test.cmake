@@ -16,9 +16,10 @@ FetchContent_MakeAvailable(googletest)
 
 file(GLOB TEST_SRC_FILES "test/*.cpp")
 message("test files: ${TEST_SRC_FILES}")
-include_directories(${PROJECT_SRC})
+include_directories(${PROJECT_SRC} ${PROJECT_SRC}/../test ${PROJECT_SRC}/../benchmark)
 set(TestRunner UnitTestRunner)
 
+message(" include directories: ${PROJECT_SRC} ${PROJECT_SRC}/../test ${PROJECT_SRC}/../benchmark")
 enable_testing()
 add_executable(UnitTestRunner 
    ${TEST_SRC_FILES}

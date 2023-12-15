@@ -1,16 +1,16 @@
-// /*
-// * Not any company's property but Public-Domain
-// * Do with source-code as you will. No requirement to keep this
-// * header if need to use it/change it/ or do whatever with it
-// *
-// * Note that there is No guarantee that this code will work
-// * and I take no responsibility for this code and any problems you
-// * might get if using it.
-// *
-// * Originally published at https://github.com/KjellKod/Q
-// */
+/*
+* Not any company's property but Public-Domain
+* Do with source-code as you will. No requirement to keep this
+* header if need to use it/change it/ or do whatever with it
+*
+* Note that there is No guarantee that this code will work
+* and I take no responsibility for this code and any problems you
+* might get if using it.
+*
+* Originally published at https://github.com/KjellKod/Q
+*/
 
-// #pragma once
+#pragma once
 // #include <gtest/gtest.h>
 // #include <atomic>
 // #include <chrono>
@@ -24,12 +24,12 @@
 // #include "test_helper.hpp"
 
 // namespace test_performance {
-//    using ResultType = std::vector<std::string>;
+//    using benchmark::result_t = std::vector<std::string>;
 //    using namespace test_helper;
 //    using sum_t = long long;
 
 //    template <typename Sender>
-//    ResultType Push(Sender q, size_t start, size_t stop, std::atomic<bool>& producerStart, std::atomic<bool>& consumerStart) {
+//    benchmark::result_t Push(Sender q, size_t start, size_t stop, std::atomic<bool>& producerStart, std::atomic<bool>& consumerStart) {
 //       using namespace std::chrono_literals;
 //       std::vector<std::string> expected;
 //       expected.reserve(stop - start);
@@ -50,7 +50,7 @@
 //    }
 
 //    template <typename Receiver>
-//    ResultType Get(Receiver q, size_t start, size_t stop, std::atomic<bool>& producerStart, std::atomic<bool>& consumerStart) {
+//    benchmark::result_t Get(Receiver q, size_t start, size_t stop, std::atomic<bool>& producerStart, std::atomic<bool>& consumerStart) {
 //       using namespace std::chrono_literals;
 //       std::vector<std::string> received;
 //       received.reserve(stop - start);
@@ -77,7 +77,7 @@
 //       producerCount++;
 //       using namespace std::chrono_literals;
 
-//       StopWatch watch;
+//       benchmark::stopwatch watch;
 //       size_t amountPushed = 0;
 //       while (!stopRunning.load(std::memory_order_relaxed)) {
 //          std::string value = data;
@@ -96,7 +96,7 @@
 //       using namespace std::chrono_literals;
 //       consumerCount++;
 
-//       StopWatch watch;
+//       benchmark::stopwatch watch;
 //       size_t amountReceived = 0;
 //       size_t byteReceived = 0;
 //       while (!stopRunning.load(std::memory_order_relaxed)) {
@@ -122,17 +122,17 @@
 //    }
 
 // //    template <typename T>
-// //    std::vector<ResultType> RunSPS2C(T queue, size_t howMany) {
+// //    std::vector<benchmark::result_t> RunSPS2C(T queue, size_t howMany) {
 // //       std::atomic<bool> producerStart{false};
 // //       std::atomic<bool> consumerStart{false};
-// //       std::vector<ResultType> result; 
+// //       std::vector<benchmark::result_t> result;
 
 // //       using namespace std;
 // //       using namespace chrono;
 // //       auto producer = std::get<queue_api::index::sender>(queue);
 // //       auto consumer = std::get<queue_api::index::receiver>(queue);
 
-// //       StopWatch watch; 
+// //       benchmark::stopwatch watch;
 // //       size_t start = 1;
 // //       size_t stop = howMany;
 // //       auto prodResult = std::async(std::launch::async, Push<decltype(producer)>,
@@ -142,14 +142,13 @@
 
 // //       auto sent = prodResult.get();
 // //       auto received = consResult.get();
-// //       ResultType expected = {watch.ElapsedNs(), 0 };
+// //       benchmark::result_t expected = {watch.ElapsedNs(), 0 };
 // //       return {sent, received, expected};
 // //     //   auto t2 = high_resolution_clock::now();
 // //     //   auto us = duration_cast<microseconds>(t2 - t1).count();
 // //     //   std::cout << "Push - Pull #" << howMany << " items in: " << us << " us" << std::endl;
 // //     //   std::cout << "Average: " << 1000 * ((float)us / (float)howMany) << " ns" << std::endl;
 // //    }
-
 
 // //    template <typename T>
 // //    void RunSPSC(T queue, size_t howMany) {
@@ -214,8 +213,8 @@
 // //       while (consumerCount.load() < numberConsumers && producerCount.load() < numberProducers) {
 // //          std::this_thread::sleep_for(1us);
 // //       }
-// //       StopWatch elapsedRun;
-// //       while (elapsedRun.ElapsedSec() < timeToRunInSec) {
+// //       benchmark::stopwatch elapsedRun;
+// //       while (elapsedRun.elapsed_sec() < timeToRunInSec) {
 // //          std::this_thread::sleep_for(1us);
 // //       }
 
@@ -278,8 +277,8 @@
 // //       while (consumerCount.load() < numberConsumers && producerCount.load() < numberProducers) {
 // //          std::this_thread::sleep_for(1us);
 // //       }
-// //       StopWatch elapsedRun;
-// //       while (elapsedRun.ElapsedSec() < timeToRunInSec) {
+// //       benchmark::stopwatch elapsedRun;
+// //       while (elapsedRun.elapsed_sec() < timeToRunInSec) {
 // //          std::this_thread::sleep_for(1us);
 // //       }
 
@@ -341,8 +340,8 @@
 // //       while (consumerCount.load() < numberConsumers && producerCount.load() < numberProducers) {
 // //          std::this_thread::sleep_for(1us);
 // //       }
-// //       StopWatch elapsedRun;
-// //       while (elapsedRun.ElapsedSec() < timeToRunInSec) {
+// //       benchmark::stopwatch elapsedRun;
+// //       while (elapsedRun.elapsed_sec() < timeToRunInSec) {
 // //          std::this_thread::sleep_for(1us);
 // //       }
 

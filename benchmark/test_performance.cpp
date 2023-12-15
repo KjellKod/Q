@@ -21,7 +21,7 @@
 //    const size_t kAmount = 1000000;
 //    const size_t kSmallQueueSize = 100;
 //    const size_t kGoodSizedQueueSize = (2 << 16);  // 65536
-   
+
 // }  // namespace
 
 // using namespace test_performance;
@@ -37,7 +37,6 @@
 //    EXPECT_NE(runner.sum, received.sum);
 //    std::cout << "messages / second " << kAmount/(runner.nanotime * 1000000000)
 // }
-
 
 // // TEST(Performance, SPSC_Flexible_CircularFifo) {
 // //    auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<std::string>>(kSmallQueueSize);

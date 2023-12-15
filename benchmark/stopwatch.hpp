@@ -13,29 +13,37 @@
 #pragma once
 #include <chrono>
 
+namespace benchmark {
+
    // inspired by github/KjellKod/StopWatch
-   struct StopWatch {
+   struct stopwatch {
       using seconds = std::chrono::seconds;
       using milliseconds = std::chrono::milliseconds;
+      using microseconds = std::chrono::microseconds;
       using nanoseconds = std::chrono::nanoseconds;
       using clock = std::chrono::steady_clock;
       clock::time_point start_;
 
-      StopWatch() :
+      stopwatch() :
           start_(std::chrono::high_resolution_clock::now()) {}
-      ~StopWatch() = default;
+      ~stopwatch() = default;
 
-      auto now() const { 
-         return std::chrono::high_resolution_clock::now(); 
+      auto now() const {
+         return std::chrono::high_resolution_clock::now();
       };
 
-      uint64_t ElapsedSec() const {
+      uint64_t elapsed_sec() const {
          return std::chrono::duration_cast<seconds>(now() - start_).count();
       }
-      uint64_t ElapsedMs() const {
+      uint64_t elapsed_ms() const {
          return std::chrono::duration_cast<milliseconds>(now() - start_).count();
       }
-      uint64_t ElapsedNs() const {
+      uint64_t elapsed_us() const {
+         return std::chrono::duration_cast<microseconds>(now() - start_).count();
+      }
+      uint64_t elapsed_ns() const {
          return std::chrono::duration_cast<nanoseconds>(now() - start_).count();
       }
    };
+
+}  // namespace benchmark
