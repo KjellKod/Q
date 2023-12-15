@@ -75,8 +75,8 @@ namespace benchmark {
          unsigned int value = 0;
          Q_CHECK(q.wait_and_pop(value, kMaxWaitMs));
          sum += value;
-         if (value == stop) {
-            break;
+         if (value == stop) 
+Ò            break;
          }
       }
       return {sum, watch.elapsed_ns()};

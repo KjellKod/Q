@@ -12,22 +12,25 @@ namespace {
 
 void benchmark_spsc() {
    std::vector<benchmark::result_t> results;
-   double total_duration_us = 0.0;
-   for (int i = 0; i < 20; ++i) {
+   double total_duration_ns = 0.0;
+   for (int i = 0; i < 33; ++i) {
+      benchmark::stopwatch watch;
       auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<unsigned int>>(kGoodSizedQueueSize);
       auto result = benchmark::runSPSC(queue, kNumberOfItems);
       results.push_back(result);
-      total_duration_us += result.elapsed_time_in_us;
+      Q_CHECK(watch.elapsed_ns() > result.elapsed_time_in_ns);
+      total_duration_ns += result.elapsed_time_in_ns;
+      std::cout << "Run " << i << " took " << watch.elapsed_ms() << " ms" << std::endl;
    }
 
-   double total_duration_s = total_duration_us / 1e6;                   // convert microseconds to seconds
-   double calls_per_second = kNumberOfItems / (total_duration_s / 20);  // average calls per second
-
-   double total_duration_ns = total_duration_us * 1e3;                           // convert microseconds to nanoseconds
-   double average_call_duration_ns = total_duration_ns / (kNumberOfItems * 20);  // average call duration in nanoseconds
+   double total_duration_s = total_duration_ns / 1e9;  // convert ns to seconds
+   std::cout << "20 runs number of seconds " << total_duration_s << "\n";
+   double total_duration_us = total_duration_ns / 1e3;                          // convert ns to microseconds
+   double calls_per_second = (20 * kNumberOfItems) / (total_duration_s);        // average calls per second
+   double average_ops_duration_us = total_duration_us / (kNumberOfItems * 20);  // average call duration in nanoseconds
 
    std::cout << "Calls per second: " << calls_per_second << std::endl;
-   std::cout << "Average call duration: " << average_call_duration_ns << " ns" << std::endl;
+   std::cout << "Average call duration: " << average_ops_duration_us << " ns" << std::endl;
 }
 
 int main() {
