@@ -4,6 +4,14 @@
 N producer threads push a 4-byte integer onto a queue. M consumer threads op the integers from the queue. All producers posts 1,000,000 messages. The total time to send and receive all messages is measured. The test is repeated 20 times. 
 
 Maximum throughput, minimum throughput and mean throughput is shown in the graph. 
+
+## Example benchmark tests
+2018 Macbook Pro 15" 2.6 GHz Intel Core i7, 16 GB 2400 MHz DDR4
+**SPSC** testing with spsc lock-free circular queue, and with mutex protected queue. 
+
+
+
+
 Average time per ops (push/pop) is shown below. 
 
 # Thoughts on performance measurements. 
@@ -21,3 +29,4 @@ There are some really amazing C++ efficiency queues out there. Most of which are
 The Q library aims to have the queue logics to be extremely easy to understand, possibly with some infinitesimal performance degradation compared to near-impossible-to-reason-about queues. 
 
 The Q library is built on common building blocks and at it's core has easy to understand logic, the famous [lock-free-circular-fifo](https://kjellkod.wordpress.com/2012/11/28/c-debt-paid-in-full-wait-free-lock-free-queue/). I wrote about this in 2012 and with some minor changes it's pretty much the same root building block as then. It's nothing new about this queue, in fact there are a myriad of similar queues out there. 
+
