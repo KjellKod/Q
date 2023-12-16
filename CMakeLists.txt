@@ -59,6 +59,16 @@ file(GLOB HEADER_FILES ${PROJECT_SRC}/q/*.hpp)
 
 message("source files: ${SRC_FILES}")
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type (default: Release)" FORCE)
+endif()
+
+# Set compiler flags for high performance
+if(CMAKE_COMPILER_IS_GNUCXX)
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+endif()
+
+
 set(Q_LIBRARY qlib)
 add_library(${Q_LIBRARY} SHARED ${SRC_FILES})
 set(${Q_LIBRARY}_VERSION_STRING ${VERSION})
@@ -75,3 +85,7 @@ INCLUDE (${Q_SOURCE_DIR}/test/test.cmake)
 # EXAMPLES
 # ============================================================================
 INCLUDE (${Q_SOURCE_DIR}/examples/examples.cmake)
+# ==========================================================================
+# Benchmark    
+# ============================================================================
+INCLUDE (${Q_SOURCE_DIR}/benchmark/benchmark.cmake)

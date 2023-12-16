@@ -13,6 +13,8 @@ _The SPSC is a powerful building block from which you can create more lock-free 
 
 Please see [spsc documentation](spsc.md) for details. 
 
+##  Benchmark testing
+Please see [benchmark documentation](benchmark.md) for details.
 
 
 # NOT YET DOCUMENTED API

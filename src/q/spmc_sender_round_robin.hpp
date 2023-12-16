@@ -23,6 +23,8 @@
 *    queue until at most all queues are visited once.
 */
 
+#pragma once
+
 #include <chrono>
 #include <utility>
 #include <vector>
