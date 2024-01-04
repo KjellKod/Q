@@ -14,9 +14,7 @@
 #include "q/spsc.hpp"
 
 using namespace std;
-using FlexibleQ = spsc::flexible::circular_fifo<string>;
-using FixedQ = spsc::fixed::circular_fifo<string, 10>;
-using FixedSmallQ = spsc::fixed::circular_fifo<string, 3>;
+using circular_fifoQ = spsc::circular_fifo<string>;
 
 template <typename Q>
 void Initialization(Q& q) {
@@ -31,9 +29,7 @@ void Initialization(Q& q) {
 }
 
 TEST(SPCS_CircularQueue, Initialization) {
-   FlexibleQ dQ{10};
-   FixedQ fQ{};
-   Initialization(fQ);
+   circular_fifoQ dQ{10};
    Initialization(dQ);
 }
 
@@ -49,9 +45,7 @@ void AddOne(Q& q) {
 }
 
 TEST(SPCS_CircularQueue, AddOne) {
-   FlexibleQ dQ{10};
-   FixedQ fQ{};
-   AddOne(fQ);
+   circular_fifoQ dQ{10};
    AddOne(dQ);
 }
 
@@ -71,9 +65,7 @@ void AddRemoveOne(Q& q) {
 }
 
 TEST(SPCS_CircularQueue, AddRemoveOne) {
-   FlexibleQ dQ{10};
-   FixedQ fQ{};
-   AddRemoveOne(fQ);
+   circular_fifoQ dQ{10};
    AddRemoveOne(dQ);
 }
 
@@ -114,9 +106,7 @@ void LoopTillBeginning(Q& q) {
 }
 
 TEST(SPCS_CircularQueue, LoopTillBeginning) {
-   FlexibleQ dQ{3};
-   FixedSmallQ fQ{};
-   LoopTillBeginning(fQ);
+   circular_fifoQ dQ{3};
    LoopTillBeginning(dQ);
 }
 
@@ -135,9 +125,7 @@ void Full(Q& q) {
 }
 
 TEST(SPCS_CircularQueue, Full) {
-   FlexibleQ dQ{10};
-   FixedQ fQ{};
-   Full(fQ);
+   circular_fifoQ dQ{10};
    Full(dQ);
 }
 
@@ -169,8 +157,6 @@ void AddTillFullRemoveTillEmpty(Q& q) {
 }
 
 TEST(SPCS_CircularQueue, AddTillFullRemoveTillEmpty) {
-   spsc::fixed::circular_fifo<string, 10> fQ;
-   spsc::flexible::circular_fifo<string> dQ(10);
-   AddTillFullRemoveTillEmpty(fQ);
+   spsc::circular_fifo<string> dQ(10);
    AddTillFullRemoveTillEmpty(dQ);
 }

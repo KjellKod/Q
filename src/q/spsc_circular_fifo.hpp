@@ -30,7 +30,6 @@
 #include <vector>
 
 namespace spsc {
-   namespace flexible {
       template <typename Element>
       class circular_fifo {
         public:
@@ -138,5 +137,4 @@ namespace spsc {
       size_t circular_fifo<Element>::usage() const {
          return (100 * size() / kSize);
       }
-   }  // namespace flexible
 }  // namespace spsc

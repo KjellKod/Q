@@ -17,9 +17,7 @@
 
 using namespace std;
 using Type = string;
-using FlexibleQ = spsc::flexible::circular_fifo<Type>;
-using FixedQ = spsc::fixed::circular_fifo<Type, 100>;
-using FixedSmallQ = spsc::fixed::circular_fifo<Type, 2>;
+using circular_fifoQ = spsc::circular_fifo<Type>;
 using LockedQ = mpmc::lock_queue<Type>;
 
 template <typename Prod, typename Cons>
@@ -44,19 +42,19 @@ void ProdConsInitialization(Prod& prod, Cons& cons) {
 }
 
 TEST(Queue, ProdConsInitialization) {
-   auto queue = queue_api::CreateQueue<FlexibleQ>(10);
+   auto queue = queue_api::CreateQueue<circular_fifoQ>(10);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
 }
 
 TEST(Queue, ProdConsInitializationCopy) {
    using namespace queue_api;
-   using QueuePair = std::pair<Sender<FlexibleQ>, Receiver<FlexibleQ>>;
-   QueuePair queue = CreateQueue<FlexibleQ>(10);
-   Sender<FlexibleQ> sender1 = std::get<index::sender>(queue);
-   Sender<FlexibleQ> sender2(std::get<index::sender>(queue));
-   Receiver<FlexibleQ> receiver1 = std::get<index::receiver>(queue);
-   Receiver<FlexibleQ> receiver2(std::get<index::receiver>(queue));
+   using QueuePair = std::pair<Sender<circular_fifoQ>, Receiver<circular_fifoQ>>;
+   QueuePair queue = CreateQueue<circular_fifoQ>(10);
+   Sender<circular_fifoQ> sender1 = std::get<index::sender>(queue);
+   Sender<circular_fifoQ> sender2(std::get<index::sender>(queue));
+   Receiver<circular_fifoQ> receiver1 = std::get<index::receiver>(queue);
+   Receiver<circular_fifoQ> receiver2(std::get<index::receiver>(queue));
 }
 
 struct HasWaitAndPop {
@@ -117,8 +115,8 @@ struct HasPush {
    }
 };
 
-TEST(Queue, BaseAPI_Flexible) {
-   auto queue = queue_api::CreateQueue<FlexibleQ>(10);
+TEST(Queue, BaseAPI_circular_fifo) {
+   auto queue = queue_api::CreateQueue<circular_fifoQ>(10);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    EXPECT_TRUE(producer.empty());
@@ -130,18 +128,6 @@ TEST(Queue, BaseAPI_Flexible) {
    EXPECT_EQ(0, producer.usage());
 }
 
-TEST(Queue, BaseAPI_Fixed) {
-   auto queue = queue_api::CreateQueue<FixedQ>();
-   auto producer = std::get<queue_api::index::sender>(queue);
-   auto consumer = std::get<queue_api::index::receiver>(queue);
-   EXPECT_TRUE(producer.empty());
-   EXPECT_FALSE(producer.full());
-   EXPECT_EQ(100, producer.capacity());
-   EXPECT_EQ(100, producer.capacity_free());
-   EXPECT_EQ(0, producer.size());
-   EXPECT_TRUE(producer.lock_free());
-   EXPECT_EQ(0, producer.usage());
-}
 
 TEST(Queue, BaseAPI_DynamicLocked) {
    auto queue = queue_api::CreateQueue<LockedQ>(10);
@@ -216,10 +202,8 @@ void QAddOne(Prod& prod) {
 }
 
 TEST(Queue, CircularQueue_AddOne) {
-   FlexibleQ dQ{100};
+   circular_fifoQ dQ{100};
    QAddOne(dQ);
-
-   FixedQ fQ{};
    QAddOne(fQ);
 }
 
@@ -258,19 +242,13 @@ void AddTillFullRemoveTillEmpty(Prod& prod, Cons& cons) {
    }
 }
 
-TEST(Queue, FlexibleQueue_AddTillFullRemoveTillEmpty) {
-   auto queue = queue_api::CreateQueue<FlexibleQ>(100);
+TEST(Queue, circular_fifoQueue_AddTillFullRemoveTillEmpty) {
+   auto queue = queue_api::CreateQueue<circular_fifoQ>(100);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    AddTillFullRemoveTillEmpty(producer, consumer);
 }
 
-TEST(Queue, FixedQueue_AddTillFullRemoveTillEmpty) {
-   auto queue = queue_api::CreateQueue<FixedQ>();
-   auto producer = std::get<queue_api::index::sender>(queue);
-   auto consumer = std::get<queue_api::index::receiver>(queue);
-   AddTillFullRemoveTillEmpty(producer, consumer);
-}
 
 TEST(Queue, LockedQ_AddTillFullRemoveTillEmpty) {
    auto queue = queue_api::CreateQueue<LockedQ>(100);
@@ -298,15 +276,8 @@ void MoveArgument(Prod& prod, Cons& cons) {
    EXPECT_EQ("hello", arg);
 }
 
-TEST(Queue, FlexibleQ_MoveArgument) {
-   auto queue = queue_api::CreateQueue<FlexibleQ>(2);
-   auto producer = std::get<queue_api::index::sender>(queue);
-   auto consumer = std::get<queue_api::index::receiver>(queue);
-   MoveArgument(producer, consumer);
-}
-
-TEST(Queue, FixedSmallQ_MoveArgument) {
-   auto queue = queue_api::CreateQueue<FixedSmallQ>();
+TEST(Queue, circular_fifoQ_MoveArgument) {
+   auto queue = queue_api::CreateQueue<circular_fifoQ>(2);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveArgument(producer, consumer);
@@ -343,15 +314,8 @@ namespace {
    using Unique = unique_ptr<string>;
 }
 
-TEST(Queue, FlexibleQ_MoveUnique) {
-   auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<Unique>>(2);
-   auto producer = std::get<queue_api::index::sender>(queue);
-   auto consumer = std::get<queue_api::index::receiver>(queue);
-   MoveUniquePtrArgument(producer, consumer);
-}
-
-TEST(Queue, FixedQ_MoveUnique) {
-   auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<Unique, 2>>();
+TEST(Queue, circular_fifoQ_MoveUnique) {
+   auto queue = queue_api::CreateQueue<spsc::circular_fifo<Unique>>(2);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    MoveUniquePtrArgument(producer, consumer);
@@ -394,15 +358,8 @@ namespace {
    using Ptr = string*;
 }
 
-TEST(Queue, FlexibleQ_NoMoveOfPtr) {
-   auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<Ptr>>(2);
-   auto producer = std::get<queue_api::index::sender>(queue);
-   auto consumer = std::get<queue_api::index::receiver>(queue);
-   NoMovePtrArgument(producer, consumer);
-}
-
-TEST(Queue, FixedQ_NoMoveOfPtr) {
-   auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<Ptr, 2>>();
+TEST(Queue, circular_fifo_fifo_fifo_fifo_fifoQ_NoMoveOfPtr) {
+   auto queue = queue_api::CreateQueue<spsc::circular_fifo<Ptr>>(2);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
    NoMovePtrArgument(producer, consumer);

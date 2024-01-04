@@ -7,11 +7,11 @@
 #include "q/spsc.hpp"
 
 // Alias for easier readability
-using spsc_queue_type = spsc::flexible::circular_fifo<std::string>;
+using spsc_queue_type = spsc::circular_fifo<std::string>;
 using sender_type = std::shared_ptr<queue_api::Sender<spsc_queue_type>>;
 using receiver_type = std::shared_ptr<queue_api::Receiver<spsc_queue_type>>;
 
-void produceMessages(queue_api::Sender<spsc::flexible::circular_fifo<std::string>>& sender, std::atomic<bool>& should_continue_working) {
+void produceMessages(queue_api::Sender<spsc::circular_fifo<std::string>>& sender, std::atomic<bool>& should_continue_working) {
    std::vector<std::string> greetings = {"Hello", "Bonjour", "Tjena", "Ciao", "Hola", "Hallo", "Hei", "Aloha", "Shalom", "Namaste",
                                          "Hello", "Bonjour", "Tjena", "Ciao", "Hola", "Hallo", "Hei", "Aloha", "Shalom", "Namaste"};
 
@@ -43,8 +43,8 @@ void consumeMessages(ReceiverQ& receiver, std::atomic<bool>& keep_working) {
 }
 
 int main() {
-   // Create a flexible SPSC queue with a dynamic size, determined at runtime initialization.
-   auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<std::string>>(10);
+   // Create a circular_fifo SPSC queue with a dynamic size, determined at runtime initialization.
+   auto queue = queue_api::CreateQueue<spsc::circular_fifo<std::string>>(10);
 
    // Get the sender and receiver endpoints of the queue
    auto senderQ = std::get<queue_api::index::sender>(queue);

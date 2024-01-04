@@ -4,7 +4,7 @@
 #include "benchmark_runs.hpp"
 #include "q/mpmc_lock_queue.hpp"
 #include "q/q_api.hpp"
-#include "q/spsc_flexible_circular_fifo.hpp"
+#include "q/spsc_circular_fifo.hpp"
 
 namespace {
    const size_t kGoodSizedQueueSize = (2 << 16);  // 65536
@@ -76,7 +76,7 @@ int main() {
    // Print the headers
    std::cout << "#runs,\t#p,\t#c,\t#msgs/s,\t#min_msgs/s,\t#max_msgs/s,\tavg call [ns],\tcomment" << std::endl;
 
-   auto spsc_result = benchmark_queue<spsc::flexible::circular_fifo<unsigned int>>("SPSC benchmark");
+   auto spsc_result = benchmark_queue<spsc::circular_fifo<unsigned int>>("SPSC benchmark");
    print_result(spsc_result);
 
    auto spsc_lockqueue_result = benchmark_queue<mpmc::lock_queue<unsigned int>>("SPSC using the lock-based MPMC benchmark");

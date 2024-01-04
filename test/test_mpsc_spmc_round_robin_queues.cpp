@@ -13,11 +13,11 @@
 #include "q/mpsc_receiver_round_robin.hpp"
 #include "q/q_api.hpp"
 #include "q/spmc_sender_round_robin.hpp"
-#include "q/spsc_flexible_circular_fifo.hpp"
+#include "q/spsc_circular_fifo.hpp"
 
 TEST(MPSC_SPMC, CreateOneQueue_MPSC) {
    using element = std::string;
-   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype = spsc::circular_fifo<element>;
    auto queue = queue_api::CreateQueue<qtype>(10);
    auto producer = std::get<queue_api::index::sender>(queue);
    auto temporary = std::get<queue_api::index::receiver>(queue);
@@ -37,7 +37,7 @@ TEST(MPSC_SPMC, CreateOneQueue_MPSC) {
 
 TEST(MPSC_SPMC, CreateManyQueues) {
    using element = std::string;
-   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype = spsc::circular_fifo<element>;
    constexpr auto senderID = queue_api::index::sender;
    constexpr auto receiverID = queue_api::index::receiver;
 
@@ -58,7 +58,7 @@ TEST(MPSC_SPMC, CreateManyQueues) {
 
 TEST(MPSC_SPMC, RoundRobinOfOne) {
    using element = std::string;
-   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype = spsc::circular_fifo<element>;
    auto queue = queue_api::CreateQueue<qtype>(2);
    auto temporary = std::get<queue_api::index::receiver>(queue);
    // convert the setup to a MPSC setup
@@ -73,7 +73,7 @@ TEST(MPSC_SPMC, RoundRobinOfOne) {
 
 TEST(MPSC_SPMC, RoundRobinOfMany) {
    using element = std::string;
-   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype = spsc::circular_fifo<element>;
    auto q1 = queue_api::CreateQueue<qtype>(2);
    auto q2 = queue_api::CreateQueue<qtype>(2);
    auto r1 = std::get<queue_api::index::receiver>(q1);
@@ -94,7 +94,7 @@ TEST(MPSC_SPMC, RoundRobinOfMany) {
 
 TEST(MPSC_SPMC, full) {
    using element = std::string;
-   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype = spsc::circular_fifo<element>;
    auto q1 = queue_api::CreateQueue<qtype>(1);
    auto q2 = queue_api::CreateQueue<qtype>(1);
    auto r1 = std::get<queue_api::index::receiver>(q1);
@@ -119,7 +119,7 @@ TEST(MPSC_SPMC, full) {
 
 TEST(MPSC_SPMC, size) {
    using element = std::string;
-   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype = spsc::circular_fifo<element>;
    auto q1 = queue_api::CreateQueue<qtype>(1);
    auto q2 = queue_api::CreateQueue<qtype>(1);
    auto r1 = std::get<queue_api::index::receiver>(q1);
@@ -144,7 +144,7 @@ TEST(MPSC_SPMC, size) {
 
 TEST(MPSC_SPMC, pop) {
    using element = std::string;
-   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype = spsc::circular_fifo<element>;
    auto q1 = queue_api::CreateQueue<qtype>(1);
    auto q2 = queue_api::CreateQueue<qtype>(1);
    auto r1 = std::get<queue_api::index::receiver>(q1);
@@ -179,7 +179,7 @@ TEST(MPSC_SPMC, pop) {
 
 TEST(MPSC_SPMC, usage) {
    using element = std::string;
-   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype = spsc::circular_fifo<element>;
    auto q1 = queue_api::CreateQueue<qtype>(1);
    auto q2 = queue_api::CreateQueue<qtype>(1);
    auto r1 = std::get<queue_api::index::receiver>(q1);
@@ -201,7 +201,7 @@ TEST(MPSC_SPMC, usage) {
 
 TEST(MPSC_SPMC, CreateOneQueue_SPMC) {
    using element = std::string;
-   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype = spsc::circular_fifo<element>;
    auto queue = queue_api::CreateQueue<qtype>(10);
    auto temporary = std::get<queue_api::index::sender>(queue);
    auto consumer = std::get<queue_api::index::receiver>(queue);
@@ -221,7 +221,7 @@ TEST(MPSC_SPMC, CreateOneQueue_SPMC) {
 
 TEST(MPSC_SPMC, CreateManyQueues_SPMC) {
    using element = std::string;
-   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype = spsc::circular_fifo<element>;
    constexpr auto senderID = queue_api::index::sender;
    constexpr auto receiverID = queue_api::index::receiver;
 
@@ -242,7 +242,7 @@ TEST(MPSC_SPMC, CreateManyQueues_SPMC) {
 
 TEST(MPSC_SPMC, push_SPMC) {
    using element = std::string;
-   using qtype = spsc::flexible::circular_fifo<element>;
+   using qtype = spsc::circular_fifo<element>;
    auto q1 = queue_api::CreateQueue<qtype>(1);
    auto q2 = queue_api::CreateQueue<qtype>(1);
    auto r1 = std::get<queue_api::index::receiver>(q1);

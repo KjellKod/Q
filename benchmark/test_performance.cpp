@@ -26,8 +26,8 @@
 
 // using namespace test_performance;
 
-// TEST(Performance, SPSC_Flexible_CircularFifo) {
-//    auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<std::string>>(kGoodSizedQueueSize);
+// TEST(Performance, SPSC_circular_fifo_CircularFifo) {
+//    auto queue = queue_api::CreateQueue<spsc::circular_fifo<std::string>>(kGoodSizedQueueSize);
 //    auto result = RunSPS2C(queue, kAmount);
 //    EXPECT_EQ(result.size(), 3);
 //    auto sent = result[0];
@@ -38,13 +38,13 @@
 //    std::cout << "messages / second " << kAmount/(runner.nanotime * 1000000000)
 // }
 
-// // TEST(Performance, SPSC_Flexible_CircularFifo) {
-// //    auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<std::string>>(kSmallQueueSize);
+// // TEST(Performance, SPSC_circular_fifo_CircularFifo) {
+// //    auto queue = queue_api::CreateQueue<spsc::circular_fifo<std::string>>(kSmallQueueSize);
 // //    RunSPSC(queue, kAmount);
 // // }
 
-// // TEST(Performance, SPSC_Flexible_CircularFifo_Smaller) {
-// //    auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<std::string>>(kSmallQueueSize);
+// // TEST(Performance, SPSC_circular_fifo_CircularFifo_Smaller) {
+// //    auto queue = queue_api::CreateQueue<spsc::circular_fifo<std::string>>(kSmallQueueSize);
 // //    RunSPSC(queue, kAmount);
 // // }
 
@@ -73,9 +73,9 @@
 // //    RunSPSC(queue, kAmount);
 // // }
 
-// // TEST(Performance, DISABLED_SPSC_Flexible_20secRun_LargeData) {
+// // TEST(Performance, DISABLED_SPSC_circular_fifo_20secRun_LargeData) {
 // //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<spsc::flexible::circular_fifo<std::string>>(kSmallQueueSize);
+// //    auto queue = queue_api::CreateQueue<spsc::circular_fifo<std::string>>(kSmallQueueSize);
 // //    const size_t large = 65000;
 // //    std::string payload(large, 'x');
 // //    EXPECT_EQ(large, payload.size());
@@ -124,7 +124,7 @@
 // // TEST(Performance, DISABLED_lock_free__SPMC_1_to_4_20secRun_LargeData) {
 // //    using namespace std;
 // //    using element = std::string;
-// //    using qtype = spsc::flexible::circular_fifo<element>;
+// //    using qtype = spsc::circular_fifo<element>;
 // //    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
 // //    std::vector<qtype_pair> queues;
 // //    for (size_t i = 0; i < 4; ++i) {
@@ -141,7 +141,7 @@
 // // TEST(Performance, DISABLED_lock_free__SPMC_1_to_4_20secRun_SmallData) {
 // //    using namespace std;
 // //    using element = std::string;
-// //    using qtype = spsc::flexible::circular_fifo<element>;
+// //    using qtype = spsc::circular_fifo<element>;
 // //    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
 // //    std::vector<qtype_pair> queues;
 // //    for (size_t i = 0; i < 4; ++i) {
@@ -182,7 +182,7 @@
 // // TEST(Performance, DISABLED_lock_free__MPSC_4_to_1_20secRun_LargeData) {
 // //    using namespace std;
 // //    using element = std::string;
-// //    using qtype = spsc::flexible::circular_fifo<element>;
+// //    using qtype = spsc::circular_fifo<element>;
 // //    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
 // //    std::vector<qtype_pair> queues;
 // //    for (size_t i = 0; i < 4; ++i) {
@@ -199,7 +199,7 @@
 // // TEST(Performance, DISABLED_lock_free__MPSC_4_to_1_20secRun_SmallData) {
 // //    using namespace std;
 // //    using element = std::string;
-// //    using qtype = spsc::flexible::circular_fifo<element>;
+// //    using qtype = spsc::circular_fifo<element>;
 // //    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
 // //    std::vector<qtype_pair> queues;
 // //    for (size_t i = 0; i < 4; ++i) {
