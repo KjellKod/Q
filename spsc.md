@@ -2,15 +2,14 @@
 
 This lock-free queue is safe to use between one producer thread and one consumer thread. 
 **SPSC lock-free options:**
-1. `fixed_circular_fifo`: Set the size of the queue in your code, the size is set during compiled time.
-1. `flexible_circular_fifo`: Set the size of the queue in the constructor.
+1. `circular_fifo`: Set the size of the queue in the constructor.
 
 _The SPSC is a powerful building block from which you can create more lock-free complicated queue structures if number of producers and consumers are known at creation time._ 
 
 **SPSC Naive Example**
 The raw and "unsafe" way to create the queue is to just "create it".  This makes it harder to use right as the producer and consumer threads  must only touch "their" parts of the API or the queue would not be thread-safe. 
 ```
-using spsc_queue_type = spsc::flexible::circular_fifo<string>;
+using spsc_queue_type = spsc::circular_fifo<string>;
 auto q_size = 1000;
 auto spsc_queue = spsc_queue_type(q_size); 
 //  through spsc_queue the FULL producer/consumer API is available, 
