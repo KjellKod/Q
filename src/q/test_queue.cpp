@@ -128,7 +128,6 @@ TEST(Queue, BaseAPI_circular_fifo) {
    EXPECT_EQ(0, producer.usage());
 }
 
-
 TEST(Queue, BaseAPI_DynamicLocked) {
    auto queue = queue_api::CreateQueue<LockedQ>(10);
    auto producer = std::get<queue_api::index::sender>(queue);
@@ -248,7 +247,6 @@ TEST(Queue, circular_fifoQueue_AddTillFullRemoveTillEmpty) {
    auto consumer = std::get<queue_api::index::receiver>(queue);
    AddTillFullRemoveTillEmpty(producer, consumer);
 }
-
 
 TEST(Queue, LockedQ_AddTillFullRemoveTillEmpty) {
    auto queue = queue_api::CreateQueue<LockedQ>(100);

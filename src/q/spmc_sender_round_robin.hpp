@@ -34,45 +34,48 @@
 
 // MPSC : Many Single Producers - Single Consumer
 namespace spmc {
-   namespace round_robin {
-      // Use case: One Producer Many Consumers
-      // Instead of using a MPMC queue you can use the SPMC
-      //                          (One Single Consumer) - Many Single Producer (spsc queues)-
-      //
-      // The Producer will round-robin fetch attempts in a fair scheduling policy
-      // the lock-free base type will typcially make this a much faster choice than using the mutex
-      // protected MPSC
-      //
-      // WARNING: The same constraints as SPSC are in place for this queue. Only ONE thread may
-      // act as the producer
-      template <typename QType>
-      class Sender : public ::round_robin::API<QType, queue_api::Sender<QType>> {
-        public:
-         using QueueAPI = ::round_robin::API<QType, queue_api::Sender<QType>>;
+   namespace fixed_size {
+      namespace round_robin {
+         // Use case: One Producer Many Consumers
+         // Instead of using a MPMC queue you can use the SPMC
+         //                          (One Single Consumer) - Many Single Producer (spsc queues)-
+         //
+         // The Producer will round-robin fetch attempts in a fair scheduling policy
+         // the lock-free base type will typcially make this a much faster choice than using the mutex
+         // protected MPSC
+         //
+         // WARNING: The same constraints as SPSC are in place for this queue. Only ONE thread may
+         // act as the producer
+         template <typename QType>
+         class Sender : public ::round_robin::API<QType, queue_api::Sender<QType>> {
+           public:
+            using QueueAPI = ::round_robin::API<QType, queue_api::Sender<QType>>;
 
-         Sender(std::vector<queue_api::Sender<QType>> senders);
-         virtual ~Sender() = default;
+            /// spmc - by using vector of consumer queues, the producer will round robin each push to fair scheduling for the multiplc consumers
+            Sender(std::vector<queue_api::Sender<QType>> senders);
+            virtual ~Sender() = default;
 
+            template <typename Element>
+            bool push(Element& item);
+         };
+
+         template <typename QType>
+         Sender<QType>::Sender(std::vector<queue_api::Sender<QType>> senders) :
+             QueueAPI(senders) {}
+
+         template <typename QType>
          template <typename Element>
-         bool push(Element& item);
-      };
+         bool Sender<QType>::push(Element& item) {
+            bool result = false;
+            const size_t loop_check = QueueAPI::queues_.size();
 
-      template <typename QType>
-      Sender<QType>::Sender(std::vector<queue_api::Sender<QType>> senders) :
-          QueueAPI(senders) {}
-
-      template <typename QType>
-      template <typename Element>
-      bool Sender<QType>::push(Element& item) {
-         bool result = false;
-         const size_t loop_check = QueueAPI::queues_.size();
-
-         size_t count = 0;
-         while (!result && count++ < loop_check) {
-            result = QueueAPI::queues_[QueueAPI::current_].push(item);
-            QueueAPI::current_ = QueueAPI::increment(QueueAPI::current_);
+            size_t count = 0;
+            while (!result && count++ < loop_check) {
+               result = QueueAPI::queues_[QueueAPI::current_].push(item);
+               QueueAPI::current_ = QueueAPI::increment(QueueAPI::current_);
+            }
+            return result;
          }
-         return result;
-      }
-   }  // namespace round_robin
+      }  // namespace round_robin
+   }     // namespace fixed_size
 }  // namespace spmc

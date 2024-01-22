@@ -1,16 +1,16 @@
-/*
-* Not any company's property but Public-Domain
-* Do with source-code as you will. No requirement to keep this
-* header if need to use it/change it/ or do whatever with it
-*
-* Note that there is No guarantee that this code will work
-* and I take no responsibility for this code and any problems you
-* might get if using it.
-*
-* Originally published at https://github.com/KjellKod/Q
-*/
+// /*
+// * Not any company's property but Public-Domain
+// * Do with source-code as you will. No requirement to keep this
+// * header if need to use it/change it/ or do whatever with it
+// *
+// * Note that there is No guarantee that this code will work
+// * and I take no responsibility for this code and any problems you
+// * might get if using it.
+// *
+// * Originally published at https://github.com/KjellKod/Q
+// */
 
-#pragma once
+// #pragma once
 // #include <gtest/gtest.h>
 // #include <atomic>
 // #include <chrono>
@@ -21,7 +21,7 @@
 // #include <q/spmc_sender_round_robin.hpp>
 // #include <string>
 // #include <vector>
-// #include "test_helper.hpp"
+// //#include "test_helper.hpp"
 
 // namespace test_performance {
 //    using benchmark::result_t = std::vector<std::string>;
@@ -121,252 +121,252 @@
 //       return amountReceived;
 //    }
 
-// //    template <typename T>
-// //    std::vector<benchmark::result_t> RunSPS2C(T queue, size_t howMany) {
-// //       std::atomic<bool> producerStart{false};
-// //       std::atomic<bool> consumerStart{false};
-// //       std::vector<benchmark::result_t> result;
+//    template <typename T>
+//    std::vector<benchmark::result_t> RunSPS2C(T queue, size_t howMany) {
+//       std::atomic<bool> producerStart{false};
+//       std::atomic<bool> consumerStart{false};
+//       std::vector<benchmark::result_t> result;
 
-// //       using namespace std;
-// //       using namespace chrono;
-// //       auto producer = std::get<queue_api::index::sender>(queue);
-// //       auto consumer = std::get<queue_api::index::receiver>(queue);
+//       using namespace std;
+//       using namespace chrono;
+//       auto producer = std::get<queue_api::index::sender>(queue);
+//       auto consumer = std::get<queue_api::index::receiver>(queue);
 
-// //       benchmark::stopwatch watch;
-// //       size_t start = 1;
-// //       size_t stop = howMany;
-// //       auto prodResult = std::async(std::launch::async, Push<decltype(producer)>,
-// //                                    producer, start, stop, std::ref(producerStart), std::ref(consumerStart));
-// //       auto consResult = std::async(std::launch::async, Get<decltype(consumer)>,
-// //                                    consumer, start, stop, std::ref(producerStart), std::ref(consumerStart));
+//       benchmark::stopwatch watch;
+//       size_t start = 1;
+//       size_t stop = howMany;
+//       auto prodResult = std::async(std::launch::async, Push<decltype(producer)>,
+//                                    producer, start, stop, std::ref(producerStart), std::ref(consumerStart));
+//       auto consResult = std::async(std::launch::async, Get<decltype(consumer)>,
+//                                    consumer, start, stop, std::ref(producerStart), std::ref(consumerStart));
 
-// //       auto sent = prodResult.get();
-// //       auto received = consResult.get();
-// //       benchmark::result_t expected = {watch.ElapsedNs(), 0 };
-// //       return {sent, received, expected};
-// //     //   auto t2 = high_resolution_clock::now();
-// //     //   auto us = duration_cast<microseconds>(t2 - t1).count();
-// //     //   std::cout << "Push - Pull #" << howMany << " items in: " << us << " us" << std::endl;
-// //     //   std::cout << "Average: " << 1000 * ((float)us / (float)howMany) << " ns" << std::endl;
-// //    }
+//       auto sent = prodResult.get();
+//       auto received = consResult.get();
+//       benchmark::result_t expected = {watch.ElapsedNs(), 0};
+//       return {sent, received, expected};
+//       //   auto t2 = high_resolution_clock::now();
+//       //   auto us = duration_cast<microseconds>(t2 - t1).count();
+//       //   std::cout << "Push - Pull #" << howMany << " items in: " << us << " us" << std::endl;
+//       //   std::cout << "Average: " << 1000 * ((float)us / (float)howMany) << " ns" << std::endl;
+//    }
 
-// //    template <typename T>
-// //    void RunSPSC(T queue, size_t howMany) {
-// //       std::atomic<bool> producerStart{false};
-// //       std::atomic<bool> consumerStart{false};
+//    template <typename T>
+//    void RunSPSC(T queue, size_t howMany) {
+//       std::atomic<bool> producerStart{false};
+//       std::atomic<bool> consumerStart{false};
 
-// //       using namespace std;
-// //       using namespace chrono;
-// //       auto producer = std::get<queue_api::index::sender>(queue);
-// //       auto consumer = std::get<queue_api::index::receiver>(queue);
+//       using namespace std;
+//       using namespace chrono;
+//       auto producer = std::get<queue_api::index::sender>(queue);
+//       auto consumer = std::get<queue_api::index::receiver>(queue);
 
-// //       auto t1 = high_resolution_clock::now();
-// //       size_t start = 1;
-// //       size_t stop = howMany;
-// //       auto prodResult = std::async(std::launch::async, Push<decltype(producer)>,
-// //                                    producer, start, stop, std::ref(producerStart), std::ref(consumerStart));
-// //       auto consResult = std::async(std::launch::async, Get<decltype(consumer)>,
-// //                                    consumer, start, stop, std::ref(producerStart), std::ref(consumerStart));
+//       auto t1 = high_resolution_clock::now();
+//       size_t start = 1;
+//       size_t stop = howMany;
+//       auto prodResult = std::async(std::launch::async, Push<decltype(producer)>,
+//                                    producer, start, stop, std::ref(producerStart), std::ref(consumerStart));
+//       auto consResult = std::async(std::launch::async, Get<decltype(consumer)>,
+//                                    consumer, start, stop, std::ref(producerStart), std::ref(consumerStart));
 
-// //       auto expected = prodResult.get();
-// //       auto received = consResult.get();
-// //       auto t2 = high_resolution_clock::now();
-// //       auto us = duration_cast<microseconds>(t2 - t1).count();
-// //       std::cout << "Push - Pull #" << howMany << " items in: " << us << " us" << std::endl;
-// //       std::cout << "Average: " << 1000 * ((float)us / (float)howMany) << " ns" << std::endl;
+//       auto expected = prodResult.get();
+//       auto received = consResult.get();
+//       auto t2 = high_resolution_clock::now();
+//       auto us = duration_cast<microseconds>(t2 - t1).count();
+//       std::cout << "Push - Pull #" << howMany << " items in: " << us << " us" << std::endl;
+//       std::cout << "Average: " << 1000 * ((float)us / (float)howMany) << " ns" << std::endl;
 
-// //       EXPECT_EQ(howMany, received.size());
-// //       EXPECT_EQ(expected, received);
-// //    }
+//       EXPECT_EQ(howMany, received.size());
+//       EXPECT_EQ(expected, received);
+//    }
 
-// //    template <typename T>
-// //    void RunMPMC(T queue, std::string data, size_t numberProducers,
-// //                 size_t numberConsumers, const size_t timeToRunInSec) {
-// //       std::atomic<size_t> producerCount{0};
-// //       std::atomic<size_t> consumerCount{0};
-// //       std::atomic<bool> producerStop{false};
-// //       std::atomic<bool> consumerStop{false};
+//    template <typename T>
+//    void RunMPMC(T queue, std::string data, size_t numberProducers,
+//                 size_t numberConsumers, const size_t timeToRunInSec) {
+//       std::atomic<size_t> producerCount{0};
+//       std::atomic<size_t> consumerCount{0};
+//       std::atomic<bool> producerStop{false};
+//       std::atomic<bool> consumerStop{false};
 
-// //       using namespace std;
-// //       using namespace std::chrono;
-// //       auto producer = std::get<queue_api::index::sender>(queue);
-// //       auto consumer = std::get<queue_api::index::receiver>(queue);
-// //       std::vector<std::future<size_t>> producerResult;
-// //       producerResult.reserve(numberProducers);
+//       using namespace std;
+//       using namespace std::chrono;
+//       auto producer = std::get<queue_api::index::sender>(queue);
+//       auto consumer = std::get<queue_api::index::receiver>(queue);
+//       std::vector<std::future<size_t>> producerResult;
+//       producerResult.reserve(numberProducers);
 
-// //       for (size_t i = 0; i < numberProducers; ++i) {
-// //          producerResult.emplace_back(std::async(std::launch::async, PushUntil<decltype(producer)>,
-// //                                                 producer, data,
-// //                                                 std::ref(producerCount),
-// //                                                 std::ref(producerStop)));
-// //       }
-// //       std::vector<std::future<size_t>> consumerResult;
-// //       consumerResult.reserve(numberConsumers);
-// //       for (size_t i = 0; i < numberConsumers; ++i) {
-// //          consumerResult.emplace_back(std::async(std::launch::async, GetUntil<decltype(consumer)>,
-// //                                                 consumer, data,
-// //                                                 std::ref(consumerCount),
-// //                                                 std::ref(consumerStop)));
-// //       }
+//       for (size_t i = 0; i < numberProducers; ++i) {
+//          producerResult.emplace_back(std::async(std::launch::async, PushUntil<decltype(producer)>,
+//                                                 producer, data,
+//                                                 std::ref(producerCount),
+//                                                 std::ref(producerStop)));
+//       }
+//       std::vector<std::future<size_t>> consumerResult;
+//       consumerResult.reserve(numberConsumers);
+//       for (size_t i = 0; i < numberConsumers; ++i) {
+//          consumerResult.emplace_back(std::async(std::launch::async, GetUntil<decltype(consumer)>,
+//                                                 consumer, data,
+//                                                 std::ref(consumerCount),
+//                                                 std::ref(consumerStop)));
+//       }
 
-// //       using namespace std::chrono_literals;
-// //       while (consumerCount.load() < numberConsumers && producerCount.load() < numberProducers) {
-// //          std::this_thread::sleep_for(1us);
-// //       }
-// //       benchmark::stopwatch elapsedRun;
-// //       while (elapsedRun.elapsed_sec() < timeToRunInSec) {
-// //          std::this_thread::sleep_for(1us);
-// //       }
+//       using namespace std::chrono_literals;
+//       while (consumerCount.load() < numberConsumers && producerCount.load() < numberProducers) {
+//          std::this_thread::sleep_for(1us);
+//       }
+//       benchmark::stopwatch elapsedRun;
+//       while (elapsedRun.elapsed_sec() < timeToRunInSec) {
+//          std::this_thread::sleep_for(1us);
+//       }
 
-// //       producerStop.store(true, std::memory_order_release);
-// //       size_t amountProduced = 0;
-// //       for (auto& result : producerResult) {
-// //          amountProduced += result.get();
-// //       }
-// //       consumerStop.store(true, std::memory_order_release);
-// //       size_t amountConsumed = 0;
-// //       for (auto& result : consumerResult) {
-// //          amountConsumed += result.get();
-// //       }
+//       producerStop.store(true, std::memory_order_release);
+//       size_t amountProduced = 0;
+//       for (auto& result : producerResult) {
+//          amountProduced += result.get();
+//       }
+//       consumerStop.store(true, std::memory_order_release);
+//       size_t amountConsumed = 0;
+//       for (auto& result : consumerResult) {
+//          amountConsumed += result.get();
+//       }
 
-// //       // amoundProduced >= amountConsumed
-// //       // amountProduced <= amountConsumed + 100
-// //       EXPECT_GE(amountProduced, amountConsumed) << "produced: " << amountProduced
-// //                                                 << ", consumed: " << amountConsumed << ", capacity: " << producer.capacity();
+//       // amoundProduced >= amountConsumed
+//       // amountProduced <= amountConsumed + 100
+//       EXPECT_GE(amountProduced, amountConsumed) << "produced: " << amountProduced
+//                                                 << ", consumed: " << amountConsumed << ", capacity: " << producer.capacity();
 
-// //       auto elapsedTimeNs = elapsedRun.ElapsedNs();
-// //       auto elapsedTimeSec = elapsedTimeNs / (1000000000);
-// //       std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
-// //       std::cout << "Average transaction: " << elapsedTimeNs / amountConsumed << " ns" << std::endl;
-// //       std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
-// //       std::cout << "Transation GByte/s: " << amountConsumed * data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;
-// //    }
+//       auto elapsedTimeNs = elapsedRun.ElapsedNs();
+//       auto elapsedTimeSec = elapsedTimeNs / (1000000000);
+//       std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
+//       std::cout << "Average transaction: " << elapsedTimeNs / amountConsumed << " ns" << std::endl;
+//       std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
+//       std::cout << "Transation GByte/s: " << amountConsumed * data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;
+//    }
 
-// //    template <typename QType, typename QTypePair>
-// //    void RunMPSC(std::vector<QTypePair> queues, std::string data, const size_t timeToRunInSec) {
-// //       std::atomic<size_t> producerCount{0};
-// //       std::atomic<size_t> consumerCount{0};
-// //       std::atomic<bool> producerStop{false};
-// //       std::atomic<bool> consumerStop{false};
+//    template <typename QType, typename QTypePair>
+//    void RunMPSC(std::vector<QTypePair> queues, std::string data, const size_t timeToRunInSec) {
+//       std::atomic<size_t> producerCount{0};
+//       std::atomic<size_t> consumerCount{0};
+//       std::atomic<bool> producerStop{false};
+//       std::atomic<bool> consumerStop{false};
 
-// //       std::vector<queue_api::Receiver<QType>> receivers;
-// //       std::vector<queue_api::Sender<QType>> senders;
+//       std::vector<queue_api::Receiver<QType>> receivers;
+//       std::vector<queue_api::Sender<QType>> senders;
 
-// //       for (auto& q : queues) {
-// //          receivers.push_back(std::get<queue_api::index::receiver>(q));
-// //          senders.push_back(std::get<queue_api::index::sender>(q));
-// //       }
-// //       const size_t numberProducers = senders.size();
-// //       mpsc::round_robin::Receiver<QType> consumer(receivers);
+//       for (auto& q : queues) {
+//          receivers.push_back(std::get<queue_api::index::receiver>(q));
+//          senders.push_back(std::get<queue_api::index::sender>(q));
+//       }
+//       const size_t numberProducers = senders.size();
+//       mpsc::fixed_size::round_robin::Receiver<QType> consumer(receivers);
 
-// //       std::vector<std::future<size_t>> producerResult;
-// //       producerResult.reserve(senders.size());
+//       std::vector<std::future<size_t>> producerResult;
+//       producerResult.reserve(senders.size());
 
-// //       for (size_t i = 0; i < senders.size(); ++i) {
-// //          auto producer = senders[i];
-// //          producerResult.emplace_back(std::async(std::launch::async, PushUntil<decltype(producer)>, senders[i], data,
-// //                                                 std::ref(producerCount), std::ref(producerStop)));
-// //       }
-// //       std::vector<std::future<size_t>> consumerResult;
-// //       const size_t numberConsumers = 1;
-// //       consumerResult.reserve(numberConsumers);
-// //       consumerResult.emplace_back(std::async(std::launch::async, GetUntil<decltype(consumer)>, consumer, data,
-// //                                              std::ref(consumerCount), std::ref(consumerStop)));
+//       for (size_t i = 0; i < senders.size(); ++i) {
+//          auto producer = senders[i];
+//          producerResult.emplace_back(std::async(std::launch::async, PushUntil<decltype(producer)>, senders[i], data,
+//                                                 std::ref(producerCount), std::ref(producerStop)));
+//       }
+//       std::vector<std::future<size_t>> consumerResult;
+//       const size_t numberConsumers = 1;
+//       consumerResult.reserve(numberConsumers);
+//       consumerResult.emplace_back(std::async(std::launch::async, GetUntil<decltype(consumer)>, consumer, data,
+//                                              std::ref(consumerCount), std::ref(consumerStop)));
 
-// //       using namespace std::chrono_literals;
-// //       while (consumerCount.load() < numberConsumers && producerCount.load() < numberProducers) {
-// //          std::this_thread::sleep_for(1us);
-// //       }
-// //       benchmark::stopwatch elapsedRun;
-// //       while (elapsedRun.elapsed_sec() < timeToRunInSec) {
-// //          std::this_thread::sleep_for(1us);
-// //       }
+//       using namespace std::chrono_literals;
+//       while (consumerCount.load() < numberConsumers && producerCount.load() < numberProducers) {
+//          std::this_thread::sleep_for(1us);
+//       }
+//       benchmark::stopwatch elapsedRun;
+//       while (elapsedRun.elapsed_sec() < timeToRunInSec) {
+//          std::this_thread::sleep_for(1us);
+//       }
 
-// //       producerStop.store(true, std::memory_order_release);
-// //       size_t amountProduced = 0;
-// //       for (auto& result : producerResult) {
-// //          amountProduced += result.get();
-// //       }
-// //       consumerStop.store(true, std::memory_order_release);
-// //       size_t amountConsumed = 0;
-// //       for (auto& result : consumerResult) {
-// //          amountConsumed += result.get();
-// //       }
+//       producerStop.store(true, std::memory_order_release);
+//       size_t amountProduced = 0;
+//       for (auto& result : producerResult) {
+//          amountProduced += result.get();
+//       }
+//       consumerStop.store(true, std::memory_order_release);
+//       size_t amountConsumed = 0;
+//       for (auto& result : consumerResult) {
+//          amountConsumed += result.get();
+//       }
 
-// //       // amoundProduced >= amountConsumed
-// //       // amountProduced <= amountConsumed + 100
-// //       EXPECT_GE(amountProduced, amountConsumed) << "produced: " << amountProduced << ", consumed: " << amountConsumed << ", capacity: " << consumer.capacity();
+//       // amoundProduced >= amountConsumed
+//       // amountProduced <= amountConsumed + 100
+//       EXPECT_GE(amountProduced, amountConsumed) << "produced: " << amountProduced << ", consumed: " << amountConsumed << ", capacity: " << consumer.capacity();
 
-// //       auto elapsedTimeNs = elapsedRun.ElapsedNs();
-// //       auto elapsedTimeSec = elapsedTimeNs / (1000000000);
-// //       std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
-// //       std::cout << "Average transaction: " << elapsedTimeNs / amountConsumed << " ns" << std::endl;
+//       auto elapsedTimeNs = elapsedRun.ElapsedNs();
+//       auto elapsedTimeSec = elapsedTimeNs / (1000000000);
+//       std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
+//       std::cout << "Average transaction: " << elapsedTimeNs / amountConsumed << " ns" << std::endl;
 
-// //       std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
-// //       std::cout << "Transation GByte/s: " << amountConsumed * data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;
-// //    }
+//       std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
+//       std::cout << "Transation GByte/s: " << amountConsumed * data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;
+//    }
 
-// //    template <typename QType, typename QTypePair>
-// //    void RunSPMC(std::vector<QTypePair> queues, std::string data, const size_t timeToRunInSec) {
-// //       std::atomic<size_t> producerCount{0};
-// //       std::atomic<size_t> consumerCount{0};
-// //       std::atomic<bool> producerStop{false};
-// //       std::atomic<bool> consumerStop{false};
+//    template <typename QType, typename QTypePair>
+//    void RunSPMC(std::vector<QTypePair> queues, std::string data, const size_t timeToRunInSec) {
+//       std::atomic<size_t> producerCount{0};
+//       std::atomic<size_t> consumerCount{0};
+//       std::atomic<bool> producerStop{false};
+//       std::atomic<bool> consumerStop{false};
 
-// //       std::vector<queue_api::Receiver<QType>> receivers;
-// //       std::vector<queue_api::Sender<QType>> senders;
+//       std::vector<queue_api::Receiver<QType>> receivers;
+//       std::vector<queue_api::Sender<QType>> senders;
 
-// //       for (auto& q : queues) {
-// //          receivers.push_back(std::get<queue_api::index::receiver>(q));
-// //          senders.push_back(std::get<queue_api::index::sender>(q));
-// //       }
-// //       const size_t numberConsumers = senders.size();
-// //       spmc::round_robin::Sender<QType> producer(senders);
-// //       std::vector<std::future<size_t>> producerResult;
-// //       const size_t numberProducers = 1;
-// //       producerResult.reserve(numberProducers);
-// //       producerResult.emplace_back(std::async(std::launch::async, PushUntil<decltype(producer)>, producer, data,
-// //                                              std::ref(producerCount), std::ref(producerStop)));
+//       for (auto& q : queues) {
+//          receivers.push_back(std::get<queue_api::index::receiver>(q));
+//          senders.push_back(std::get<queue_api::index::sender>(q));
+//       }
+//       const size_t numberConsumers = senders.size();
+//       spmc::fixed_size::round_robin::Sender<QType> producer(senders);
+//       std::vector<std::future<size_t>> producerResult;
+//       const size_t numberProducers = 1;
+//       producerResult.reserve(numberProducers);
+//       producerResult.emplace_back(std::async(std::launch::async, PushUntil<decltype(producer)>, producer, data,
+//                                              std::ref(producerCount), std::ref(producerStop)));
 
-// //       std::vector<std::future<size_t>> consumerResult;
-// //       consumerResult.reserve(receivers.size());
-// //       for (size_t i = 0; i < receivers.size(); ++i) {
-// //          auto consumer = receivers[i];
-// //          consumerResult.emplace_back(std::async(std::launch::async, GetUntil<decltype(consumer)>, receivers[i], data,
-// //                                                 std::ref(consumerCount), std::ref(consumerStop)));
-// //       }
+//       std::vector<std::future<size_t>> consumerResult;
+//       consumerResult.reserve(receivers.size());
+//       for (size_t i = 0; i < receivers.size(); ++i) {
+//          auto consumer = receivers[i];
+//          consumerResult.emplace_back(std::async(std::launch::async, GetUntil<decltype(consumer)>, receivers[i], data,
+//                                                 std::ref(consumerCount), std::ref(consumerStop)));
+//       }
 
-// //       using namespace std::chrono_literals;
-// //       while (consumerCount.load() < numberConsumers && producerCount.load() < numberProducers) {
-// //          std::this_thread::sleep_for(1us);
-// //       }
-// //       benchmark::stopwatch elapsedRun;
-// //       while (elapsedRun.elapsed_sec() < timeToRunInSec) {
-// //          std::this_thread::sleep_for(1us);
-// //       }
+//       using namespace std::chrono_literals;
+//       while (consumerCount.load() < numberConsumers && producerCount.load() < numberProducers) {
+//          std::this_thread::sleep_for(1us);
+//       }
+//       benchmark::stopwatch elapsedRun;
+//       while (elapsedRun.elapsed_sec() < timeToRunInSec) {
+//          std::this_thread::sleep_for(1us);
+//       }
 
-// //       producerStop.store(true, std::memory_order_release);
-// //       size_t amountProduced = 0;
-// //       for (auto& result : producerResult) {
-// //          amountProduced += result.get();
-// //       }
-// //       consumerStop.store(true, std::memory_order_release);
-// //       size_t amountConsumed = 0;
-// //       for (auto& result : consumerResult) {
-// //          amountConsumed += result.get();
-// //       }
+//       producerStop.store(true, std::memory_order_release);
+//       size_t amountProduced = 0;
+//       for (auto& result : producerResult) {
+//          amountProduced += result.get();
+//       }
+//       consumerStop.store(true, std::memory_order_release);
+//       size_t amountConsumed = 0;
+//       for (auto& result : consumerResult) {
+//          amountConsumed += result.get();
+//       }
 
-// //       // amoundProduced >= amountConsumed
-// //       // amountProduced <= amountConsumed + 100
-// //       EXPECT_GE(amountProduced, amountConsumed) << "produced: " << amountProduced << ", consumed: " << amountConsumed << ", capacity: " << producer.capacity();
+//       // amoundProduced >= amountConsumed
+//       // amountProduced <= amountConsumed + 100
+//       EXPECT_GE(amountProduced, amountConsumed) << "produced: " << amountProduced << ", consumed: " << amountConsumed << ", capacity: " << producer.capacity();
 
-// //       auto elapsedTimeNs = elapsedRun.ElapsedNs();
-// //       auto elapsedTimeSec = elapsedTimeNs / (1000000000);
-// //       std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
-// //       std::cout << "Average transaction: " << elapsedTimeNs / amountConsumed << " ns" << std::endl;
+//       auto elapsedTimeNs = elapsedRun.ElapsedNs();
+//       auto elapsedTimeSec = elapsedTimeNs / (1000000000);
+//       std::cout << "Transaction/s: " << amountConsumed / elapsedTimeSec << std::endl;
+//       std::cout << "Average transaction: " << elapsedTimeNs / amountConsumed << " ns" << std::endl;
 
-// //       std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
-// //       std::cout << "Transation GByte/s: " << amountConsumed * data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;
-// //    }
+//       std::cout << "Transaction/s per consumer: " << amountConsumed / elapsedTimeSec / numberConsumers << std::endl;
+//       std::cout << "Transation GByte/s: " << amountConsumed * data.size() / (1024 * 1024 * 1024) / elapsedTimeSec << std::endl;
+//    }
 
-// // }  // namespace test_performance
+// }  // namespace test_performance
