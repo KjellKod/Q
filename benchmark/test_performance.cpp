@@ -9,7 +9,7 @@
 // * Originally published at: https://github.com/KjellKod/Q
 // */
 
-// #include "test_performance.hpp"
+// //#include "test_performance.hpp"
 // #include <gtest/gtest.h>
 // #include <algorithm>
 // #include <future>
@@ -38,189 +38,189 @@
 //    std::cout << "messages / second " << kAmount/(runner.nanotime * 1000000000)
 // }
 
-// // TEST(Performance, SPSC_circular_fifo_CircularFifo) {
-// //    auto queue = queue_api::CreateQueue<spsc::circular_fifo<std::string>>(kSmallQueueSize);
-// //    RunSPSC(queue, kAmount);
-// // }
+// TEST(Performance, SPSC_circular_fifo_CircularFifo) {
+//    auto queue = queue_api::CreateQueue<spsc::circular_fifo<std::string>>(kSmallQueueSize);
+//    RunSPSC(queue, kAmount);
+// }
 
-// // TEST(Performance, SPSC_circular_fifo_CircularFifo_Smaller) {
-// //    auto queue = queue_api::CreateQueue<spsc::circular_fifo<std::string>>(kSmallQueueSize);
-// //    RunSPSC(queue, kAmount);
-// // }
+// TEST(Performance, SPSC_circular_fifo_CircularFifo_Smaller) {
+//    auto queue = queue_api::CreateQueue<spsc::circular_fifo<std::string>>(kSmallQueueSize);
+//    RunSPSC(queue, kAmount);
+// }
 
-// // TEST(Performance, SPSC_Fixed_CircularFifo) {
-// //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<string, kSmallQueueSize>>();
-// //    RunSPSC(queue, kAmount);
-// // }
+// TEST(Performance, SPSC_Fixed_CircularFifo) {
+//    using namespace std;
+//    auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<string, kSmallQueueSize>>();
+//    RunSPSC(queue, kAmount);
+// }
 
-// // TEST(Performance, SPSC_Fixed_CircularFifo_Smaller) {
-// //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<string, kSmallQueueSize>>();
-// //    RunSPSC(queue, kAmount);
-// // }
+// TEST(Performance, SPSC_Fixed_CircularFifo_Smaller) {
+//    using namespace std;
+//    auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<string, kSmallQueueSize>>();
+//    RunSPSC(queue, kAmount);
+// }
 
-// // TEST(Performance, MPMC_1_to_1) {
-// //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kAmount);
-// //    RunSPSC(queue, kAmount);
-// // }
+// TEST(Performance, MPMC_1_to_1) {
+//    using namespace std;
+//    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kAmount);
+//    RunSPSC(queue, kAmount);
+// }
 
-// // TEST(Performance, MPMC_1_to_1_Smaller) {
-// //    using namespace std;
+// TEST(Performance, MPMC_1_to_1_Smaller) {
+//    using namespace std;
 
-// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
-// //    RunSPSC(queue, kAmount);
-// // }
+//    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
+//    RunSPSC(queue, kAmount);
+// }
 
-// // TEST(Performance, DISABLED_SPSC_circular_fifo_20secRun_LargeData) {
-// //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<spsc::circular_fifo<std::string>>(kSmallQueueSize);
-// //    const size_t large = 65000;
-// //    std::string payload(large, 'x');
-// //    EXPECT_EQ(large, payload.size());
-// //    const size_t numberOfProducers = 1;
-// //    const size_t numberOfConsumers = 1;
-// //    const size_t kTimeToRunSec = 20;
-// //    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
-// // }
+// TEST(Performance, DISABLED_SPSC_circular_fifo_20secRun_LargeData) {
+//    using namespace std;
+//    auto queue = queue_api::CreateQueue<spsc::circular_fifo<std::string>>(kSmallQueueSize);
+//    const size_t large = 65000;
+//    std::string payload(large, 'x');
+//    EXPECT_EQ(large, payload.size());
+//    const size_t numberOfProducers = 1;
+//    const size_t numberOfConsumers = 1;
+//    const size_t kTimeToRunSec = 20;
+//    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
+// }
 
-// // TEST(Performance, DISABLED_SPSC_Fixed_20secRun_LargeData) {
-// //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<std::string, kSmallQueueSize>>();
-// //    const size_t large = 65000;
-// //    std::string payload(large, 'x');
-// //    EXPECT_EQ(large, payload.size());
-// //    const size_t numberOfProducers = 1;
-// //    const size_t numberOfConsumers = 1;
-// //    const size_t kTimeToRunSec = 20;
-// //    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
-// // }
+// TEST(Performance, DISABLED_SPSC_Fixed_20secRun_LargeData) {
+//    using namespace std;
+//    auto queue = queue_api::CreateQueue<spsc::fixed::circular_fifo<std::string, kSmallQueueSize>>();
+//    const size_t large = 65000;
+//    std::string payload(large, 'x');
+//    EXPECT_EQ(large, payload.size());
+//    const size_t numberOfProducers = 1;
+//    const size_t numberOfConsumers = 1;
+//    const size_t kTimeToRunSec = 20;
+//    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
+// }
 
-// // TEST(Performance, DISABLED_MPMC_1_to_4_20secRun_LargeData) {
-// //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
-// //    const size_t large = 65000;
-// //    std::string payload(large, 'x');
-// //    EXPECT_EQ(large, payload.size());
-// //    const size_t numberOfProducers = 1;
-// //    const size_t numberOfConsumers = 4;
-// //    const size_t kTimeToRunSec = 20;
-// //    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
-// // }
+// TEST(Performance, DISABLED_MPMC_1_to_4_20secRun_LargeData) {
+//    using namespace std;
+//    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
+//    const size_t large = 65000;
+//    std::string payload(large, 'x');
+//    EXPECT_EQ(large, payload.size());
+//    const size_t numberOfProducers = 1;
+//    const size_t numberOfConsumers = 4;
+//    const size_t kTimeToRunSec = 20;
+//    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
+// }
 
-// // TEST(Performance, DISABLED_MPMC_1_to_4_20secRun_SmallData) {
-// //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
-// //    const size_t small = 10;
-// //    std::string payload(small, 'x');
-// //    EXPECT_EQ(small, payload.size());
-// //    const size_t numberOfProducers = 1;
-// //    const size_t numberOfConsumers = 4;
-// //    const size_t kTimeToRunSec = 20;
-// //    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
-// // }
+// TEST(Performance, DISABLED_MPMC_1_to_4_20secRun_SmallData) {
+//    using namespace std;
+//    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
+//    const size_t small = 10;
+//    std::string payload(small, 'x');
+//    EXPECT_EQ(small, payload.size());
+//    const size_t numberOfProducers = 1;
+//    const size_t numberOfConsumers = 4;
+//    const size_t kTimeToRunSec = 20;
+//    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
+// }
 
-// // TEST(Performance, DISABLED_lock_free__SPMC_1_to_4_20secRun_LargeData) {
-// //    using namespace std;
-// //    using element = std::string;
-// //    using qtype = spsc::circular_fifo<element>;
-// //    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
-// //    std::vector<qtype_pair> queues;
-// //    for (size_t i = 0; i < 4; ++i) {
-// //       queues.push_back(queue_api::CreateQueue<qtype>(kSmallQueueSize));
-// //    }
+// TEST(Performance, DISABLED_lock_free__SPMC_1_to_4_20secRun_LargeData) {
+//    using namespace std;
+//    using element = std::string;
+//    using qtype = spsc::circular_fifo<element>;
+//    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
+//    std::vector<qtype_pair> queues;
+//    for (size_t i = 0; i < 4; ++i) {
+//       queues.push_back(queue_api::CreateQueue<qtype>(kSmallQueueSize));
+//    }
 
-// //    const size_t large = 65000;
-// //    std::string payload(large, 'x');
-// //    EXPECT_EQ(large, payload.size());
-// //    const size_t kTimeToRunSec = 20;
-// //    RunSPMC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
-// // }
+//    const size_t large = 65000;
+//    std::string payload(large, 'x');
+//    EXPECT_EQ(large, payload.size());
+//    const size_t kTimeToRunSec = 20;
+//    RunSPMC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
+// }
 
-// // TEST(Performance, DISABLED_lock_free__SPMC_1_to_4_20secRun_SmallData) {
-// //    using namespace std;
-// //    using element = std::string;
-// //    using qtype = spsc::circular_fifo<element>;
-// //    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
-// //    std::vector<qtype_pair> queues;
-// //    for (size_t i = 0; i < 4; ++i) {
-// //       queues.push_back(queue_api::CreateQueue<qtype>(kSmallQueueSize));
-// //    }
+// TEST(Performance, DISABLED_lock_free__SPMC_1_to_4_20secRun_SmallData) {
+//    using namespace std;
+//    using element = std::string;
+//    using qtype = spsc::circular_fifo<element>;
+//    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
+//    std::vector<qtype_pair> queues;
+//    for (size_t i = 0; i < 4; ++i) {
+//       queues.push_back(queue_api::CreateQueue<qtype>(kSmallQueueSize));
+//    }
 
-// //    const size_t small = 10;
-// //    std::string payload(small, 'x');
-// //    EXPECT_EQ(small, payload.size());
-// //    const size_t kTimeToRunSec = 20;
-// //    RunSPMC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
-// // }
+//    const size_t small = 10;
+//    std::string payload(small, 'x');
+//    EXPECT_EQ(small, payload.size());
+//    const size_t kTimeToRunSec = 20;
+//    RunSPMC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
+// }
 
-// // TEST(Performance, DISABLED_MPMC_4_to_1_20secRun_LargeData) {
-// //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
-// //    const size_t large = 65000;
-// //    std::string payload(large, 'x');
-// //    EXPECT_EQ(large, payload.size());
-// //    const size_t numberOfProducers = 4;
-// //    const size_t numberOfConsumers = 1;
-// //    const size_t kTimeToRunSec = 20;
-// //    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
-// // }
+// TEST(Performance, DISABLED_MPMC_4_to_1_20secRun_LargeData) {
+//    using namespace std;
+//    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
+//    const size_t large = 65000;
+//    std::string payload(large, 'x');
+//    EXPECT_EQ(large, payload.size());
+//    const size_t numberOfProducers = 4;
+//    const size_t numberOfConsumers = 1;
+//    const size_t kTimeToRunSec = 20;
+//    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
+// }
 
-// // TEST(Performance, DISABLED_MPMC_4_to_1_20secRun_SmallData) {
-// //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
-// //    const size_t small = 10;
-// //    std::string payload(small, 'x');
-// //    EXPECT_EQ(small, payload.size());
-// //    const size_t numberOfProducers = 4;
-// //    const size_t numberOfConsumers = 1;
-// //    const size_t kTimeToRunSec = 20;
-// //    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
-// // }
+// TEST(Performance, DISABLED_MPMC_4_to_1_20secRun_SmallData) {
+//    using namespace std;
+//    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
+//    const size_t small = 10;
+//    std::string payload(small, 'x');
+//    EXPECT_EQ(small, payload.size());
+//    const size_t numberOfProducers = 4;
+//    const size_t numberOfConsumers = 1;
+//    const size_t kTimeToRunSec = 20;
+//    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
+// }
 
-// // TEST(Performance, DISABLED_lock_free__MPSC_4_to_1_20secRun_LargeData) {
-// //    using namespace std;
-// //    using element = std::string;
-// //    using qtype = spsc::circular_fifo<element>;
-// //    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
-// //    std::vector<qtype_pair> queues;
-// //    for (size_t i = 0; i < 4; ++i) {
-// //       queues.push_back(queue_api::CreateQueue<qtype>(kSmallQueueSize));
-// //    }
+// TEST(Performance, DISABLED_lock_free__MPSC_4_to_1_20secRun_LargeData) {
+//    using namespace std;
+//    using element = std::string;
+//    using qtype = spsc::circular_fifo<element>;
+//    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
+//    std::vector<qtype_pair> queues;
+//    for (size_t i = 0; i < 4; ++i) {
+//       queues.push_back(queue_api::CreateQueue<qtype>(kSmallQueueSize));
+//    }
 
-// //    const size_t large = 65000;
-// //    std::string payload(large, 'x');
-// //    EXPECT_EQ(large, payload.size());
-// //    const size_t kTimeToRunSec = 20;
-// //    RunMPSC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
-// // }
+//    const size_t large = 65000;
+//    std::string payload(large, 'x');
+//    EXPECT_EQ(large, payload.size());
+//    const size_t kTimeToRunSec = 20;
+//    RunMPSC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
+// }
 
-// // TEST(Performance, DISABLED_lock_free__MPSC_4_to_1_20secRun_SmallData) {
-// //    using namespace std;
-// //    using element = std::string;
-// //    using qtype = spsc::circular_fifo<element>;
-// //    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
-// //    std::vector<qtype_pair> queues;
-// //    for (size_t i = 0; i < 4; ++i) {
-// //       queues.push_back(queue_api::CreateQueue<qtype>(kSmallQueueSize));
-// //    }
+// TEST(Performance, DISABLED_lock_free__MPSC_4_to_1_20secRun_SmallData) {
+//    using namespace std;
+//    using element = std::string;
+//    using qtype = spsc::circular_fifo<element>;
+//    using qtype_pair = std::tuple<queue_api::Sender<qtype>, queue_api::Receiver<qtype>>;
+//    std::vector<qtype_pair> queues;
+//    for (size_t i = 0; i < 4; ++i) {
+//       queues.push_back(queue_api::CreateQueue<qtype>(kSmallQueueSize));
+//    }
 
-// //    const size_t small = 10;
-// //    std::string payload(small, 'x');
-// //    EXPECT_EQ(small, payload.size());
-// //    const size_t kTimeToRunSec = 20;
-// //    RunMPSC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
-// // }
+//    const size_t small = 10;
+//    std::string payload(small, 'x');
+//    EXPECT_EQ(small, payload.size());
+//    const size_t kTimeToRunSec = 20;
+//    RunMPSC<qtype, qtype_pair>(queues, payload, kTimeToRunSec);
+// }
 
-// // TEST(Performance, DISABLED_MPMC_4_to_4_20secRun_LargeData) {
-// //    using namespace std;
-// //    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
-// //    const size_t large = 65000;
-// //    std::string payload(large, 'x');
-// //    EXPECT_EQ(large, payload.size());
-// //    const size_t numberOfProducers = 4;
-// //    const size_t numberOfConsumers = 4;
-// //    const size_t kTimeToRunSec = 20;
-// //    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
-// // }
+// TEST(Performance, DISABLED_MPMC_4_to_4_20secRun_LargeData) {
+//    using namespace std;
+//    auto queue = queue_api::CreateQueue<mpmc::lock_queue<string>>(kSmallQueueSize);
+//    const size_t large = 65000;
+//    std::string payload(large, 'x');
+//    EXPECT_EQ(large, payload.size());
+//    const size_t numberOfProducers = 4;
+//    const size_t numberOfConsumers = 4;
+//    const size_t kTimeToRunSec = 20;
+//    RunMPMC(queue, payload, numberOfProducers, numberOfConsumers, kTimeToRunSec);
+// }
