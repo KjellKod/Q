@@ -11,8 +11,8 @@
 #include <gtest/gtest.h>
 #include <string>
 #include "q/q_api.hpp"
-#include "q/spmc_fixed_sender_round_robin.hpp"
-#include "q/spsc_circular_fifo.hpp"
+#include <q/queue_spmc_fixed_sender_round_robin.hpp>
+#include <q/queue_spsc.hpp>
 
 TEST(SingleProducer_MultipleConsumers, CreateOneQueue) {
    using element = std::string;

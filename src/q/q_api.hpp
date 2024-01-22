@@ -18,10 +18,10 @@
 #include <chrono>
 #include <memory>
 #include <tuple>
-#include "q/sfinae_receiver.hpp"
-#include "q/sfinae_sender.hpp"
+#include "q/internal/sfinae_receiver.hpp"
+#include "q/internal/sfinae_sender.hpp"
 
-namespace queue_api {
+namespace queue_api { 
 
    // std::declval converts any type T to a reference type,
    // making it possible to use member functions in decltype expressions without

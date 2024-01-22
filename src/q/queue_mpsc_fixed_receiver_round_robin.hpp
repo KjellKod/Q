@@ -28,8 +28,8 @@
 #include <utility>
 #include <vector>
 #include "q/q_api.hpp"
-#include "q/round_robin_api.hpp"
-#include "q/spsc_circular_fifo.hpp"
+#include "q/queue_api_round_robin.hpp"
+#include "q/queue_spsc.hpp"
 
 // MPSC : Many Single Producers - Single Consumer
 namespace mpsc {

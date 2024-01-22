@@ -15,7 +15,7 @@
 #include <mutex>
 #include <set>
 #include <thread>
-#include "q/thread_exit_notifier.hpp"
+#include <q/internal/thread_exit_notifier.hpp>
 
 namespace {
    std::set<std::thread::id> ids;

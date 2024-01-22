@@ -53,6 +53,11 @@ namespace round_robin {
       bool lock_free() const;
 
      protected:
+     // careful, full access to queue internal. take care to not abuse this. 
+      virtual std::vector<QueueUsageApi>& queue_access() {
+         return queues_; 
+      }
+
       std::vector<QueueUsageApi> queues_;
       size_t current_;
    };

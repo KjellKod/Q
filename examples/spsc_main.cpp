@@ -4,7 +4,7 @@
 #include <thread>
 #include <tuple>
 #include "q/q_api.hpp"
-#include "q/spsc.hpp"
+#include "q/queue_spsc.hpp"
 
 // Alias for easier readability
 using spsc_queue_type = spsc::circular_fifo<std::string>;

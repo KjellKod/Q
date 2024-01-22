@@ -11,7 +11,7 @@
 */
 #include <gtest/gtest.h>
 #include <string>
-#include "q/spsc.hpp"
+#include <q/queue_spsc.hpp>
 
 using namespace std;
 using circular_fifoQ = spsc::circular_fifo<string>;

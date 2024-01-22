@@ -1,7 +1,7 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
-#include "q/thread_exit_notifier.hpp"
+#include "q/internal/thread_exit_notifier.hpp"
 
 void coutThreadExit(std::thread::id id) {
    std::cout << "Thread " << id << " has exited." << std::endl;

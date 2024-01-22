@@ -9,10 +9,11 @@
 * Originally published at: https://github.com/KjellKod/Q
 */
 #include <gtest/gtest.h>
+#include <string>
 #include <q/mpmc.hpp>
 #include <q/q_api.hpp>
-#include <q/spsc.hpp>
-#include <string>
+#include <q/queue_spsc.hpp>
+
 #include "stopwatch.hpp"
 
 using namespace std;

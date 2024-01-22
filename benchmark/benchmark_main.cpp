@@ -2,9 +2,9 @@
 #include <iostream>
 #include "benchmark_functions.hpp"
 #include "benchmark_runs.hpp"
-#include "q/mpmc_lock_queue.hpp"
+#include "q/queue_lock_mpmc.hpp"
 #include "q/q_api.hpp"
-#include "q/spsc_circular_fifo.hpp"
+#include "q/queue_spsc.hpp"
 
 namespace {
    const size_t kGoodSizedQueueSize = (2 << 16);  // 65536
