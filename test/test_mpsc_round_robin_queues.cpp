@@ -10,9 +10,8 @@
 
 #include <gtest/gtest.h>
 #include <string>
-#include "q/mpsc_receiver_round_robin.hpp"
+#include "q/mpsc_fixed_receiver_round_robin.hpp"
 #include "q/q_api.hpp"
-#include "q/spmc_sender_round_robin.hpp"
 #include "q/spsc_circular_fifo.hpp"
 
 TEST(MultipleProducers_SingleConsumer, CreateOneQueue) {
