@@ -16,9 +16,9 @@
 // #include <chrono>
 // #include <future>
 // #include <iostream>
-// #include <q/mpsc_receiver_round_robin.hpp>
+// #include <q/mpsc_fixed_receiver_round_robin.hpp>
 // #include <q/q_api.hpp>
-// #include <q/spmc_sender_round_robin.hpp>
+// #include <q/spmc_fixed_sender_round_robin.hpp>
 // #include <string>
 // #include <vector>
 // //#include "test_helper.hpp"
