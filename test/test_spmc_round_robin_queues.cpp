@@ -11,7 +11,7 @@
 #include <gtest/gtest.h>
 #include <string>
 #include "q/q_api.hpp"
-#include <q/queue_spmc_fixed_sender_round_robin.hpp>
+#include <q/queue_spmc_fixed_sender.hpp>
 #include <q/queue_spsc.hpp>
 
 TEST(SingleProducer_MultipleConsumers, CreateOneQueue) {
